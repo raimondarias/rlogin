@@ -1,0 +1,34 @@
+[versions]
+# --- Plataformas (compileOnly, provistas en runtime por el servidor) ---
+paper-api = "1.21.4-R0.1-SNAPSHOT"
+velocity-api = "3.4.0-SNAPSHOT"
+folia-api = "1.21.4-R0.1-SNAPSHOT"
+
+# --- Dependencias embebidas (shaded) ---
+hikaricp = "5.1.0"
+sqlite-jdbc = "3.47.1.0"
+mysql-connector = "9.1.0"
+snakeyaml = "2.3"
+bcrypt = "0.10.2"
+
+# --- Test ---
+junit = "5.11.4"
+
+# --- Build ---
+shadow = "8.3.5"
+
+[libraries]
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper-api" }
+velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity-api" }
+
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
+mysql-connector = { module = "com.mysql:mysql-connector-j", version.ref = "mysql-connector" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
+
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

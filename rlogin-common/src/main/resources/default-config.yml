@@ -1,0 +1,82 @@
+# ============================================================
+#  rLogin — configuración
+#  https://github.com/raimondarias/rlogin
+# ============================================================
+
+general:
+  # es | en  (añade tu propio lang/messages_XX.yml y ponlo aquí)
+  language: es
+  debug: false
+
+database:
+  # sqlite -> cero configuración, ideal para un solo servidor.
+  # mysql  -> recomendado si varios Paper/Folia comparten las mismas cuentas.
+  type: sqlite
+  sqlite:
+    file: rlogin.db
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    database: rlogin
+    username: root
+    password: ""
+    use-ssl: false
+    pool-size: 10
+
+premium:
+  # Autologin para cuentas premium (Java original). En Velocity usa Modern
+  # Forwarding; en standalone hace fallback a la API de Mojang.
+  auto-login: true
+  api-timeout-ms: 3000
+  # Qué hacer si la API de Mojang no responde a tiempo o está caída:
+  #   fail-open   -> se trata como cracked, se le pide /login (recomendado)
+  #   fail-closed -> se rechaza la conexión hasta que la API vuelva
+  api-failure-policy: fail-open
+  cache-ttl-minutes: 60
+  # No permite /register en un nombre que pertenece a una cuenta premium real,
+  # para que su dueño legítimo no se quede sin poder auto-loguearse.
+  protect-premium-names: true
+
+session:
+  # "Recuérdame": si el jugador vuelve a entrar desde la misma IP dentro de
+  # esta ventana, no se le vuelve a pedir /login.
+  remember-me: true
+  remember-me-minutes: 30
+
+security:
+  bruteforce:
+    enabled: true
+    max-attempts: 5
+    lockout-seconds: 60
+    lockout-multiplier: 2.0
+    max-lockout-seconds: 3600
+  totp:
+    enabled: true
+    issuer: rLogin
+  password:
+    min-length: 5
+    max-length: 30
+    bcrypt-cost: 10
+
+limbo:
+  # Mientras no se autentica: se congela al jugador in-place (sin teleport a
+  # un mundo limbo) y solo puede usar los comandos de esta lista.
+  freeze: true
+  allowed-commands:
+    - /login
+    - /l
+    - /register
+    - /reg
+    - /2fa
+  reminder-interval-seconds: 5
+
+bedrock:
+  # Jugadores conectados vía Geyser/Floodgate se tratan como premium autologin.
+  floodgate-auto-login: true
+  prefix: "."
+
+update-checker:
+  enabled: true
+
+metrics:
+  bstats: true

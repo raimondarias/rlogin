@@ -1,0 +1,62 @@
+# rLogin messages — English
+# Placeholders available depending on the message: {player} {seconds} {attempts} {min}
+
+prefix: "&8[&brLogin&8] &r"
+
+login:
+  usage: "{prefix}&cUsage: /login <password>"
+  wrong-password: "{prefix}&cWrong password. Attempts left: {attempts}"
+  already-logged-in: "{prefix}&cYou are already logged in."
+  success: "{prefix}&aLogged in successfully. Welcome {player}!"
+  need-totp: "{prefix}&eAlso enter your 2FA code: /login <password> <code>"
+  wrong-totp: "{prefix}&cWrong 2FA code."
+  not-registered: "{prefix}&cYou don't have an account. Register with /register <password> <password>"
+
+register:
+  usage: "{prefix}&cUsage: /register <password> <repeat password>"
+  already-registered: "{prefix}&cThis account is already registered."
+  passwords-dont-match: "{prefix}&cPasswords don't match."
+  password-too-short: "{prefix}&cPassword must be at least {min} characters long."
+  premium-name-protected: "{prefix}&cThat name belongs to a premium account. If it's yours, connect with the original Minecraft client."
+  success: "{prefix}&aRegistration complete. Welcome {player}!"
+
+logout:
+  success: "{prefix}&aLogged out."
+  not-logged-in: "{prefix}&cYou are not logged in."
+
+changepassword:
+  usage: "{prefix}&cUsage: /changepassword <current password> <new password>"
+  success: "{prefix}&aPassword updated successfully."
+  wrong-password: "{prefix}&cCurrent password is incorrect."
+
+premium:
+  auto-login-message: "{prefix}&aPremium account detected, session started automatically."
+  info-premium: "{prefix}&aYour account is verified as premium by Mojang."
+  info-cracked: "{prefix}&eYour account is non-premium, you need your own password."
+
+limbo:
+  freeze-reminder: "{prefix}&eYou must log in to be able to move. Use /login or /register."
+  action-blocked: "{prefix}&cYou can't do that until you log in."
+
+security:
+  locked-out: "{prefix}&cToo many failed attempts. Wait {seconds} seconds."
+  captcha-required: "{prefix}&eSolve the captcha to continue: {captcha}"
+
+totp:
+  enabled: "{prefix}&aTwo-factor authentication enabled."
+  disabled: "{prefix}&aTwo-factor authentication disabled."
+  setup-secret: "{prefix}&eYour 2FA key: &f{secret} &e(add it to your authenticator app and confirm with /2fa confirm <code>)"
+  confirm-usage: "{prefix}&cUsage: /2fa confirm <code>"
+  already-enabled: "{prefix}&cYou already have two-factor authentication enabled."
+  not-enabled: "{prefix}&cYou don't have two-factor authentication enabled."
+
+admin:
+  no-permission: "{prefix}&cYou don't have permission to do that."
+  reloaded: "{prefix}&aConfiguration reloaded."
+  unregistered: "{prefix}&a{player}'s account has been deleted."
+  force-logged-in: "{prefix}&a{player} has been force logged in."
+  player-not-found: "{prefix}&cPlayer not found."
+  migration-started: "{prefix}&eImporting accounts from {plugin}..."
+  migration-done: "{prefix}&aImport complete: {count} accounts imported."
+  migration-failed: "{prefix}&cImport error: {error}"
+  info: "{prefix}&f{player} &7-> premium: &f{premium}&7, 2FA: &f{totp}&7, last login: &f{last-login}"

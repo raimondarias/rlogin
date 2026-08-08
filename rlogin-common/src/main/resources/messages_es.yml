@@ -1,0 +1,62 @@
+# Mensajes de rLogin — Español
+# Placeholders disponibles según el mensaje: {player} {seconds} {attempts} {min}
+
+prefix: "&8[&brLogin&8] &r"
+
+login:
+  usage: "{prefix}&cUso: /login <contraseña>"
+  wrong-password: "{prefix}&cContraseña incorrecta. Intentos restantes: {attempts}"
+  already-logged-in: "{prefix}&cYa has iniciado sesión."
+  success: "{prefix}&aHas iniciado sesión correctamente. ¡Bienvenido {player}!"
+  need-totp: "{prefix}&eIntroduce también tu código 2FA: /login <contraseña> <código>"
+  wrong-totp: "{prefix}&cCódigo 2FA incorrecto."
+  not-registered: "{prefix}&cNo tienes cuenta. Regístrate con /register <contraseña> <contraseña>"
+
+register:
+  usage: "{prefix}&cUso: /register <contraseña> <repite la contraseña>"
+  already-registered: "{prefix}&cEsta cuenta ya está registrada."
+  passwords-dont-match: "{prefix}&cLas contraseñas no coinciden."
+  password-too-short: "{prefix}&cLa contraseña debe tener al menos {min} caracteres."
+  premium-name-protected: "{prefix}&cEse nombre pertenece a una cuenta premium. Si es tuya, conéctate desde el cliente original de Minecraft."
+  success: "{prefix}&aRegistro completado. ¡Bienvenido {player}!"
+
+logout:
+  success: "{prefix}&aSesión cerrada."
+  not-logged-in: "{prefix}&cNo has iniciado sesión."
+
+changepassword:
+  usage: "{prefix}&cUso: /changepassword <contraseña actual> <contraseña nueva>"
+  success: "{prefix}&aContraseña actualizada correctamente."
+  wrong-password: "{prefix}&cLa contraseña actual no es correcta."
+
+premium:
+  auto-login-message: "{prefix}&aCuenta premium detectada, sesión iniciada automáticamente."
+  info-premium: "{prefix}&aTu cuenta está verificada como premium por Mojang."
+  info-cracked: "{prefix}&eTu cuenta es no-premium, necesitas contraseña propia."
+
+limbo:
+  freeze-reminder: "{prefix}&eDebes iniciar sesión para poder moverte. Usa /login o /register."
+  action-blocked: "{prefix}&cNo puedes hacer eso hasta que inicies sesión."
+
+security:
+  locked-out: "{prefix}&cDemasiados intentos fallidos. Espera {seconds} segundos."
+  captcha-required: "{prefix}&eResuelve el captcha para continuar: {captcha}"
+
+totp:
+  enabled: "{prefix}&aVerificación en dos pasos activada."
+  disabled: "{prefix}&aVerificación en dos pasos desactivada."
+  setup-secret: "{prefix}&eTu clave 2FA: &f{secret} &e(añádela a tu app de autenticación y confirma con /2fa confirm <código>)"
+  confirm-usage: "{prefix}&cUso: /2fa confirm <código>"
+  already-enabled: "{prefix}&cYa tienes la verificación en dos pasos activada."
+  not-enabled: "{prefix}&cNo tienes la verificación en dos pasos activada."
+
+admin:
+  no-permission: "{prefix}&cNo tienes permiso para hacer eso."
+  reloaded: "{prefix}&aConfiguración recargada."
+  unregistered: "{prefix}&aCuenta de {player} eliminada."
+  force-logged-in: "{prefix}&a{player} ha sido autenticado a la fuerza."
+  player-not-found: "{prefix}&cJugador no encontrado."
+  migration-started: "{prefix}&eImportando cuentas desde {plugin}..."
+  migration-done: "{prefix}&aImportación completa: {count} cuentas importadas."
+  migration-failed: "{prefix}&cError al importar: {error}"
+  info: "{prefix}&f{player} &7-> premium: &f{premium}&7, 2FA: &f{totp}&7, último login: &f{last-login}"
