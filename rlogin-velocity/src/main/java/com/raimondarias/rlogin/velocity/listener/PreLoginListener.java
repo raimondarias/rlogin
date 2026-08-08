@@ -13,14 +13,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * El corazón del auto-login premium: decide, para cada conexión entrante,
- * si Velocity debe forzar el handshake cifrado con Mojang (cuenta premium,
- * el cliente se autentica solo, sin contraseña) o dejarla pasar en modo
- * offline (cuenta cracked, rLogin le pedirá /login en el backend).
+ * The heart of premium auto-login: decides, for every incoming connection,
+ * whether Velocity should force the encrypted Mojang handshake (premium
+ * account — the client authenticates on its own, no password) or let it
+ * through in offline mode (cracked account — rLogin will ask for /login on
+ * the backend).
  *
- * <p>Esto es exactamente lo que Minecraft llama "modo híbrido": el proxy en
- * su conjunto corre con {@code online-mode: false}, pero cada conexión
- * individual puede forzarse a online-mode según lo que decidamos aquí.</p>
+ * <p>This is exactly what's usually called "hybrid mode": the proxy as a
+ * whole runs with {@code online-mode: false}, but each individual
+ * connection can be forced to online-mode based on what we decide here.</p>
  */
 public final class PreLoginListener {
 
@@ -28,7 +29,7 @@ public final class PreLoginListener {
     private final PremiumChecker premiumChecker;
     private final Logger logger;
 
-    /** UUIDs que Velocity ya sabe premium en esta sesión de proxy (útil para {@link SyncListener}). */
+    /** UUIDs Velocity already knows are premium in this proxy session (used by {@link SyncListener}). */
     private final Set<java.util.UUID> trustedThisSession = new CopyOnWriteArraySet<>();
     private final ConcurrentHashMap<String, Boolean> lastDecisionByUsername = new ConcurrentHashMap<>();
 
@@ -53,7 +54,7 @@ public final class PreLoginListener {
 
             if (lookup.status() == PremiumChecker.Status.ERROR && !config.premiumApiFailOpen()) {
                 event.setResult(PreLoginEvent.PreLoginComponentResult.denied(
-                        Component.text("No se pudo verificar tu cuenta con Mojang. Inténtalo de nuevo en unos segundos.")));
+                        Component.text("Could not verify your account with Mojang. Please try again in a few seconds.")));
                 return;
             }
 
@@ -62,14 +63,14 @@ public final class PreLoginListener {
 
             if (premium) {
                 event.setResult(PreLoginEvent.PreLoginComponentResult.forceOnlineMode());
-                logger.debug("{} detectado como premium, forzando online-mode", username);
+                logger.debug("{} detected as premium, forcing online-mode", username);
             } else {
                 event.setResult(PreLoginEvent.PreLoginComponentResult.forceOfflineMode());
             }
         });
     }
 
-    /** Llamado por {@link SyncListener} en cuanto conocemos el UUID final del jugador. */
+    /** Called by {@link SyncListener} as soon as we know the player's final UUID. */
     public boolean wasForcedPremium(String username) {
         return Boolean.TRUE.equals(lastDecisionByUsername.get(username.toLowerCase(java.util.Locale.ROOT)));
     }

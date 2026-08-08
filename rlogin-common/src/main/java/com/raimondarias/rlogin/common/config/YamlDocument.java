@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Envoltorio muy fino sobre un YAML cargado con SnakeYAML, con acceso por
- * rutas separadas por puntos (ej. {@code "database.mysql.host"}). No es un
- * ORM ni un mapeador de objetos a propósito: rLogin solo necesita leer
- * config y mensajes, nada más.
+ * Very thin wrapper over a YAML document loaded with SnakeYAML, with
+ * dot-separated path access (e.g. {@code "database.mysql.host"}). Not an
+ * ORM or object mapper on purpose: rLogin only ever needs to read config
+ * and messages, nothing more.
  */
 public final class YamlDocument {
 
@@ -25,7 +25,7 @@ public final class YamlDocument {
         this.root = root;
     }
 
-    /** Carga el fichero si existe; si no, lo crea a partir del recurso embebido. */
+    /** Loads the file if it exists; otherwise creates it from the bundled resource. */
     public static YamlDocument loadOrCreate(Path file, String classpathResource) throws IOException {
         if (Files.notExists(file)) {
             if (file.getParent() != null) {
@@ -33,7 +33,7 @@ public final class YamlDocument {
             }
             try (InputStream in = YamlDocument.class.getClassLoader().getResourceAsStream(classpathResource)) {
                 if (in == null) {
-                    throw new IOException("Recurso embebido no encontrado: " + classpathResource);
+                    throw new IOException("Bundled resource not found: " + classpathResource);
                 }
                 Files.copy(in, file);
             }
@@ -46,7 +46,7 @@ public final class YamlDocument {
     public static YamlDocument fromClasspath(String classpathResource) throws IOException {
         try (InputStream in = YamlDocument.class.getClassLoader().getResourceAsStream(classpathResource)) {
             if (in == null) {
-                throw new IOException("Recurso embebido no encontrado: " + classpathResource);
+                throw new IOException("Bundled resource not found: " + classpathResource);
             }
             return new YamlDocument(readMap(in));
         }
@@ -108,7 +108,7 @@ public final class YamlDocument {
         return def;
     }
 
-    /** Aplana el documento a claves con puntos -> valor en texto (para mensajes). */
+    /** Flattens the document to dot-separated keys -> text value (used for messages). */
     public Map<String, String> flatten() {
         Map<String, String> out = new LinkedHashMap<>();
         flattenInto("", root, out);

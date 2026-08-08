@@ -8,15 +8,15 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Autoridad en memoria de "¿este jugador conectado ya está autenticado?".
- * Vive solo mientras el jugador está en línea; el estado persistente real
- * (contraseña, 2FA, sesión recordada por IP) está en la base de datos.
+ * In-memory authority for "is this connected player already authenticated?".
+ * It only lives while the player is online; the real persistent state
+ * (password, 2FA, IP-remembered session) lives in the database.
  *
- * <p>{@link com.raimondarias.rlogin.paper.listener.FreezeListener} consulta
- * este estado en cada evento para decidir si congelar al jugador — así que
- * en cuanto algo marca a alguien como autenticado (login, registro, premium,
- * "recuérdame", o el aviso {@code TRUSTED} del proxy), deja de estar
- * congelado de inmediato sin ningún paso adicional.</p>
+ * <p>{@link com.raimondarias.rlogin.paper.listener.FreezeListener} checks
+ * this state on every event to decide whether to freeze the player — so as
+ * soon as something marks someone as authenticated (login, register,
+ * premium, "remember me", or the proxy's {@code TRUSTED} notice), they stop
+ * being frozen immediately, with no extra step needed.</p>
  */
 public final class AuthSessionManager {
 

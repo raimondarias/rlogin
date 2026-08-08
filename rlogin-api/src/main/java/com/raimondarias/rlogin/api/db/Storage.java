@@ -8,17 +8,17 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * SPI de persistencia de rLogin. Todas las operaciones son asíncronas: nunca
- * deben llamarse desde el hilo principal/de región de Bukkit ni desde el
- * event loop de Velocity.
+ * rLogin's persistence SPI. Every operation is asynchronous: none of them
+ * should ever be called from Bukkit's main/region thread, nor from
+ * Velocity's event loop.
  *
- * <p>Implementaciones incluidas: {@code SqliteStorage} y {@code MysqlStorage}
- * (módulo {@code rlogin-common}). Un addon de terceros puede aportar la suya
- * implementando esta interfaz.</p>
+ * <p>Bundled implementations: {@code SqliteStorage} and {@code MysqlStorage}
+ * (module {@code rlogin-common}). A third-party addon can bring its own by
+ * implementing this interface.</p>
  */
 public interface Storage extends AutoCloseable {
 
-    /** Crea el esquema si no existe y deja el pool de conexiones listo. */
+    /** Creates the schema if missing and gets the connection pool ready. */
     CompletableFuture<Void> init();
 
     CompletableFuture<Optional<RLoginAccount>> findByUuid(UUID uuid);
@@ -29,7 +29,7 @@ public interface Storage extends AutoCloseable {
 
     CompletableFuture<Void> delete(UUID uuid);
 
-    // --- Sesión "recuérdame" ---
+    // --- "Remember me" session ---
 
     CompletableFuture<Void> saveSession(UUID uuid, String ip, String server, Instant expiresAt);
 

@@ -16,20 +16,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Importa cuentas desde la tabla {@code authme} del plugin AuthMe.
+ * Imports accounts from AuthMe's {@code authme} table.
  *
- * <p>{@code source} admite dos formas:</p>
+ * <p>{@code source} accepts two forms:</p>
  * <ul>
- *   <li>una ruta a su fichero SQLite (ej. {@code plugins/AuthMe/authme.db})</li>
- *   <li>una URL JDBC completa si AuthMe usa MySQL, con usuario/contraseña
- *       incluidos (ej. {@code jdbc:mysql://user:pass@host:3306/authme})</li>
+ *   <li>a path to its SQLite file (e.g. {@code plugins/AuthMe/authme.db})</li>
+ *   <li>a full JDBC URL if AuthMe uses MySQL, with username/password
+ *       included (e.g. {@code jdbc:mysql://user:pass@host:3306/authme})</li>
  * </ul>
  *
- * <p>Solo reconoce los formatos de hash bcrypt y SHA256 (el algoritmo por
- * defecto de AuthMe, {@code $SHA$salt$hash}). Otros algoritmos (MD5,
- * WHIRLPOOL, XAUTH...) se importan igualmente pero no podrán iniciar sesión
- * hasta que el jugador se registre de nuevo — se avisa en el log de
- * importación.</p>
+ * <p>Only recognizes bcrypt and SHA256 hash formats (AuthMe's default
+ * algorithm, {@code $SHA$salt$hash}). Other algorithms (MD5, WHIRLPOOL,
+ * XAUTH...) are still imported, but those accounts won't be able to log in
+ * until the player registers again — this is reported in the import log.</p>
  */
 public final class AuthMeImporter implements Importer {
 
@@ -60,7 +59,7 @@ public final class AuthMeImporter implements Importer {
                 out.add(new ImportedAccount(username, OfflineUuid.of(username), false, stored, algo, rs.getString("ip")));
             }
         } catch (SQLException e) {
-            throw new ImportException("No se pudo leer la base de datos de AuthMe: " + e.getMessage(), e);
+            throw new ImportException("Could not read AuthMe's database: " + e.getMessage(), e);
         }
         return out;
     }

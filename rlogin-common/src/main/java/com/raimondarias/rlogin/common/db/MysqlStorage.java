@@ -4,8 +4,8 @@ import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.zaxxer.hikari.HikariConfig;
 
 /**
- * Almacenamiento MySQL/MariaDB, recomendado cuando varios backends
- * Paper/Folia deben compartir las mismas cuentas de rLogin.
+ * MySQL/MariaDB storage, recommended when several Paper/Folia backends
+ * need to share the same rLogin accounts.
  */
 public final class MysqlStorage extends AbstractSqlStorage {
 

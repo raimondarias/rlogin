@@ -18,9 +18,9 @@ subprojects {
 
     java {
         toolchain {
-            // Compilar en el mínimo soportado (Java 21). El bytecode resultante
-            // corre sin cambios en cualquier JRE posterior (22, 23, 24, 25, 26...),
-            // así que no hace falta recompilar al subir de versión de Java.
+            // Compile against the minimum supported version (Java 21). The resulting
+            // bytecode runs unchanged on any later JRE (22, 23, 24, 25, 26...), so
+            // there's no need to recompile when the server's Java version goes up.
             languageVersion.set(JavaLanguageVersion.of(21))
         }
     }

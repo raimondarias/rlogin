@@ -1,14 +1,17 @@
 package com.raimondarias.rlogin.paper.command;
 
+import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
+import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -17,16 +20,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * {@code /rlogin ...} — router hacia los mismos comandos que sus alias
- * cortos ({@code /login}, {@code /register}...) más los subcomandos de
- * administración ({@code rlogin.admin}).
+ * {@code /rlogin ...} — router to the same commands as their short aliases
+ * ({@code /login}, {@code /register}...) plus admin subcommands
+ * ({@code rlogin.admin}), including spawn point management.
  */
 public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> PLAYER_SUBCOMMANDS =
             List.of("login", "register", "changepassword", "logout", "2fa", "premium");
     private static final List<String> ADMIN_SUBCOMMANDS =
-            List.of("reload", "unregister", "forcelogin", "migrate", "info", "lang");
+            List.of("reload", "unregister", "forcelogin", "migrate", "info", "lang", "spawn");
+    private static final List<String> SPAWN_ACTIONS =
+            List.of("set", "list", "remove", "join", "firstjoin", "login", "register");
 
     private final RLoginPaperPlugin plugin;
     private final LoginCommand loginCommand;
@@ -71,10 +76,11 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
             case "forcelogin" -> adminOnly(sender, () -> forceLogin(sender, rest));
             case "migrate" -> adminOnly(sender, () -> migrate(sender, rest));
             case "info" -> adminOnly(sender, () -> info(sender, rest));
+            case "spawn" -> adminOnly(sender, () -> spawn(sender, rest));
             case "lang" -> adminOnly(sender, () -> sender.sendMessage(
-                    "Cambia general.language en config.yml y ejecuta /rlogin reload."));
+                    "Change general.language in config.yml and run /rlogin reload."));
             default -> {
-                sender.sendMessage("Subcomando desconocido: " + sub);
+                sender.sendMessage("Unknown subcommand: " + sub);
                 yield true;
             }
         };
@@ -91,7 +97,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private void unregister(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("/rlogin unregister <jugador>");
+            sender.sendMessage("/rlogin unregister <player>");
             return;
         }
         UUID uuid = resolveUuid(args[0]);
@@ -101,7 +107,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private void forceLogin(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("/rlogin forcelogin <jugador>");
+            sender.sendMessage("/rlogin forcelogin <player>");
             return;
         }
         Player target = Bukkit.getPlayerExact(args[0]);
@@ -120,12 +126,12 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private void migrate(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage("/rlogin migrate <authme|nlogin|jpremium> <ruta-o-jdbc>");
+            sender.sendMessage("/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>");
             return;
         }
         var importer = plugin.importerRegistry().get(args[0]);
         if (importer.isEmpty()) {
-            sender.sendMessage("Importador desconocido: " + args[0]);
+            sender.sendMessage("Unknown importer: " + args[0]);
             return;
         }
         sender.sendMessage(plugin.messages().get("admin.migration-started", Map.of("plugin", importer.get().displayName())));
@@ -141,7 +147,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private void info(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("/rlogin info <jugador>");
+            sender.sendMessage("/rlogin info <player>");
             return;
         }
         UUID uuid = resolveUuid(args[0]);
@@ -159,6 +165,67 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
         });
     }
 
+    /**
+     * {@code /rlogin spawn set|list|remove <name>} manages named spawn points;
+     * {@code /rlogin spawn join|firstjoin|login|register [name|none]} assigns
+     * which named spawn is used for that purpose (or clears it with "none",
+     * or shows the current assignment when no name is given). When a role has
+     * no spawn assigned, players simply stay wherever they last disconnected.
+     */
+    private void spawn(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            sender.sendMessage("/rlogin spawn <" + String.join("|", SPAWN_ACTIONS) + "> ...");
+            return;
+        }
+        String action = args[0].toLowerCase(Locale.ROOT);
+        SpawnManager spawns = plugin.spawnManager();
+
+        switch (action) {
+            case "set" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage("Only a player can set a spawn point (needs a location).");
+                    return;
+                }
+                if (args.length < 2) {
+                    sender.sendMessage("/rlogin spawn set <name>");
+                    return;
+                }
+                Location location = player.getLocation();
+                spawns.set(args[1], location);
+                sender.sendMessage("Spawn '" + args[1] + "' saved at your current location.");
+            }
+            case "list" -> {
+                var names = spawns.names();
+                sender.sendMessage(names.isEmpty() ? "No spawn points defined." : "Spawns: " + String.join(", ", names));
+            }
+            case "remove" -> {
+                if (args.length < 2) {
+                    sender.sendMessage("/rlogin spawn remove <name>");
+                    return;
+                }
+                boolean removed = spawns.remove(args[1]);
+                sender.sendMessage(removed ? "Spawn '" + args[1] + "' removed." : "No such spawn: " + args[1]);
+            }
+            case "join", "firstjoin", "login", "register" -> {
+                SpawnManager.Role role = SpawnManager.Role.valueOf(action.toUpperCase(Locale.ROOT));
+                if (args.length < 2) {
+                    var current = spawns.roleAssignment(role);
+                    sender.sendMessage("rlogin." + action + " -> "
+                            + current.orElse("(not set — players stay where they logged out)"));
+                    return;
+                }
+                if (args[1].equalsIgnoreCase("none")) {
+                    spawns.clearRole(role);
+                    sender.sendMessage(action + " spawn cleared.");
+                    return;
+                }
+                boolean ok = spawns.assignRole(role, args[1]);
+                sender.sendMessage(ok ? action + " spawn set to '" + args[1] + "'." : "No such spawn: " + args[1]);
+            }
+            default -> sender.sendMessage("/rlogin spawn <" + String.join("|", SPAWN_ACTIONS) + "> ...");
+        }
+    }
+
     private UUID resolveUuid(String name) {
         Player online = Bukkit.getPlayerExact(name);
         if (online != null) {
@@ -170,14 +237,28 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length != 1) {
-            return List.of();
+        if (args.length == 1) {
+            List<String> options = sender.hasPermission("rlogin.admin")
+                    ? java.util.stream.Stream.concat(PLAYER_SUBCOMMANDS.stream(), ADMIN_SUBCOMMANDS.stream()).toList()
+                    : PLAYER_SUBCOMMANDS;
+            return options.stream()
+                    .filter(s -> s.startsWith(args[0].toLowerCase(Locale.ROOT)))
+                    .collect(Collectors.toList());
         }
-        List<String> options = sender.hasPermission("rlogin.admin")
-                ? java.util.stream.Stream.concat(PLAYER_SUBCOMMANDS.stream(), ADMIN_SUBCOMMANDS.stream()).toList()
-                : PLAYER_SUBCOMMANDS;
-        return options.stream()
-                .filter(s -> s.startsWith(args[0].toLowerCase(Locale.ROOT)))
-                .collect(Collectors.toList());
+        if (args.length == 2 && args[0].equalsIgnoreCase("spawn") && sender.hasPermission("rlogin.admin")) {
+            return SPAWN_ACTIONS.stream()
+                    .filter(s -> s.startsWith(args[1].toLowerCase(Locale.ROOT)))
+                    .collect(Collectors.toList());
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("spawn")
+                && List.of("remove", "join", "firstjoin", "login", "register").contains(args[1].toLowerCase(Locale.ROOT))
+                && sender.hasPermission("rlogin.admin")) {
+            List<String> names = new ArrayList<>(plugin.spawnManager().names());
+            names.add("none");
+            return names.stream()
+                    .filter(s -> s.startsWith(args[2].toLowerCase(Locale.ROOT)))
+                    .collect(Collectors.toList());
+        }
+        return List.of();
     }
 }

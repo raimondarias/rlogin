@@ -6,10 +6,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 /**
- * Comandos de administración del lado proxy. La gestión de cuentas
- * (registro, login, migración...) vive en {@code rlogin-paper}, que es
- * quien tiene la base de datos; aquí solo se administra la config del
- * propio proxy (detección premium, política de fallo de la API de Mojang...).
+ * Proxy-side admin commands. Account management (register, login,
+ * migration...) lives in {@code rlogin-paper}, which owns the database;
+ * this only administers the proxy's own config (premium detection, Mojang
+ * API failure policy, auth lobby routing...).
  */
 public final class RLoginVelocityCommand implements SimpleCommand {
 
@@ -26,12 +26,12 @@ public final class RLoginVelocityCommand implements SimpleCommand {
         String[] args = invocation.arguments();
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             plugin.reload();
-            invocation.source().sendMessage(Component.text("rLogin (proxy): configuración recargada.", NamedTextColor.GREEN));
+            invocation.source().sendMessage(Component.text("rLogin (proxy): configuration reloaded.", NamedTextColor.GREEN));
             return;
         }
         invocation.source().sendMessage(Component.text(
-                "/rlogin reload — recarga la configuración del proxy. "
-                        + "La gestión de cuentas (registro/login/migración) se hace en cada backend.",
+                "/rlogin reload — reloads the proxy's configuration. "
+                        + "Account management (register/login/migration) happens on each backend.",
                 NamedTextColor.YELLOW));
     }
 

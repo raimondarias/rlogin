@@ -20,11 +20,11 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Congela a los jugadores no autenticados: pueden ver el mundo pero no
- * moverse (salvo mirar alrededor), interactuar, recibir/hacer daño, abrir
- * inventarios ni escribir comandos fuera de la lista blanca de
- * {@code limbo.allowed-commands}. Se puede desactivar del todo con
- * {@code limbo.freeze: false} en config.yml.
+ * Freezes not-yet-authenticated players in place: they can see the world
+ * but can't move (except looking around), interact, take/deal damage, open
+ * inventories, or run commands outside the {@code limbo.allowed-commands}
+ * allowlist. Can be turned off entirely with {@code limbo.freeze: false}
+ * in config.yml.
  */
 public final class FreezeListener implements Listener {
 

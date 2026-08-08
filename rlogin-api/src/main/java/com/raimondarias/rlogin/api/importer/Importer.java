@@ -3,18 +3,18 @@ package com.raimondarias.rlogin.api.importer;
 import java.util.List;
 
 /**
- * SPI para migrar cuentas desde otro plugin de autenticación hacia rLogin.
- * {@code source} suele ser una ruta a un fichero (SQLite de AuthMe) o una
- * URL JDBC (MySQL de nLogin/JPremium), según cada implementación.
+ * SPI for migrating accounts from another auth plugin into rLogin.
+ * {@code source} is usually a path to a file (AuthMe's SQLite) or a JDBC
+ * URL (nLogin/JPremium's MySQL), depending on the implementation.
  */
 public interface Importer {
 
-    /** Identificador corto usado en el comando, ej. {@code authme}. */
+    /** Short identifier used in the command, e.g. {@code authme}. */
     String id();
 
-    /** Nombre legible para mensajes/logs, ej. {@code AuthMe}. */
+    /** Human-readable name for messages/logs, e.g. {@code AuthMe}. */
     String displayName();
 
-    /** Lee y normaliza las cuentas del plugin de origen. */
+    /** Reads and normalizes the accounts from the source plugin. */
     List<ImportedAccount> read(String source) throws ImportException;
 }

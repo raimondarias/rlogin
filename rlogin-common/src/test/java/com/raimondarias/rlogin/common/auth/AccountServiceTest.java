@@ -24,7 +24,7 @@ class AccountServiceTest {
 
     @BeforeEach
     void setUp(@TempDir Path tempDir) throws IOException {
-        // Desactiva la protección de nombres premium para no depender de la API de Mojang en los tests.
+        // Disable premium-name protection so the tests don't depend on the Mojang API.
         Files.writeString(tempDir.resolve("config.yml"),
                 "premium:\n  protect-premium-names: false\nsecurity:\n  bruteforce:\n    max-attempts: 3\n"
                         + "    lockout-seconds: 60\n",
@@ -89,9 +89,9 @@ class AccountServiceTest {
         UUID uuid = UUID.randomUUID();
         accountService.register(uuid, "Steve", "hunter22", "hunter22").join();
 
-        accountService.login(uuid, "mal1", null, "127.0.0.1").join();
-        accountService.login(uuid, "mal2", null, "127.0.0.1").join();
-        accountService.login(uuid, "mal3", null, "127.0.0.1").join(); // 3er fallo = límite
+        accountService.login(uuid, "wrong1", null, "127.0.0.1").join();
+        accountService.login(uuid, "wrong2", null, "127.0.0.1").join();
+        accountService.login(uuid, "wrong3", null, "127.0.0.1").join(); // 3rd failure = limit
 
         var lockedAttempt = accountService.login(uuid, "hunter22", null, "127.0.0.1").join();
         assertEquals(AccountService.LoginResult.LOCKED, lockedAttempt.result());

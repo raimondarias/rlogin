@@ -9,17 +9,18 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /**
- * Mensajes de rLogin, cargados desde {@code <dataFolder>/messages_<lang>.yml}.
- * Ambos idiomas embebidos (es/en) se copian a disco la primera vez para que
- * el administrador pueda editarlos.
+ * rLogin messages, loaded from {@code <dataFolder>/messages_<lang>.yml}.
+ * English is the primary/default language; every other bundled translation
+ * (Spanish for now, more to come) is copied to disk on first run too, so an
+ * admin can pick any of them via {@code general.language} and still edit it.
  *
- * <p>Devuelve texto con códigos de color estilo Bukkit ({@code &a}, ya
- * convertidos a {@code §a}); cada plataforma se encarga de convertirlo a un
- * {@code Component} de Adventure si lo necesita.</p>
+ * <p>Returns text with Bukkit-style color codes ({@code &a}, already
+ * converted to {@code §a}); each platform converts it to an Adventure
+ * {@code Component} itself if it needs to.</p>
  */
 public final class Messages {
 
-    private static final String DEFAULT_LANGUAGE = "es";
+    private static final String DEFAULT_LANGUAGE = "en";
 
     private final Map<String, String> flat;
 
@@ -39,7 +40,7 @@ public final class Messages {
                     : loadFallback(dataFolder);
             return new Messages(doc.flatten());
         } catch (IOException e) {
-            throw new IllegalStateException("No se pudieron cargar los mensajes de rLogin", e);
+            throw new IllegalStateException("Could not load rLogin messages", e);
         }
     }
 

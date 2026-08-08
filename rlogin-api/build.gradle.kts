@@ -1,2 +1,2 @@
-// rlogin-api: interfaces públicas (SPI) sin dependencias externas.
-// Cualquier addon de terceros solo debería depender de este módulo.
+// rlogin-api: public interfaces (SPI) with no external dependencies.
+// Any third-party addon should only ever depend on this module.

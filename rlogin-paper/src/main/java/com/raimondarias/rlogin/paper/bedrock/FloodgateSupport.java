@@ -4,10 +4,10 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
- * Integración blanda (sin dependencia obligatoria) con Floodgate: si el
- * plugin está presente en el servidor, se usa su API vía reflexión para
- * saber si un jugador viene de Bedrock y tratarlo como premium auto-login.
- * Si no está instalado, esta clase simplemente no hace nada.
+ * Soft integration (no hard dependency) with Floodgate: if the plugin is
+ * present on the server, its API is used via reflection to tell whether a
+ * player is coming from Bedrock and treat them as premium auto-login. If
+ * it's not installed, this class simply does nothing.
  */
 public final class FloodgateSupport {
 
@@ -26,7 +26,7 @@ public final class FloodgateSupport {
             method = apiClass.getMethod("isFloodgatePlayer", UUID.class);
             ok = true;
         } catch (ReflectiveOperationException | LinkageError e) {
-            // Floodgate no está instalado: no pasa nada, simplemente no se usa.
+            // Floodgate isn't installed: that's fine, it's simply not used.
         }
         this.available = ok;
         this.api = apiInstance;

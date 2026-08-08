@@ -6,12 +6,12 @@ import com.raimondarias.rlogin.common.config.RLoginConfig;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Evita que una cuenta no-premium se registre con un nombre que pertenece a
- * una cuenta premium real, para que su dueño legítimo no se quede sin poder
- * usar el auto-login premium con ese mismo nombre.
+ * Prevents a non-premium account from registering with a name that belongs
+ * to a real premium account, so its legitimate owner never loses the
+ * ability to use premium auto-login with that same name.
  *
- * <p>Si la API de Mojang falla, se permite el registro (más permisivo que
- * bloquear a todo el mundo por una caída temporal de Mojang).</p>
+ * <p>If the Mojang API fails, registration is allowed (more permissive than
+ * blocking everyone over a temporary Mojang outage).</p>
  */
 public final class PremiumNameGuard {
 

@@ -1,19 +1,19 @@
 package com.raimondarias.rlogin.api;
 
-/** Por qué se considera autenticado a un jugador en un momento dado. */
+/** Why a player is considered authenticated at a given moment. */
 public enum AuthReason {
-    /** Velocity verificó la cuenta contra Mojang vía Modern Forwarding (forceOnlineMode). */
+    /** Velocity verified the account against Mojang via Modern Forwarding (forceOnlineMode). */
     PREMIUM_FORWARDED,
-    /** Se comprobó como premium consultando directamente la API de Mojang (modo standalone). */
+    /** Verified as premium by querying the Mojang API directly (standalone mode). */
     PREMIUM_MOJANG_API,
-    /** El servidor entero corre en online-mode: true; todos los que llegan ya están verificados. */
+    /** The whole server runs in online-mode: true; everyone who joins is already verified. */
     PREMIUM_SERVER_ONLINE_MODE,
-    /** Jugador Bedrock autenticado vía Floodgate. */
+    /** Bedrock player authenticated via Floodgate. */
     FLOODGATE,
-    /** Escribió /login con la contraseña correcta. */
+    /** Typed /login with the correct password. */
     PASSWORD,
-    /** Sesión "recuérdame" válida por IP+UUID dentro de la ventana configurada. */
+    /** Valid "remember me" session by IP+UUID within the configured window. */
     REMEMBERED_SESSION,
-    /** Un administrador forzó el login manualmente. */
+    /** An admin forced the login manually. */
     FORCED_BY_ADMIN
 }

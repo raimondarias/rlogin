@@ -8,10 +8,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Verificador del formato SHA256 por defecto de AuthMe
- * ({@code $SHA$salt$hash} = sha256(sha256(password) + salt)), usado solo
- * para poder loguear cuentas migradas hasta que rLogin las re-hashee a
- * bcrypt automáticamente en su siguiente login correcto.
+ * Verifier for AuthMe's default SHA256 format
+ * ({@code $SHA$salt$hash} = sha256(sha256(password) + salt)), used only so
+ * migrated accounts can log in until rLogin automatically re-hashes them to
+ * bcrypt on their next successful login.
  */
 public final class AuthMeLegacyHash {
 

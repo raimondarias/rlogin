@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BruteforceGuardTest {
 
-    // Valores por defecto de default-config.yml: max-attempts=5, lockout-seconds=60,
+    // Defaults from default-config.yml: max-attempts=5, lockout-seconds=60,
     // lockout-multiplier=2.0, max-lockout-seconds=3600.
 
     private RLoginConfig loadDefaultConfig(Path tempDir) throws IOException {
@@ -45,7 +45,7 @@ class BruteforceGuardTest {
     @Test
     void lockoutIsCappedAtMaximum(@TempDir Path tempDir) throws IOException {
         BruteforceGuard guard = new BruteforceGuard(loadDefaultConfig(tempDir));
-        assertEquals(3600, guard.lockoutSecondsFor(20)); // se dispararía muy por encima de 3600 sin el cap
+        assertEquals(3600, guard.lockoutSecondsFor(20)); // would go way above 3600 without the cap
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.raimondarias.rlogin.paper.command;
 
 import com.raimondarias.rlogin.common.auth.AccountService;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
+import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,7 +21,7 @@ public final class LoginCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Solo un jugador puede usar este comando.");
+            sender.sendMessage("Only a player can use this command.");
             return true;
         }
         if (plugin.authSessions().isAuthenticated(player.getUniqueId())) {
@@ -47,6 +48,7 @@ public final class LoginCommand implements CommandExecutor {
                 player.sendMessage(plugin.messages().get("login.success", Map.of("player", player.getName())));
                 plugin.sessionService().remember(player.getUniqueId(), ip, plugin.getServer().getName());
                 plugin.notifyProxyAuthenticated(player);
+                plugin.spawnManager().teleportForRole(player, SpawnManager.Role.LOGIN);
             }
             case WRONG_PASSWORD -> player.sendMessage(plugin.messages().get("login.wrong-password",
                     Map.of("attempts", String.valueOf(outcome.attemptsLeft()))));

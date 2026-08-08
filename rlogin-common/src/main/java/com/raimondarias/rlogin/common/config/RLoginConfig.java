@@ -5,9 +5,16 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Configuración de rLogin, común a Velocity y Paper/Folia. Se carga desde
- * {@code <dataFolder>/config.yml}, creado a partir de {@code default-config.yml}
- * la primera vez.
+ * rLogin configuration. Loaded from {@code <dataFolder>/config.yml}, created
+ * from a bundled default resource the first time.
+ *
+ * <p>Paper and Velocity ship <em>different</em> default config files
+ * (Paper's has database/security/session/limbo/bedrock settings; Velocity's
+ * only has what the proxy actually needs, plus the auth-lobby settings) —
+ * see {@link #load(Path)} vs {@link #load(Path, String)}. Both are read
+ * through this same class since the underlying YAML access is identical;
+ * unknown keys are simply ignored, so each platform only sees the sections
+ * relevant to it in its own file.</p>
  */
 public final class RLoginConfig {
 
@@ -17,21 +24,27 @@ public final class RLoginConfig {
         this.doc = doc;
     }
 
+    /** Paper/Folia default: {@code default-config.yml}. */
     public static RLoginConfig load(Path dataFolder) throws IOException {
+        return load(dataFolder, "default-config.yml");
+    }
+
+    /** Loads (creating if missing) {@code <dataFolder>/config.yml} from the given bundled resource. */
+    public static RLoginConfig load(Path dataFolder, String bundledResource) throws IOException {
         Path file = dataFolder.resolve("config.yml");
-        return new RLoginConfig(YamlDocument.loadOrCreate(file, "default-config.yml"));
+        return new RLoginConfig(YamlDocument.loadOrCreate(file, bundledResource));
     }
 
     // --- general ---
     public String language() {
-        return doc.getString("general.language", "es");
+        return doc.getString("general.language", "en");
     }
 
     public boolean debug() {
         return doc.getBoolean("general.debug", false);
     }
 
-    // --- database ---
+    // --- database (Paper/Folia only) ---
     public String databaseType() {
         return doc.getString("database.type", "sqlite");
     }
@@ -68,7 +81,7 @@ public final class RLoginConfig {
         return doc.getInt("database.mysql.pool-size", 10);
     }
 
-    // --- premium ---
+    // --- premium (shared: Paper standalone fallback + Velocity's PreLoginEvent decision) ---
     public boolean premiumAutoLogin() {
         return doc.getBoolean("premium.auto-login", true);
     }
@@ -77,7 +90,7 @@ public final class RLoginConfig {
         return doc.getInt("premium.api-timeout-ms", 3000);
     }
 
-    /** {@code fail-open} (tratar como cracked) o {@code fail-closed} (rechazar). */
+    /** {@code fail-open} (treat as cracked) or {@code fail-closed} (reject the connection). */
     public boolean premiumApiFailOpen() {
         return !doc.getString("premium.api-failure-policy", "fail-open").equalsIgnoreCase("fail-closed");
     }
@@ -90,7 +103,7 @@ public final class RLoginConfig {
         return doc.getBoolean("premium.protect-premium-names", true);
     }
 
-    // --- session ---
+    // --- session (Paper/Folia only) ---
     public boolean rememberMeEnabled() {
         return doc.getBoolean("session.remember-me", true);
     }
@@ -99,7 +112,7 @@ public final class RLoginConfig {
         return doc.getInt("session.remember-me-minutes", 30);
     }
 
-    // --- security ---
+    // --- security (Paper/Folia only) ---
     public boolean bruteforceEnabled() {
         return doc.getBoolean("security.bruteforce.enabled", true);
     }
@@ -140,7 +153,7 @@ public final class RLoginConfig {
         return doc.getInt("security.password.bcrypt-cost", 10);
     }
 
-    // --- limbo ---
+    // --- limbo (Paper/Folia only) ---
     public boolean limboFreeze() {
         return doc.getBoolean("limbo.freeze", true);
     }
@@ -153,13 +166,25 @@ public final class RLoginConfig {
         return doc.getInt("limbo.reminder-interval-seconds", 5);
     }
 
-    // --- bedrock ---
+    // --- bedrock (Paper/Folia only) ---
     public boolean floodgateAutoLogin() {
         return doc.getBoolean("bedrock.floodgate-auto-login", true);
     }
 
     public String floodgatePrefix() {
         return doc.getString("bedrock.prefix", ".");
+    }
+
+    // --- lobby (Velocity only) ---
+
+    /** Backend name (from velocity.toml) every not-yet-authenticated player is routed to first. Empty = disabled. */
+    public String authLobbyServer() {
+        return doc.getString("lobby.auth-server", "");
+    }
+
+    /** Backend name authenticated players get sent/transferred to. Empty = disabled (respect velocity.toml's try order). */
+    public String defaultLobbyServer() {
+        return doc.getString("lobby.default-server", "");
     }
 
     // --- misc ---

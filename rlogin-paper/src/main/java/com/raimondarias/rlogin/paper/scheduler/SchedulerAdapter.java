@@ -8,11 +8,11 @@ import org.bukkit.plugin.Plugin;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Envoltorio fino sobre la API de scheduler "Folia-safe" que Paper expone
- * también en servidores normales ({@code Entity#getScheduler()},
- * {@code Bukkit#getAsyncScheduler()}): el mismo código funciona igual en
- * Paper que en Folia sin necesidad de ramificar por plataforma, porque en
- * Paper normal esos métodos simplemente delegan al hilo principal.
+ * Thin wrapper over the "Folia-safe" scheduler API that Paper also exposes
+ * on regular servers ({@code Entity#getScheduler()},
+ * {@code Bukkit#getAsyncScheduler()}): the same code behaves identically on
+ * Paper and Folia with no platform branching needed, because on regular
+ * Paper those methods simply delegate to the main thread.
  */
 public final class SchedulerAdapter {
 
@@ -37,17 +37,17 @@ public final class SchedulerAdapter {
         return FOLIA;
     }
 
-    /** Ejecuta en el hilo "dueño" de este jugador (su región en Folia). */
+    /** Runs on this player's "owning" thread (their region on Folia). */
     public void runForPlayer(Player player, Runnable task) {
         player.getScheduler().run(plugin, scheduledTask -> task.run(), null);
     }
 
-    /** Ejecuta fuera del hilo del servidor (I/O, red, base de datos...). */
+    /** Runs off the server thread (I/O, network, database...). */
     public void runAsync(Runnable task) {
         Bukkit.getAsyncScheduler().runNow(plugin, scheduledTask -> task.run());
     }
 
-    /** Repite cada cierto intervalo en el hilo del jugador; se autocancela si se desconecta. */
+    /** Repeats on this player's thread at a fixed interval; auto-cancels when they disconnect. */
     public CancellableTask runForPlayerTimer(Player player, long delayTicks, long periodTicks, Runnable task) {
         ScheduledTask scheduled = player.getScheduler().runAtFixedRate(plugin, st -> {
             if (!player.isOnline()) {
@@ -63,7 +63,7 @@ public final class SchedulerAdapter {
         };
     }
 
-    /** Repite en un hilo async, sin depender de ningún jugador concreto (ej. limpieza de sesiones). */
+    /** Repeats on an async thread, not tied to any particular player (e.g. session cleanup). */
     public CancellableTask runAsyncTimer(long delayTicks, long periodTicks, Runnable task) {
         long delayMs = delayTicks * 50L;
         long periodMs = periodTicks * 50L;

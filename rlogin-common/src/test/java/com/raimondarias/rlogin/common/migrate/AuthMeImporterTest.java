@@ -62,6 +62,6 @@ class AuthMeImporterTest {
         return accounts.stream()
                 .filter(a -> a.username().equals(username))
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("No se encontró " + username));
+                .orElseThrow(() -> new AssertionError("Could not find " + username));
     }
 }

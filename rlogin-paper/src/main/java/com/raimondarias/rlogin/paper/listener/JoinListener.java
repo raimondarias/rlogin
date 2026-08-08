@@ -2,6 +2,7 @@ package com.raimondarias.rlogin.paper.listener;
 
 import com.raimondarias.rlogin.common.util.OfflineUuid;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
+import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,14 +13,16 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.UUID;
 
 /**
- * Determina si un jugador es premium y arranca (o no) la congelación.
+ * Determines whether a joining player is premium and starts (or skips)
+ * freezing, then applies the {@code join}/{@code firstjoin} spawn if one is
+ * configured.
  *
- * <p>La detección de premium es deliberadamente simple y uniforme: se
- * compara el UUID real con el que generaría el propio servidor para ese
- * mismo nombre en modo offline ({@link OfflineUuid}). Si no coinciden, es
- * que alguien (Velocity vía Modern Forwarding, o el propio servidor en
- * online-mode: true) ya verificó esa cuenta contra Mojang — sin necesidad
- * de repetir esa verificación aquí ni de sincronizar nada entre procesos.</p>
+ * <p>Premium detection is deliberately simple and uniform: the real UUID is
+ * compared against the one the server itself would generate for that same
+ * name in offline mode ({@link OfflineUuid}). If they don't match, somebody
+ * (Velocity via Modern Forwarding, or the server itself running in
+ * online-mode: true) already verified that account against Mojang — no need
+ * to repeat that check here, nor to sync anything between processes.</p>
  */
 public final class JoinListener implements Listener {
 
@@ -53,14 +56,19 @@ public final class JoinListener implements Listener {
             plugin.authSessions().markAuthenticated(uuid);
             plugin.sessionService().remember(uuid, ip, plugin.getServer().getName());
         }
-        // Si no está recordado ni es premium, se queda pendiente: FreezeListener y
-        // los comandos /login, /register se encargan del resto en cuanto entre al mundo.
+        // If neither premium nor remembered, the player stays pending: FreezeListener and
+        // the /login, /register commands take it from here once they enter the world.
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
+
+        SpawnManager.Role joinRole = player.hasPlayedBefore() ? SpawnManager.Role.JOIN : SpawnManager.Role.FIRSTJOIN;
+        plugin.spawnManager().teleportForRole(player, joinRole);
+        // No spawn assigned for this role -> nothing happens, player stays where they
+        // last disconnected, which is Bukkit's own default behavior anyway.
 
         if (plugin.authSessions().isAuthenticated(uuid)) {
             return;

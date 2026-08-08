@@ -13,9 +13,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Ejecuta un {@link Importer} y vuelca el resultado en el {@link Storage}
- * activo. Nunca se dispara solo: siempre a petición explícita de un admin
- * vía {@code /rlogin migrate <plugin> <origen>}.
+ * Runs an {@link Importer} and writes the result into the active
+ * {@link Storage}. Never triggers on its own: always at an admin's explicit
+ * request via {@code /rlogin migrate <plugin> <source>}.
  */
 public final class MigrationService {
 

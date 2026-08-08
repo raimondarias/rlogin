@@ -23,15 +23,16 @@ import com.raimondarias.rlogin.paper.listener.FreezeListener;
 import com.raimondarias.rlogin.paper.listener.JoinListener;
 import com.raimondarias.rlogin.paper.listener.SyncMessageListener;
 import com.raimondarias.rlogin.paper.scheduler.SchedulerAdapter;
+import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Instant;
 
 /**
- * Punto de entrada del lado Paper/Folia de rLogin. Aquí vive la base de
- * datos y toda la lógica de cuentas; Velocity (si existe) solo decide el
- * modo online/offline por conexión, nada más.
+ * Entry point for the Paper/Folia side of rLogin. This is where the
+ * database and all account logic lives; Velocity (if present) only decides
+ * online/offline-mode per connection, nothing more.
  */
 public final class RLoginPaperPlugin extends JavaPlugin {
 
@@ -48,6 +49,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
     private FloodgateSupport floodgate;
     private SchedulerAdapter scheduler;
     private LimboService limboService;
+    private SpawnManager spawnManager;
     private final AuthSessionManager authSessions = new AuthSessionManager();
 
     private SchedulerAdapter.CancellableTask sessionCleanupTask;
@@ -67,14 +69,14 @@ public final class RLoginPaperPlugin extends JavaPlugin {
 
         registerCommands();
 
-        // Limpieza periódica de sesiones "recuérdame" caducadas: cada 30 minutos, en un hilo async.
+        // Periodic cleanup of expired "remember me" sessions: every 30 minutes, on an async thread.
         this.sessionCleanupTask = scheduler.runAsyncTimer(20L * 60, 20L * 60 * 30,
                 () -> storage.purgeExpiredSessions(Instant.now()));
 
-        getLogger().info("rLogin listo. Folia: " + SchedulerAdapter.isFolia()
-                + " | BD: " + config.databaseType()
-                + " | Auto-login premium: " + (config.premiumAutoLogin() ? "activado" : "desactivado")
-                + " | Floodgate: " + (floodgate.isAvailable() ? "detectado" : "no instalado"));
+        getLogger().info("rLogin ready. Folia: " + SchedulerAdapter.isFolia()
+                + " | Database: " + config.databaseType()
+                + " | Premium auto-login: " + (config.premiumAutoLogin() ? "enabled" : "disabled")
+                + " | Floodgate: " + (floodgate.isAvailable() ? "detected" : "not installed"));
     }
 
     @Override
@@ -97,7 +99,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         try {
             this.config = RLoginConfig.load(getDataFolder().toPath());
         } catch (Exception e) {
-            getLogger().severe("No se pudo cargar la configuración de rLogin: " + e.getMessage());
+            getLogger().severe("Could not load rLogin's configuration: " + e.getMessage());
             return false;
         }
         this.messages = Messages.load(getDataFolder().toPath(), config.language());
@@ -113,6 +115,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         this.floodgate = new FloodgateSupport();
         this.scheduler = new SchedulerAdapter(this);
         this.limboService = new LimboService(this);
+        this.spawnManager = new SpawnManager(getDataFolder());
         return true;
     }
 
@@ -129,7 +132,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         getCommand("rlogin").setTabCompleter(adminCommand);
     }
 
-    /** Avisa a Velocity (si lo hay) de que este jugador acaba de autenticarse, para que confíe en él en otros backends. */
+    /** Tells Velocity (if present) this player just authenticated, so it trusts them on other backends too. */
     public void notifyProxyAuthenticated(Player player) {
         player.sendPluginMessage(this, SYNC_CHANNEL,
                 new SyncMessage(SyncMessage.Type.AUTHENTICATED, player.getUniqueId()).encode());
@@ -139,7 +142,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         loadConfigAndServices();
     }
 
-    // --- getters usados por listeners/comandos ---
+    // --- getters used by listeners/commands ---
     public RLoginConfig config() {
         return config;
     }
@@ -178,6 +181,10 @@ public final class RLoginPaperPlugin extends JavaPlugin {
 
     public LimboService limboService() {
         return limboService;
+    }
+
+    public SpawnManager spawnManager() {
+        return spawnManager;
     }
 
     public AuthSessionManager authSessions() {

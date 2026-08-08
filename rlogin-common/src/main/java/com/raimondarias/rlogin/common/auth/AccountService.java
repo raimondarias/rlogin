@@ -15,9 +15,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Orquesta registro/login/2FA sobre {@link Storage}, aplicando hashing,
- * bloqueo por fuerza bruta y protección de nombres premium. Es el punto de
- * entrada único que usan los comandos de {@code rlogin-paper}.
+ * Orchestrates register/login/2FA on top of {@link Storage}, applying
+ * hashing, brute-force lockout and premium-name protection. This is the
+ * single entry point used by {@code rlogin-paper}'s commands.
  */
 public final class AccountService {
 
@@ -57,7 +57,7 @@ public final class AccountService {
         return storage.findByUsername(username);
     }
 
-    /** Crea o refresca una cuenta ya verificada como premium por Velocity/Mojang; nunca pide contraseña. */
+    /** Creates or refreshes an account already verified as premium by Velocity/Mojang; never asks for a password. */
     public CompletableFuture<RLoginAccount> upsertPremium(UUID uuid, String username, String ip) {
         Instant now = Instant.now();
         return storage.findByUuid(uuid).thenCompose(existing -> {
@@ -122,8 +122,8 @@ public final class AccountService {
                 }
             }
             RLoginAccount authenticated = account.withLogin(ip, now);
-            // Cuenta migrada de otro plugin (ej. AuthMe SHA256): al loguear con éxito,
-            // se re-hashea a bcrypt y así se abandona el algoritmo heredado.
+            // Account migrated from another plugin (e.g. AuthMe SHA256): on a successful
+            // login, it gets re-hashed to bcrypt, retiring the legacy algorithm for good.
             if (!PasswordHasher.ALGO_ID.equals(account.hashAlgo())) {
                 authenticated = authenticated.withPassword(hasher.hash(password), PasswordHasher.ALGO_ID);
             }
@@ -131,7 +131,7 @@ public final class AccountService {
         });
     }
 
-    /** Bcrypt es el formato nativo; se acepta también SHA256 heredado de cuentas importadas de AuthMe. */
+    /** Bcrypt is the native format; legacy SHA256 from accounts imported from AuthMe is accepted too. */
     private boolean verifyPassword(String plain, RLoginAccount account) {
         String stored = account.passwordHash();
         if (AuthMeLegacyHash.matches(stored)) {
@@ -167,23 +167,23 @@ public final class AccountService {
 
     public CompletableFuture<RLoginAccount> forceLogin(UUID uuid, String ip) {
         return storage.findByUuid(uuid).thenCompose(opt -> {
-            RLoginAccount account = opt.orElseThrow(() -> new IllegalStateException("Cuenta no encontrada"));
+            RLoginAccount account = opt.orElseThrow(() -> new IllegalStateException("Account not found"));
             return storage.save(account.withLogin(ip, Instant.now()));
         });
     }
 
-    /** Genera un secreto TOTP nuevo, sin activarlo todavía (falta confirmar con {@link #confirmTotp}). */
+    /** Generates a new TOTP secret, not yet enabled (needs confirming via {@link #confirmTotp}). */
     public CompletableFuture<String> beginTotpSetup(UUID uuid) {
         String secret = Totp.generateSecret();
         return storage.findByUuid(uuid).thenCompose(opt -> {
-            RLoginAccount account = opt.orElseThrow(() -> new IllegalStateException("Cuenta no encontrada"));
+            RLoginAccount account = opt.orElseThrow(() -> new IllegalStateException("Account not found"));
             return storage.save(account.withTotp(secret, false)).thenApply(saved -> secret);
         });
     }
 
     public CompletableFuture<Boolean> confirmTotp(UUID uuid, String code) {
         return storage.findByUuid(uuid).thenCompose(opt -> {
-            RLoginAccount account = opt.orElseThrow(() -> new IllegalStateException("Cuenta no encontrada"));
+            RLoginAccount account = opt.orElseThrow(() -> new IllegalStateException("Account not found"));
             if (account.totpSecret() == null || !Totp.verify(account.totpSecret(), code)) {
                 return CompletableFuture.completedFuture(false);
             }
@@ -193,7 +193,7 @@ public final class AccountService {
 
     public CompletableFuture<Void> disableTotp(UUID uuid) {
         return storage.findByUuid(uuid).thenCompose(opt -> {
-            RLoginAccount account = opt.orElseThrow(() -> new IllegalStateException("Cuenta no encontrada"));
+            RLoginAccount account = opt.orElseThrow(() -> new IllegalStateException("Account not found"));
             return storage.save(account.withTotp(null, false)).thenAccept(saved -> {
             });
         });

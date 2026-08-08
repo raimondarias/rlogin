@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AuthMeLegacyHashTest {
 
-    /** sha256(sha256(password) + salt), calculado de forma independiente al código de producción. */
+    /** sha256(sha256(password) + salt), computed independently of the production code. */
     private static String referenceHash(String password, String salt) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         String innerHex = HexFormat.of().formatHex(digest.digest(password.getBytes(StandardCharsets.UTF_8)));

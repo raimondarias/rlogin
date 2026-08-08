@@ -4,14 +4,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
- * El mismo UUID "offline" que genera Minecraft/Bukkit/Velocity para un
- * jugador no-premium: {@code UUID.nameUUIDFromBytes("OfflinePlayer:<nombre>")}.
+ * The same "offline" UUID Minecraft/Bukkit/Velocity generates for a
+ * non-premium player: {@code UUID.nameUUIDFromBytes("OfflinePlayer:<name>")}.
  *
- * <p>Es la base de la detección de premium en {@code rlogin-paper}: si el
- * UUID real de un jugador que se conecta NO coincide con este cálculo, es
- * que viene de una verificación Mojang real (proxy con Modern Forwarding
- * forzando online-mode, o el propio servidor en online-mode: true) y por
- * tanto es premium de verdad.</p>
+ * <p>This is the basis of premium detection in {@code rlogin-paper}: if a
+ * connecting player's real UUID does NOT match this computation, they came
+ * through real Mojang verification (a proxy with Modern Forwarding forcing
+ * online-mode, or the server itself running online-mode: true) and are
+ * therefore genuinely premium.</p>
  */
 public final class OfflineUuid {
 

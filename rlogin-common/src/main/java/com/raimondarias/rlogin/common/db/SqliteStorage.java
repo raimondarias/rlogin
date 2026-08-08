@@ -5,8 +5,8 @@ import com.zaxxer.hikari.HikariConfig;
 import java.nio.file.Path;
 
 /**
- * Almacenamiento SQLite: cero configuración, ideal para un único servidor.
- * Un solo fichero en {@code <dataFolder>/<database.sqlite.file>}.
+ * SQLite storage: zero configuration, great for a single server. A single
+ * file at {@code <dataFolder>/<database.sqlite.file>}.
  */
 public final class SqliteStorage extends AbstractSqlStorage {
 
@@ -21,8 +21,8 @@ public final class SqliteStorage extends AbstractSqlStorage {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:sqlite:" + dbFile.toAbsolutePath());
         config.setDriverClassName("org.sqlite.JDBC");
-        // SQLite solo admite un escritor a la vez; un pool de 1 evita
-        // errores "database is locked" bajo concurrencia.
+        // SQLite only allows one writer at a time; a pool size of 1 avoids
+        // "database is locked" errors under concurrency.
         config.setMaximumPoolSize(1);
         config.setPoolName("rlogin-sqlite");
         config.setConnectionTestQuery("SELECT 1");

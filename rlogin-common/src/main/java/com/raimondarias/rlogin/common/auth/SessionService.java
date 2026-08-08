@@ -8,9 +8,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Sesión "recuérdame": si un jugador no-premium ya autenticado vuelve a
- * conectar desde la misma IP dentro de la ventana configurada, no se le
- * vuelve a pedir {@code /login}.
+ * "Remember me" session: if an already-authenticated non-premium player
+ * reconnects from the same IP within the configured window, they won't be
+ * asked for {@code /login} again.
  */
 public final class SessionService {
 

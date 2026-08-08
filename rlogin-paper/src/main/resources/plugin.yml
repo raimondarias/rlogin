@@ -3,38 +3,38 @@ main: com.raimondarias.rlogin.paper.RLoginPaperPlugin
 version: '${version}'
 api-version: '1.21'
 author: raimondarias
-description: Autenticación premium automática + login para no-premium (Paper, Velocity, Folia)
+description: Automatic premium auto-login + password login for cracked accounts (Paper, Velocity, Folia)
 website: https://github.com/raimondarias/rlogin
 folia-supported: true
 
 commands:
   login:
-    description: Inicia sesión con tu contraseña
+    description: Log in with your password
     aliases: [l]
-    usage: /login <contraseña> [código-2fa]
+    usage: /login <password> [2fa-code]
   register:
-    description: Registra tu cuenta
+    description: Register your account
     aliases: [reg]
-    usage: /register <contraseña> <repite la contraseña>
+    usage: /register <password> <repeat password>
   changepassword:
-    description: Cambia tu contraseña
+    description: Change your password
     aliases: [changepass]
-    usage: /changepassword <contraseña actual> <contraseña nueva>
+    usage: /changepassword <current password> <new password>
   logout:
-    description: Cierra tu sesión
+    description: Log out
   2fa:
-    description: Gestiona la verificación en dos pasos (TOTP)
-    usage: /2fa <enable|disable|confirm> [código]
+    description: Manage two-factor authentication (TOTP)
+    usage: /2fa <enable|disable|confirm> [code]
   premium:
-    description: Consulta el estado premium de tu cuenta
+    description: Check your account's premium status
   rlogin:
-    description: Comando general de rLogin (incluye todos los anteriores + administración)
+    description: General rLogin command (includes all of the above plus administration)
     aliases: [rl]
 
 permissions:
   rlogin.admin:
-    description: Acceso a los comandos de administración de rLogin
+    description: Access to rLogin's admin commands
     default: op
   rlogin.bypass:
-    description: Omite el requisito de login (NPCs, bots de pruebas, etc.)
+    description: Skips the login requirement (NPCs, test bots, etc.)
     default: false

@@ -23,7 +23,7 @@ class OfflineUuidTest {
 
     @Test
     void usernameIsCaseSensitive() {
-        // Minecraft trata "Steve" y "steve" como nombres distintos a efectos de este cálculo.
+        // Minecraft treats "Steve" and "steve" as distinct names for this computation.
         assertNotEquals(OfflineUuid.of("Steve"), OfflineUuid.of("steve"));
     }
 
@@ -35,7 +35,7 @@ class OfflineUuidTest {
 
     @Test
     void isOfflineRejectsUnrelatedUuid() {
-        // Un UUID real de Mojang (aleatorio v4) nunca coincidirá con el cálculo offline determinista.
+        // A real Mojang UUID (random v4) will never match the deterministic offline computation.
         UUID random = UUID.randomUUID();
         assertFalse(OfflineUuid.isOffline(random, "Steve"));
     }

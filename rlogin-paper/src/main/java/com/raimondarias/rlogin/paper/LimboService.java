@@ -3,11 +3,11 @@ package com.raimondarias.rlogin.paper;
 import org.bukkit.entity.Player;
 
 /**
- * Arranca/detiene el recordatorio periódico ("debes iniciar sesión...")
- * para un jugador pendiente de autenticar. La congelación en sí la aplica
- * {@link com.raimondarias.rlogin.paper.listener.FreezeListener} consultando
- * {@link AuthSessionManager} en cada evento; esta clase solo gestiona el
- * recordatorio y el mensaje inicial.
+ * Starts/stops the periodic reminder ("you need to log in...") for a
+ * player pending authentication. The freeze itself is enforced by
+ * {@link com.raimondarias.rlogin.paper.listener.FreezeListener}, which
+ * checks {@link AuthSessionManager} on every event; this class only
+ * manages the reminder and the initial message.
  */
 public final class LimboService {
 

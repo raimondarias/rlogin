@@ -5,6 +5,7 @@ import com.raimondarias.rlogin.common.auth.PremiumChecker;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.raimondarias.rlogin.common.i18n.Messages;
 import com.raimondarias.rlogin.velocity.command.RLoginVelocityCommand;
+import com.raimondarias.rlogin.velocity.listener.LobbyListener;
 import com.raimondarias.rlogin.velocity.listener.PreLoginListener;
 import com.raimondarias.rlogin.velocity.listener.SyncListener;
 import com.velocitypowered.api.command.CommandManager;
@@ -20,19 +21,19 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Punto de entrada del lado proxy de rLogin. Su única responsabilidad
- * "mágica" es decidir, en {@link PreLoginListener}, si Velocity debe forzar
- * el handshake cifrado con Mojang (cuenta premium) o dejar pasar la
- * conexión en modo offline (cuenta cracked, se le pedirá /login en el
- * backend). No persiste cuentas: eso vive en {@code rlogin-paper}, que es
- * quien tiene la base de datos.
+ * Entry point for the proxy side of rLogin. Its only "magic" responsibility
+ * is deciding, in {@link PreLoginListener}, whether Velocity should force
+ * the encrypted Mojang handshake (premium account) or let the connection
+ * through in offline mode (cracked account, the backend will ask for
+ * /login). It never persists accounts — that lives in {@code rlogin-paper},
+ * which owns the database.
  */
 @Plugin(
         id = "rlogin",
         name = "rLogin",
         version = "1.0.0",
         authors = {"raimondarias"},
-        description = "Autenticación premium automática + login para no-premium (Paper, Velocity, Folia)"
+        description = "Automatic premium auto-login + password login for cracked accounts (Paper, Velocity, Folia)"
 )
 public final class RLoginVelocityPlugin {
 
@@ -63,23 +64,25 @@ public final class RLoginVelocityPlugin {
         server.getChannelRegistrar().register(SYNC_CHANNEL);
 
         PreLoginListener preLoginListener = new PreLoginListener(config, premiumChecker, logger);
-        this.syncListener = new SyncListener(server, preLoginListener);
+        this.syncListener = new SyncListener(server, config, preLoginListener);
+        LobbyListener lobbyListener = new LobbyListener(server, config, preLoginListener, logger);
 
         server.getEventManager().register(this, preLoginListener);
         server.getEventManager().register(this, syncListener);
+        server.getEventManager().register(this, lobbyListener);
 
         CommandManager commands = server.getCommandManager();
         commands.register(commands.metaBuilder("rlogin").plugin(this).build(), new RLoginVelocityCommand(this));
 
-        logger.info("rLogin (Velocity) listo. Auto-login premium: {}",
-                config.premiumAutoLogin() ? "activado" : "desactivado");
+        logger.info("rLogin (Velocity) ready. Premium auto-login: {}",
+                config.premiumAutoLogin() ? "enabled" : "disabled");
     }
 
     private boolean loadConfig() {
         try {
-            this.config = RLoginConfig.load(dataDirectory);
+            this.config = RLoginConfig.load(dataDirectory, "velocity-config.yml");
         } catch (IOException e) {
-            logger.error("No se pudo cargar la configuración de rLogin", e);
+            logger.error("Could not load rLogin's configuration", e);
             return false;
         }
         this.messages = Messages.load(dataDirectory, config.language());

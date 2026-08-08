@@ -1,156 +1,202 @@
 # rLogin
 
-**Autenticación premium automática + login para no-premium.** Para Paper,
-Velocity (proxy) y Folia. Java 21→26, Minecraft 1.21→26.x.
+**Automatic premium auto-login + password login for cracked accounts.**
+For Paper, Velocity (proxy) and Folia. Java 21→26, Minecraft 1.21→26.x.
 
-> 🇬🇧 English: rLogin is a Minecraft auth plugin (Paper/Velocity/Folia) with
-> automatic premium (Java-original) login and password login for cracked
-> accounts. Full English messages are built in — set `general.language: en`
-> in `config.yml`.
+> 🇪🇸 Español: rLogin trae mensajes en español incluidos de fábrica — pon
+> `general.language: es` en `config.yml`. Más idiomas se pueden añadir
+> copiando un `messages_<code>.yml` junto a los existentes.
 
-## ¿Qué hace distinto a rLogin?
+## What makes rLogin different?
 
-La promesa es simple: **las cuentas premium entran a la partida sin
-escribir nada**, y **las cuentas no-premium inician sesión con
-`/login`/`/register`**, como en nLogin Premium — pero:
+The promise is simple: **premium accounts join without typing anything**,
+and **non-premium accounts log in with `/login`/`/register`** — like
+nLogin Premium, but:
 
-- Detección premium **criptográficamente verificada** vía Modern Forwarding
-  de Velocity (no solo un chequeo de la API de Mojang que se puede falsear).
-- Sesión **"recuérdame"** por IP: si un no-premium ya se logueó, no vuelve a
-  pedirle contraseña al reconectar en poco tiempo.
-- Al cambiar de servidor dentro de la misma red (mismo proxy), **no vuelve a
-  pedir login**, ni a premium ni a no-premium, durante toda la conexión.
-- 2FA (TOTP), anti fuerza bruta y protección de nombres premium, **todo
-  opcional y configurable**.
-- Migración desde AuthMe (nLogin/JPremium en camino, ver [Roadmap](#roadmap-fase-2)).
-- Soporte Bedrock vía Floodgate.
-- Pensado desde el primer día para Folia (schedulers regionales, sin usar el
-  scheduler clásico de Bukkit en ningún punto sensible).
+- **Cryptographically verified** premium detection via Velocity's Modern
+  Forwarding (not just a spoofable Mojang API check).
+- **"Remember me"** session by IP: an already-logged-in non-premium player
+  isn't asked for their password again on a quick reconnect.
+- Switching servers within the same network (same proxy) **never asks to
+  log in again**, premium or not, for the whole duration of the connection.
+- 2FA (TOTP), brute-force protection and premium-name protection — **all
+  optional and configurable**.
+- Migration from AuthMe (nLogin/JPremium importers coming, see
+  [Roadmap](#roadmap-phase-2)).
+- Bedrock support via Floodgate.
+- Built for Folia from day one (regional schedulers, never touching
+  Bukkit's classic scheduler anywhere that matters).
+- Optional **authentication lobby** routing on Velocity, and configurable
+  **spawn points** on Paper/Folia for first join, returning join,
+  post-login and post-register.
 
-## Cómo funciona el auto-login premium
+## How premium auto-login works
 
-Cuando hay **Velocity** delante, rLogin usa la misma técnica que plugins de
-referencia como FastLogin: el proxy corre en `online-mode: false`, pero en
-`PreLoginEvent` consulta si el nombre que se conecta es una cuenta premium
-real (caché local + [API de Mojang](https://api.mojang.com)) y, si lo es,
-fuerza el handshake cifrado con Mojang **solo para esa conexión**
-(`forceOnlineMode()`). El cliente se autentica solo, sin contraseña. Si no
-es premium, la conexión pasa en modo offline y rLogin le pide `/login` en
-el backend.
+When there's a **Velocity** proxy in front, rLogin uses the same technique
+as reference plugins like FastLogin: the proxy runs in `online-mode: false`,
+but on `PreLoginEvent` it checks whether the connecting name is a real
+premium account (local cache + the [Mojang API](https://api.mojang.com))
+and, if it is, forces the encrypted Mojang handshake **for that connection
+only** (`forceOnlineMode()`). The client authenticates on its own, no
+password. If it's not premium, the connection goes through in offline mode
+and rLogin asks for `/login` on the backend.
 
-En **Paper/Folia standalone** (sin proxy) la detección es aún más simple:
-se compara el UUID real del jugador con el que generaría el propio servidor
-en modo offline para ese mismo nombre. Si no coinciden, es que alguien ya
-lo verificó contra Mojang (el propio servidor en `online-mode: true`, o un
-proxy con Modern Forwarding) — sin repetir ninguna llamada de red.
+On **standalone Paper/Folia** (no proxy) detection is even simpler: the
+player's real UUID is compared against the one the server itself would
+generate in offline mode for that same name. If they don't match, somebody
+already verified it against Mojang (the server itself running
+`online-mode: true`, or a proxy with Modern Forwarding) — no extra network
+call needed.
 
-> **Límite conocido:** mezclar "premium automático" + "cracked con
-> contraseña" **en un único Paper/Folia sin proxy delante** no es posible de
-> forma robusta multiversión sin inyección de bajo nivel en Netty (lo que
-> hacen algunos plugins de forma no oficial y frágil). Si quieres esa
-> combinación, la vía soportada y recomendada es **Velocity + backends
-> Paper/Folia**. Un servidor standalone puede ser 100% premium
-> (`online-mode: true`) o 100% cracked (`online-mode: false`, login con
-> contraseña normal) sin ningún problema.
+> **Known limitation:** combining "automatic premium" + "cracked with
+> password" **on a single Paper/Folia with no proxy in front** isn't
+> reliably possible across Minecraft versions without low-level Netty
+> packet injection (which some plugins do unofficially, and fragilely). If
+> you want that combination, the supported and recommended path is
+> **Velocity + Paper/Folia backends**. A standalone server can be 100%
+> premium (`online-mode: true`) or 100% cracked (`online-mode: false`,
+> normal password login) with no issues at all.
 
-## Requisitos
+## Requirements
 
-- Java 21 o superior (compilado con `--release 21`, corre igual en versiones
-  posteriores).
-- Paper 1.21+ (o Folia 1.21+) para el backend.
-- Velocity 3.x (opcional, solo si quieres auto-login premium en red).
+- Java 21 or newer (compiled with `--release 21`, runs unchanged on later
+  versions).
+- Paper 1.21+ (or Folia 1.21+) for the backend.
+- Velocity 3.x (optional, only needed for network-wide premium auto-login).
 
-## Instalación
+## Installation
 
-1. Descarga `rLogin-Paper.jar` (y `rLogin-Velocity.jar` si usas proxy).
-2. Colócalo en `plugins/` de cada Paper/Folia (y en `plugins/` de Velocity
-   si aplica) y arranca una vez para que genere `config.yml`.
-3. Si usas Velocity:
+1. Download `rLogin-Paper.jar` (and `rLogin-Velocity.jar` if you run a
+   proxy).
+2. Drop it into `plugins/` on each Paper/Folia server (and Velocity's
+   `plugins/` too, if applicable) and start once to generate `config.yml`.
+3. If you're using Velocity:
    - `velocity.toml`: `player-info-forwarding-mode = "modern"`.
-   - En cada backend Paper/Folia: `online-mode: false` en `server.properties`,
-     y `config/paper-global.yml` → `proxies.velocity.enabled: true` +
-     `online-mode: true` (para que confíe en el forwarding). Copia el mismo
-     `forwarding.secret` de Velocity a cada backend.
-4. Ajusta `plugins/rLogin/config.yml` a tu gusto (ver más abajo) y
-   `/rlogin reload`.
+   - On each Paper/Folia backend: `online-mode: false` in
+     `server.properties`, and in `config/paper-global.yml` →
+     `proxies.velocity.enabled: true` + `online-mode: true` (so it trusts
+     the forwarding). Copy Velocity's `forwarding.secret` to every backend.
+4. Tune `plugins/rLogin/config.yml` (Paper/Folia) and/or
+   `plugins/rlogin/config.yml` (Velocity) to your liking, then `/rlogin reload`.
 
-## Comandos
+## Authentication lobby (Velocity, optional)
 
-| Comando | Alias | Descripción |
+If your network wants every unauthenticated player centralized on one
+server before they reach the real hub, set these in Velocity's
+`config.yml`:
+
+```yaml
+lobby:
+  auth-server: "auth"      # backend from velocity.toml players land on first if not yet authenticated
+  default-server: "hub"    # backend they're sent to once authenticated
+```
+
+Premium players skip `auth-server` entirely and go straight to
+`default-server`. Non-premium players land on `auth-server`, and get
+automatically transferred to `default-server` the instant they finish
+`/login` or `/register` there. Leave both blank to disable this and keep
+velocity.toml's normal `try` order — nothing changes for networks that
+don't want a dedicated auth lobby.
+
+## Spawn points (Paper/Folia)
+
+`/rlogin spawn` manages named spawn points and assigns one to each of four
+situations. If a situation has no spawn assigned, the player simply stays
+wherever they last disconnected — Bukkit's own default behavior.
+
+```
+/rlogin spawn set <name>           save your current location as a named spawn
+/rlogin spawn list                 list all named spawns
+/rlogin spawn remove <name>        delete a named spawn
+
+/rlogin spawn join <name|none>     spawn used for an already-authenticated join
+                                    (premium auto-login, remembered session, bypass)
+/rlogin spawn firstjoin <name|none> spawn used the very first time a player ever joins
+/rlogin spawn login <name|none>    spawn used right after a successful /login
+/rlogin spawn register <name|none> spawn used right after a successful /register
+```
+
+Running any of `join`/`firstjoin`/`login`/`register` with no name shows the
+current assignment; passing `none` clears it.
+
+## Commands
+
+| Command | Alias | Description |
 |---|---|---|
-| `/login <contraseña> [código-2fa]` | `/l`, `/rlogin login` | Inicia sesión |
-| `/register <contraseña> <repite>` | `/reg`, `/rlogin register` | Crea tu cuenta |
-| `/changepassword <actual> <nueva>` | `/rlogin changepassword` | Cambia tu contraseña |
-| `/logout` | `/rlogin logout` | Cierra tu sesión |
-| `/2fa enable\|disable\|confirm <código>` | `/rlogin 2fa` | Gestiona el 2FA |
-| `/premium` | `/rlogin premium` | Consulta tu estado premium |
+| `/login <password> [2fa-code]` | `/l`, `/rlogin login` | Log in |
+| `/register <password> <repeat>` | `/reg`, `/rlogin register` | Create your account |
+| `/changepassword <current> <new>` | `/rlogin changepassword` | Change your password |
+| `/logout` | `/rlogin logout` | Log out |
+| `/2fa enable\|disable\|confirm <code>` | `/rlogin 2fa` | Manage 2FA |
+| `/premium` | `/rlogin premium` | Check your premium status |
 
-Administración (`rlogin.admin`):
+Administration (`rlogin.admin`):
 
-| Comando | Descripción |
+| Command | Description |
 |---|---|
-| `/rlogin reload` | Recarga `config.yml` y los mensajes |
-| `/rlogin unregister <jugador>` | Elimina una cuenta |
-| `/rlogin forcelogin <jugador>` | Autentica a un jugador a la fuerza |
-| `/rlogin migrate <authme\|nlogin\|jpremium> <ruta-o-jdbc>` | Importa cuentas |
-| `/rlogin info <jugador>` | Info de una cuenta |
+| `/rlogin reload` | Reload `config.yml` and messages |
+| `/rlogin unregister <player>` | Delete an account |
+| `/rlogin forcelogin <player>` | Force-authenticate a player |
+| `/rlogin migrate <authme\|nlogin\|jpremium> <path-or-jdbc>` | Import accounts |
+| `/rlogin info <player>` | Show account info |
+| `/rlogin spawn ...` | Manage spawn points (see above) |
 
-## Permisos
+## Permissions
 
-- `rlogin.admin` (`op` por defecto) — comandos de administración.
-- `rlogin.bypass` (`false` por defecto) — omite el requisito de login (NPCs, bots de prueba...).
+- `rlogin.admin` (`op` by default) — admin commands.
+- `rlogin.bypass` (`false` by default) — skips the login requirement (NPCs, test bots...).
 
-## Base de datos
+## Database
 
-`database.type: sqlite` (por defecto, cero configuración) o `mysql`
-(recomendado si varios backends Paper/Folia deben compartir las mismas
-cuentas — ver `config.yml`).
+`database.type: sqlite` (default, zero configuration) or `mysql`
+(recommended if several Paper/Folia backends need to share the same
+accounts — see `config.yml`).
 
-## Migración desde otros plugins
+## Migrating from other plugins
 
 ```
 /rlogin migrate authme plugins/AuthMe/authme.db
-/rlogin migrate authme "jdbc:mysql://usuario:contraseña@host:3306/authme"
+/rlogin migrate authme "jdbc:mysql://user:password@host:3306/authme"
 ```
 
-Reconoce contraseñas en bcrypt y en el SHA256 por defecto de AuthMe (se
-re-hashean a bcrypt automáticamente en el primer login correcto tras
-migrar). Otros algoritmos de AuthMe (MD5, WHIRLPOOL...) se importan pero
-necesitan que el jugador vuelva a registrarse.
+Recognizes bcrypt passwords and AuthMe's default SHA256 format (these get
+auto-rehashed to bcrypt on the first successful login after migrating).
+Other AuthMe algorithms (MD5, WHIRLPOOL...) are still imported but need the
+player to register again.
 
-## Roadmap (Fase 2)
+## Roadmap (Phase 2)
 
-Este es un proyecto vivo. Pendiente para próximas versiones:
+This is a living project. Planned for future versions:
 
-- Importadores reales de nLogin y JPremium/LoginSecurity (ahora mismo lanzan
-  un error explícito en vez de fingir que funcionan — se agradecen PRs).
-- Generación de código QR para el setup de 2FA (de momento se da la clave +
-  URI `otpauth://` en texto).
-- Captcha en pantalla tras varios intentos fallidos.
-- Métricas bStats.
-- Modo standalone híbrido (premium + cracked sin proxy) si aparece una forma
-  fiable y multiversión de hacerlo.
+- Real importers for nLogin and JPremium/LoginSecurity (right now they
+  throw an explicit error instead of pretending to work — PRs welcome).
+- QR code generation for 2FA setup (currently gives the secret + an
+  `otpauth://` URI as text).
+- On-screen captcha after repeated failed attempts.
+- bStats metrics.
+- A reliable, cross-version standalone hybrid mode (premium + cracked with
+  no proxy), if one is ever found.
 
-## Compilar desde el código fuente
+## Building from source
 
 ```
 ./gradlew build
 ```
 
-Genera `rlogin-paper/build/libs/rLogin-Paper.jar` y
-`rlogin-velocity/build/libs/rLogin-Velocity.jar`. Necesita acceso de red al
-repositorio de PaperMC (`repo.papermc.io`), donde viven los artefactos de
-Paper API y Velocity API.
+Produces `rlogin-paper/build/libs/rLogin-Paper.jar` and
+`rlogin-velocity/build/libs/rLogin-Velocity.jar`. Needs network access to
+PaperMC's repository (`repo.papermc.io`), where the Paper API and Velocity
+API artifacts live.
 
-## Estructura del proyecto
+## Project structure
 
 ```
-rlogin-api/       Interfaces públicas (Storage, Importer) — SPI para addons de terceros
-rlogin-common/    Lógica pura Java: config, i18n, BD, seguridad, auth, migración
-rlogin-velocity/  Plugin de proxy: decide online/offline-mode por conexión
-rlogin-paper/     Plugin de backend: cuentas, comandos, congelación, Folia
+rlogin-api/       Public interfaces (Storage, Importer) — SPI for third-party addons
+rlogin-common/    Pure Java logic: config, i18n, database, security, auth, migration
+rlogin-velocity/  Proxy plugin: decides online/offline-mode per connection, auth-lobby routing
+rlogin-paper/     Backend plugin: accounts, commands, freezing unauthenticated players, spawn points, Folia
 ```
 
-## Licencia
+## License
 
-MIT — ver [LICENSE](LICENSE). Autor: [raimondarias](https://github.com/raimondarias).
+MIT — see [LICENSE](LICENSE). Author: [raimondarias](https://github.com/raimondarias).

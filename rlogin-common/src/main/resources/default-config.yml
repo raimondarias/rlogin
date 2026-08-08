@@ -1,16 +1,19 @@
 # ============================================================
-#  rLogin — configuración
+#  rLogin (Paper/Folia) — configuration
 #  https://github.com/raimondarias/rlogin
 # ============================================================
 
 general:
-  # es | en  (añade tu propio lang/messages_XX.yml y ponlo aquí)
-  language: es
+  # Primary language is English. Spanish is bundled too (and more
+  # translations may be added over time) — set the language code that
+  # matches one of the messages_<code>.yml files copied next to this one.
+  language: en
   debug: false
 
 database:
-  # sqlite -> cero configuración, ideal para un solo servidor.
-  # mysql  -> recomendado si varios Paper/Folia comparten las mismas cuentas.
+  # sqlite -> zero configuration, great for a single server.
+  # mysql  -> recommended if several Paper/Folia backends must share the
+  #           same accounts.
   type: sqlite
   sqlite:
     file: rlogin.db
@@ -24,22 +27,23 @@ database:
     pool-size: 10
 
 premium:
-  # Autologin para cuentas premium (Java original). En Velocity usa Modern
-  # Forwarding; en standalone hace fallback a la API de Mojang.
+  # Auto-login for premium (Java-original) accounts. Behind Velocity this
+  # is decided there via Modern Forwarding; standalone, it falls back to
+  # the Mojang API.
   auto-login: true
   api-timeout-ms: 3000
-  # Qué hacer si la API de Mojang no responde a tiempo o está caída:
-  #   fail-open   -> se trata como cracked, se le pide /login (recomendado)
-  #   fail-closed -> se rechaza la conexión hasta que la API vuelva
+  # What to do if the Mojang API doesn't respond in time or is down:
+  #   fail-open   -> treat as cracked, ask for /login (recommended)
+  #   fail-closed -> reject the connection until the API is back
   api-failure-policy: fail-open
   cache-ttl-minutes: 60
-  # No permite /register en un nombre que pertenece a una cuenta premium real,
-  # para que su dueño legítimo no se quede sin poder auto-loguearse.
+  # Disallows /register on a name that belongs to a real premium account,
+  # so its legitimate owner never loses the ability to auto-login with it.
   protect-premium-names: true
 
 session:
-  # "Recuérdame": si el jugador vuelve a entrar desde la misma IP dentro de
-  # esta ventana, no se le vuelve a pedir /login.
+  # "Remember me": if the player reconnects from the same IP within this
+  # window, they won't be asked to /login again.
   remember-me: true
   remember-me-minutes: 30
 
@@ -59,8 +63,8 @@ security:
     bcrypt-cost: 10
 
 limbo:
-  # Mientras no se autentica: se congela al jugador in-place (sin teleport a
-  # un mundo limbo) y solo puede usar los comandos de esta lista.
+  # While not authenticated: the player is frozen in place (no teleport to
+  # a separate limbo world) and can only use the commands in this list.
   freeze: true
   allowed-commands:
     - /login
@@ -71,7 +75,7 @@ limbo:
   reminder-interval-seconds: 5
 
 bedrock:
-  # Jugadores conectados vía Geyser/Floodgate se tratan como premium autologin.
+  # Players connecting via Geyser/Floodgate are treated as premium auto-login.
   floodgate-auto-login: true
   prefix: "."
 

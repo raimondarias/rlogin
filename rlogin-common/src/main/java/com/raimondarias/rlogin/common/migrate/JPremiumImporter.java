@@ -7,9 +7,9 @@ import com.raimondarias.rlogin.api.importer.Importer;
 import java.util.List;
 
 /**
- * TODO (Fase 2): JPremium/LoginSecurity tienen esquemas propios (y
- * distintos entre sí). Falta implementar la lectura real; de momento se deja
- * el hueco explícito en vez de fingir que funciona.
+ * TODO (Phase 2): JPremium/LoginSecurity each have their own (and mutually
+ * different) schemas. Reading against a real schema still needs
+ * implementing; this leaves the gap explicit instead of pretending it works.
  */
 public final class JPremiumImporter implements Importer {
 
@@ -25,7 +25,7 @@ public final class JPremiumImporter implements Importer {
 
     @Override
     public List<ImportedAccount> read(String source) throws ImportException {
-        throw new ImportException("El importador de JPremium/LoginSecurity todavía no está implementado (Fase 2). "
-                + "Puedes usar AuthMeImporter como referencia para aportar uno vía PR.");
+        throw new ImportException("The JPremium/LoginSecurity importer isn't implemented yet (Phase 2). "
+                + "Feel free to use AuthMeImporter as a reference and contribute one via PR.");
     }
 }

@@ -8,20 +8,19 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * Codec del canal de plugin messaging {@code rlogin:sync} entre Velocity y
- * los backends Paper/Folia. Solo dos tipos de mensaje:
+ * Codec for the {@code rlogin:sync} plugin messaging channel between
+ * Velocity and the Paper/Folia backends. Only two message types:
  *
  * <ul>
- *   <li>{@code AUTHENTICATED} (backend → proxy): un jugador acaba de
- *   autenticarse (login/registro/2FA) en ese backend.</li>
- *   <li>{@code TRUSTED} (proxy → backend): el proxy ya considera a este
- *   jugador autenticado (premium auto-login, o porque otro backend avisó
- *   antes) — el backend puede saltarse el login sin volver a preguntarle.</li>
+ *   <li>{@code AUTHENTICATED} (backend → proxy): a player just authenticated
+ *   (login/register/2FA) on that backend.</li>
+ *   <li>{@code TRUSTED} (proxy → backend): the proxy already considers this
+ *   player authenticated (premium auto-login, or because another backend
+ *   reported it earlier) — the backend can skip the login prompt entirely.</li>
  * </ul>
  *
- * <p>Puramente un array de bytes, sin dependencias de la API de ninguna
- * plataforma, para poder compartirlo entre {@code rlogin-velocity} y
- * {@code rlogin-paper}.</p>
+ * <p>Purely a byte array, with no dependency on any platform's API, so it
+ * can be shared between {@code rlogin-velocity} and {@code rlogin-paper}.</p>
  */
 public final class SyncMessage {
 

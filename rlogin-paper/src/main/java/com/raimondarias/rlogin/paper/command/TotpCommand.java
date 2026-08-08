@@ -33,7 +33,7 @@ public final class TotpCommand implements CommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            player.sendMessage("/2fa <enable|disable|confirm> [código]");
+            player.sendMessage("/2fa <enable|disable|confirm> [code]");
             return true;
         }
 
@@ -41,7 +41,7 @@ public final class TotpCommand implements CommandExecutor {
             case "enable" -> enable(player);
             case "confirm" -> confirm(player, args);
             case "disable" -> disable(player);
-            default -> player.sendMessage("/2fa <enable|disable|confirm> [código]");
+            default -> player.sendMessage("/2fa <enable|disable|confirm> [code]");
         }
         return true;
     }

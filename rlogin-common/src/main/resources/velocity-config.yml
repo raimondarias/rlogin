@@ -1,0 +1,43 @@
+# ============================================================
+#  rLogin (Velocity) — proxy configuration
+#  https://github.com/raimondarias/rlogin
+#
+#  This file is intentionally smaller than the one on Paper/Folia: the
+#  proxy never touches the database or account records, it only decides
+#  online/offline-mode per connection and (optionally) routes players
+#  through an authentication lobby.
+# ============================================================
+
+general:
+  language: en
+  debug: false
+
+premium:
+  # Auto-login for premium (Java-original) accounts, decided here via
+  # Modern Forwarding (forceOnlineMode/forceOfflineMode per connection).
+  auto-login: true
+  api-timeout-ms: 3000
+  # What to do if the Mojang API doesn't respond in time or is down:
+  #   fail-open   -> treat as cracked, let them through offline (recommended)
+  #   fail-closed -> reject the connection until the API is back
+  api-failure-policy: fail-open
+  cache-ttl-minutes: 60
+
+lobby:
+  # Backend name (as defined in velocity.toml's [servers] table) that every
+  # NOT-YET-authenticated player is sent to first, overriding velocity.toml's
+  # normal "try" order. Leave empty to disable — players then follow the
+  # normal try order and authenticate wherever they land (each backend
+  # freezes them until they /login or /register, same as always).
+  auth-server: ""
+  # Backend name authenticated players get sent to: premium accounts go
+  # here directly (skipping auth-server entirely), and non-premium accounts
+  # get auto-transferred here right after a successful /login or /register
+  # on auth-server. Leave empty to disable automatic transfers.
+  default-server: ""
+
+update-checker:
+  enabled: true
+
+metrics:
+  bstats: true

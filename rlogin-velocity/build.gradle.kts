@@ -12,7 +12,7 @@ tasks.shadowJar {
     archiveClassifier.set("")
     archiveBaseName.set("rLogin-Velocity")
 
-    // Reubicamos las libs embebidas para no chocar con otros plugins del proxy.
+    // Relocate the embedded libs so they don't clash with other proxy plugins.
     relocate("com.zaxxer.hikari", "com.raimondarias.rlogin.libs.hikari")
     relocate("org.sqlite", "com.raimondarias.rlogin.libs.sqlite")
     relocate("com.mysql", "com.raimondarias.rlogin.libs.mysql")

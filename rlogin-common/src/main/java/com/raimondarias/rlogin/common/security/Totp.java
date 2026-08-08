@@ -11,15 +11,15 @@ import java.time.Instant;
 import java.util.Locale;
 
 /**
- * TOTP (RFC 6238) sobre HOTP (RFC 4226) con HMAC-SHA1, el mismo algoritmo
- * que usan por defecto Google Authenticator, Authy, Aegis, etc. Sin
- * dependencias externas: es criptografía estándar de la JDK.
+ * TOTP (RFC 6238) on top of HOTP (RFC 4226) with HMAC-SHA1, the same
+ * algorithm Google Authenticator, Authy, Aegis, etc. use by default. No
+ * external dependencies: it's all standard JDK cryptography.
  */
 public final class Totp {
 
     private static final int TIME_STEP_SECONDS = 30;
     private static final int DIGITS = 6;
-    /** Margen de +/- 1 paso (30s) para tolerar pequeños desfases de reloj. */
+    /** +/- 1 step (30s) of margin to tolerate small clock drift. */
     private static final int ALLOWED_DRIFT_STEPS = 1;
     private static final String BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -27,7 +27,7 @@ public final class Totp {
     private Totp() {
     }
 
-    /** Genera un secreto aleatorio de 160 bits, codificado en Base32. */
+    /** Generates a random 160-bit secret, Base32-encoded. */
     public static String generateSecret() {
         byte[] bytes = new byte[20];
         RANDOM.nextBytes(bytes);
@@ -51,12 +51,12 @@ public final class Totp {
         return generateCode(base32Secret, Instant.now().getEpochSecond() / TIME_STEP_SECONDS);
     }
 
-    /** Código para un instante concreto en lugar de "ahora" — sobre todo útil en tests. */
+    /** Code for a specific instant instead of "now" — mostly useful in tests. */
     public static String codeAtTime(String base32Secret, long epochSeconds) {
         return generateCode(base32Secret, epochSeconds / TIME_STEP_SECONDS);
     }
 
-    /** URI {@code otpauth://} estándar, para pegar en cualquier app de autenticación. */
+    /** Standard {@code otpauth://} URI, to paste into any authenticator app. */
     public static String buildOtpAuthUri(String issuer, String account, String base32Secret) {
         String label = urlEncode(issuer) + ":" + urlEncode(account);
         return "otpauth://totp/" + label
@@ -84,7 +84,7 @@ public final class Totp {
             int otp = binary % (int) Math.pow(10, DIGITS);
             return String.format(Locale.ROOT, "%0" + DIGITS + "d", otp);
         } catch (Exception e) {
-            throw new IllegalStateException("No se pudo generar el código TOTP", e);
+            throw new IllegalStateException("Could not generate the TOTP code", e);
         }
     }
 
@@ -92,7 +92,7 @@ public final class Totp {
         return URLEncoder.encode(s, StandardCharsets.UTF_8);
     }
 
-    // --- Base32 (RFC 4648), sin relleno ---
+    // --- Base32 (RFC 4648), unpadded ---
 
     private static String base32Encode(byte[] data) {
         StringBuilder sb = new StringBuilder();

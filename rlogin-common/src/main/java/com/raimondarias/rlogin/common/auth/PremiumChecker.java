@@ -20,13 +20,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Consulta si un nombre pertenece a una cuenta premium (Java original) vía
- * la API pública de Mojang, con caché en memoria para no golpearla en cada
- * conexión.
+ * Checks whether a name belongs to a premium (Java-original) account via
+ * Mojang's public API, with an in-memory cache so it isn't hit on every
+ * single connection.
  *
- * <p>Es el fallback de {@code rlogin-velocity} cuando no hay Modern
- * Forwarding disponible, y el único mecanismo de detección en
- * {@code rlogin-paper} standalone.</p>
+ * <p>This is {@code rlogin-velocity}'s fallback when Modern Forwarding
+ * isn't available, and the only detection mechanism in standalone
+ * {@code rlogin-paper}.</p>
  */
 public final class PremiumChecker {
 
@@ -96,7 +96,7 @@ public final class PremiumChecker {
                 .thenApply(this::parseResponse)
                 .exceptionally(ex -> PremiumLookup.error())
                 .thenApply(result -> {
-                    // No cacheamos errores: la próxima conexión debe reintentar.
+                    // Errors are never cached: the next connection must retry.
                     if (result.status() != Status.ERROR) {
                         cache.put(key, new CacheEntry(result, Instant.now().plusSeconds(config.premiumCacheTtlMinutes() * 60L)));
                     }
@@ -104,7 +104,7 @@ public final class PremiumChecker {
                 });
     }
 
-    /** Marca manualmente en caché que un UUID ya conocido es premium (evita ir a la API). */
+    /** Manually caches that an already-known UUID is premium (avoids an API round-trip). */
     public void rememberPremium(String username, UUID uuid) {
         cache.put(username.toLowerCase(Locale.ROOT),
                 new CacheEntry(PremiumLookup.premium(new MojangProfile(uuid, username)),
@@ -120,7 +120,7 @@ public final class PremiumChecker {
                 return PremiumLookup.premium(new MojangProfile(uuid, nameMatcher.group(1)));
             }
         }
-        // 204/404 -> Mojang no conoce ese nombre como cuenta premium.
+        // 204/404 -> Mojang doesn't know this name as a premium account.
         return PremiumLookup.notPremium();
     }
 

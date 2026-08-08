@@ -18,13 +18,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Lógica JDBC compartida entre {@link SqliteStorage} y {@link MysqlStorage}.
- * Las subclases solo aportan la configuración de HikariCP y el DDL de
- * creación de tablas (que difiere ligeramente entre SQLite y MySQL); todo lo
- * demás (SELECT/INSERT/UPDATE) es SQL estándar válido en ambos motores.
+ * JDBC logic shared between {@link SqliteStorage} and {@link MysqlStorage}.
+ * Subclasses only contribute the HikariCP configuration and the table
+ * creation DDL (which differs slightly between SQLite and MySQL); everything
+ * else (SELECT/INSERT/UPDATE) is standard SQL valid on both engines.
  *
- * <p>Todas las operaciones se ejecutan en un pool de hilos propio: nunca en
- * el hilo principal/de región de Bukkit ni en el event loop de Velocity.</p>
+ * <p>Every operation runs on its own thread pool: never on Bukkit's
+ * main/region thread, nor on Velocity's event loop.</p>
  */
 public abstract class AbstractSqlStorage implements Storage {
 

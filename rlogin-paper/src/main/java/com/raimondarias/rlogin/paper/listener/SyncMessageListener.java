@@ -6,10 +6,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 /**
- * Recibe el aviso {@code TRUSTED} de Velocity: el proxy ya considera
- * autenticado a este jugador (premium, o porque hizo login en otro backend
- * de la misma red), así que este servidor puede saltarse el login sin
- * volver a preguntarle.
+ * Receives Velocity's {@code TRUSTED} notice: the proxy already considers
+ * this player authenticated (premium, or because they logged in on another
+ * backend of the same network), so this server can skip the login prompt
+ * entirely.
  */
 public final class SyncMessageListener implements PluginMessageListener {
 

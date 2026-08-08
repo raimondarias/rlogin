@@ -4,13 +4,13 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Representa una cuenta gestionada por rLogin, ya sea premium (Java original,
- * verificada por Mojang/Modern Forwarding) o no-premium (cracked, con
- * contraseña propia).
+ * Represents an account managed by rLogin, either premium (Java-original,
+ * verified by Mojang/Modern Forwarding) or non-premium (cracked, with its
+ * own password).
  *
- * <p>Para cuentas premium {@code passwordHash} normalmente es {@code null}:
- * no hace falta contraseña porque la identidad ya viene verificada por
- * Mojang antes de que el jugador llegue al servidor.</p>
+ * <p>For premium accounts {@code passwordHash} is normally {@code null}: no
+ * password is needed because identity is already verified by Mojang before
+ * the player ever reaches the server.</p>
  */
 public record RLoginAccount(
         UUID uuid,

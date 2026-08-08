@@ -3,9 +3,9 @@ package com.raimondarias.rlogin.common.security;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
 /**
- * Hashing de contraseñas con bcrypt (algoritmo recomendado para auth de
- * plugins de Minecraft: lento a propósito, con coste configurable y salt
- * integrada en el propio hash).
+ * Password hashing with bcrypt (the recommended algorithm for Minecraft
+ * auth plugins: deliberately slow, configurable cost, salt embedded in the
+ * hash itself).
  */
 public final class PasswordHasher {
 
