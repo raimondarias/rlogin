@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public final class UpdateChecker {
 
     private static final String LATEST_RELEASE =
-            "https://api.github.com/repos/raimondarias/rlogin/releases/latest";
+            "https://api.github.com/repos/pyrelightmc/rlogin/releases/latest";
     private static final Pattern TAG_PATTERN = Pattern.compile("\"tag_name\"\\s*:\\s*\"([^\"]+)\"");
     private static final Duration TIMEOUT = Duration.ofSeconds(5);
 
@@ -70,7 +70,7 @@ public final class UpdateChecker {
         }
         String latest = tag.group(1);
         return isNewerThanCurrent(latest)
-                ? Optional.of(new Update(latest, currentVersion, "https://github.com/raimondarias/rlogin/releases"))
+                ? Optional.of(new Update(latest, currentVersion, "https://github.com/pyrelightmc/rlogin/releases"))
                 : Optional.empty();
     }
 

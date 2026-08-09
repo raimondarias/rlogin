@@ -12,8 +12,8 @@ Authentication for Paper, Folia and Velocity — including on a standalone `onli
 [![Modrinth](https://img.shields.io/modrinth/dt/rlg?logo=modrinth&logoColor=white&label=Modrinth&color=00AF5C&style=for-the-badge)](https://modrinth.com/plugin/rlg)
 [![Docs](https://img.shields.io/badge/Docs-pyrelight-ef7025?logo=readthedocs&logoColor=white&style=for-the-badge)](https://pyrelight.mintlify.app/rlogin/introduction)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/5tuSrNRk3a)
-[![Stars](https://img.shields.io/github/stars/raimondarias/rlogin?logo=github&logoColor=white&label=Stars&color=eec9bc&style=for-the-badge)](https://github.com/raimondarias/rlogin/stargazers)
-[![License](https://img.shields.io/github/license/raimondarias/rlogin?color=4fa1ab&style=for-the-badge)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/pyrelightmc/rlogin?logo=github&logoColor=white&label=Stars&color=eec9bc&style=for-the-badge)](https://github.com/pyrelightmc/rlogin/stargazers)
+[![License](https://img.shields.io/github/license/pyrelightmc/rlogin?color=4fa1ab&style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -32,7 +32,7 @@ as it does behind a proxy, and 17 languages ship with it.
 
 | | |
 |---|---|
-| **Server** | Paper, Folia or Velocity |
+| **Server** | Paper, Folia or Velocity (3.x and 4.x) |
 | **Minecraft** | 1.21 or newer |
 | **Java** | 21 or newer |
 | **[PacketEvents](https://modrinth.com/plugin/packetevents)** | Required on a standalone `online-mode: false` server — that is where rLogin does the Mojang verification itself. Not needed behind a proxy or with `online-mode: true`. |
@@ -67,13 +67,13 @@ troubleshooting.
 
 Downloads: [Hangar](https://hangar.papermc.io/raimondarias/rlg) ·
 [Modrinth](https://modrinth.com/plugin/rlg) ·
-[GitHub Releases](https://github.com/raimondarias/rlogin/releases)
+[GitHub Releases](https://github.com/pyrelightmc/rlogin/releases)
 
 ## Support
 
 Questions, bug reports and feature requests are welcome in
 [Discord](https://discord.gg/5tuSrNRk3a), or as a
-[GitHub issue](https://github.com/raimondarias/rlogin/issues).
+[GitHub issue](https://github.com/pyrelightmc/rlogin/issues).
 
 ## Building from source
 

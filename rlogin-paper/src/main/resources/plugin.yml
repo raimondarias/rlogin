@@ -4,7 +4,7 @@ version: '${version}'
 api-version: '1.21'
 author: raimondarias
 description: Automatic premium auto-login + password login for cracked accounts (Paper, Velocity, Folia)
-website: https://github.com/raimondarias/rlogin
+website: https://github.com/pyrelightmc/rlogin
 folia-supported: true
 softdepend: [packetevents]
 

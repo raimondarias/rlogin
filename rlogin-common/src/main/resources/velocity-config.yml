@@ -1,6 +1,6 @@
 # ============================================================
 #  rLogin (Velocity) — proxy configuration
-#  https://github.com/raimondarias/rlogin
+#  https://github.com/pyrelightmc/rlogin
 #
 #  This file is short on purpose. rLogin is configured on the BACKEND, in
 #  plugins/rLogin/config.yml there: passwords, 2FA, sessions, spawns,
