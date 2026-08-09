@@ -2,6 +2,46 @@
 
 Notable changes to rLogin. Dates are release dates.
 
+## 1.1.3 — 2026-08-09
+
+### Fixed
+
+- **The update check had been failing silently since the repository moved to
+  the organisation.** GitHub answers `301` for a repository that changed
+  owner, and Java's HTTP client follows no redirects by default — so every
+  server on an older build was told nothing while two releases went by.
+  Redirects are followed now.
+- **A successful check no longer looks identical to a broken one.** It only
+  ever spoke when it found an update, so silence meant either "up to date" or
+  "the check failed" with no way to tell. All four outcomes are reported, on
+  the line after `rLogin ready`:
+
+  ```
+  [rLogin] You are running the latest release: 1.1.3
+  ```
+
+### Added
+
+- **`/rlogin version`** — what is running, and whether it is current. Open to
+  every player, not just staff: needing an operator to read a version number
+  is why so many bug reports guess at it. The check runs fresh rather than
+  repeating what startup found.
+- **LuckPerms integration**, optional and absent without a trace when it is
+  not installed:
+  - **`rlogin:authenticated` context.** A frozen player still holds every
+    permission their rank grants — rLogin blocks its own commands, but
+    anything asking LuckPerms directly sees a fully-privileged player who has
+    not proved who they are. Now you can scope permissions to people who
+    actually logged in.
+  - **`/rlogin changeuuid` carries the rank across.** LuckPerms keys its data
+    by UUID, so under `uuid-type: real` a premium player arrived with a new
+    identity and no rank. Copied rather than moved, and refused outright when
+    the target already has permissions.
+- **The startup line names the server fork**, and bStats reports it. Purpur,
+  Pufferfish and the rest need no code — they inherit the Paper API rLogin
+  uses — but bStats files them all under "Paper", so there was no way to know
+  which fork a report came from.
+
 ## 1.1.2 — 2026-08-09
 
 ### Security

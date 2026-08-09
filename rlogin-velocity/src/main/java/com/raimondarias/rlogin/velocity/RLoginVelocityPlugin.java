@@ -47,7 +47,7 @@ public final class RLoginVelocityPlugin {
      * checker needs the same value at runtime — declaring it once is what
      * stops the two from drifting apart.
      */
-    public static final String PLUGIN_VERSION = "1.1.2";
+    public static final String PLUGIN_VERSION = "1.1.3";
 
     public static final MinecraftChannelIdentifier SYNC_CHANNEL = MinecraftChannelIdentifier.create("rlogin", "sync");
 
