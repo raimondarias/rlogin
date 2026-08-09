@@ -98,7 +98,7 @@ Thanks to the following sponsor for supporting this project:
 
 <div align="center">
 
-[<img src="assets/xerohost.png" alt="XeroHost" height="46">](https://xerohost.net)
+[<img src="assets/xerohost.png" alt="XeroHost" height="46">](https://www.xerohost.net)
 
 </div>
 
