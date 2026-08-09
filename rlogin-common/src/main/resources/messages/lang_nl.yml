@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eAlleen een speler kan dit commando gebruiken."
+
 login:
   usage: "{prefix}&#fd5e5eGebruik: &#e39fff/login <wachtwoord>"
   wrong-password: "{prefix}&#fd5e5eVerkeerd wachtwoord. Resterende pogingen: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5eVoer ook je 2FA-code in: &#e39fff/login <wachtwoord> <code>"
   wrong-totp: "{prefix}&#fd5e5eVerkeerde 2FA-code."
   not-registered: "{prefix}&#fd5e5eJe hebt geen account. Registreer met &#e39fff/register <wachtwoord> <wachtwoord>"
+  session-restored: "{prefix}&#91f251Welkom terug, {player}. Je sessie was nog actief."
 
 register:
   usage: "{prefix}&#fd5e5eGebruik: &#e39fff/register <wachtwoord> <herhaal wachtwoord>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eTe veel mislukte pogingen. Wacht &#5e9dfd{seconds} seconden&#fd5e5e."
-  captcha-required: "{prefix}&#fdba5eLos de captcha op om door te gaan: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251Tweefactorauthenticatie ingeschakeld."
   disabled: "{prefix}&#91f251Tweefactorauthenticatie uitgeschakeld."
   setup-secret: "{prefix}&#fdba5eJe 2FA-sleutel: &#fd8ddb{secret} &#fdba5e(voeg deze toe aan je authenticator-app en bevestig met &#e39fff/2fa confirm <code>&#fdba5e)"
+  usage: "{prefix}&#fd5e5eGebruik: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eTweefactorauthenticatie is uitgeschakeld op deze server."
   confirm-usage: "{prefix}&#fd5e5eGebruik: &#e39fff/2fa confirm <code>"
   already-enabled: "{prefix}&#fd5e5eJe hebt tweefactorauthenticatie al ingeschakeld."
   not-enabled: "{prefix}&#fd5e5eJe hebt tweefactorauthenticatie niet ingeschakeld."

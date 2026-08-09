@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eTej komendy może użyć tylko gracz."
+
 login:
   usage: "{prefix}&#fd5e5eUżycie: &#e39fff/login <hasło>"
   wrong-password: "{prefix}&#fd5e5eBłędne hasło. Pozostałe próby: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5ePodaj również kod 2FA: &#e39fff/login <hasło> <kod>"
   wrong-totp: "{prefix}&#fd5e5eBłędny kod 2FA."
   not-registered: "{prefix}&#fd5e5eNie masz konta. Zarejestruj się za pomocą &#e39fff/register <hasło> <hasło>"
+  session-restored: "{prefix}&#91f251Witaj ponownie, {player}. Twoja sesja była nadal aktywna."
 
 register:
   usage: "{prefix}&#fd5e5eUżycie: &#e39fff/register <hasło> <powtórz hasło>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eZbyt wiele nieudanych prób. Poczekaj &#5e9dfd{seconds} sekund&#fd5e5e."
-  captcha-required: "{prefix}&#fdba5eRozwiąż captchę, aby kontynuować: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251Weryfikacja dwuetapowa włączona."
   disabled: "{prefix}&#91f251Weryfikacja dwuetapowa wyłączona."
   setup-secret: "{prefix}&#fdba5eTwój klucz 2FA: &#fd8ddb{secret} &#fdba5e(dodaj go do aplikacji uwierzytelniającej i potwierdź za pomocą &#e39fff/2fa confirm <kod>&#fdba5e)"
+  usage: "{prefix}&#fd5e5eUżycie: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eUwierzytelnianie dwuskładnikowe jest wyłączone na tym serwerze."
   confirm-usage: "{prefix}&#fd5e5eUżycie: &#e39fff/2fa confirm <kod>"
   already-enabled: "{prefix}&#fd5e5eMasz już włączoną weryfikację dwuetapową."
   not-enabled: "{prefix}&#fd5e5eNie masz włączonej weryfikacji dwuetapowej."

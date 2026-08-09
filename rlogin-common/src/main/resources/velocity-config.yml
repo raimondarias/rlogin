@@ -11,7 +11,10 @@
 # ============================================================
 
 general:
+  # Any of the 17 languages in the messages/ folder next to this file:
+  # en, es, pt_BR, de, fr, ru, zh_CN, pl, it, nl, tr, uk, ja, ko, ar, vi, id
   language: en
+  # Explains in the console why each connection was forced online or offline.
   debug: false
 
 premium:
@@ -75,7 +78,6 @@ session:
   remember-me-minutes: 30
 
 update-checker:
+  # Checks GitHub once at startup and prints a line if a newer release
+  # exists. Nothing is sent about your network, and nothing is downloaded.
   enabled: true
-
-metrics:
-  bstats: true

@@ -14,6 +14,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eSolo un jugador puede usar este comando."
+
 login:
   usage: "{prefix}&#fd5e5eUso: &#e39fff/login <contraseña>"
   wrong-password: "{prefix}&#fd5e5eContraseña incorrecta. Intentos restantes: &#fd8ddb{attempts}"
@@ -22,6 +25,7 @@ login:
   need-totp: "{prefix}&#fdba5eIntroduce también tu código 2FA: &#e39fff/login <contraseña> <código>"
   wrong-totp: "{prefix}&#fd5e5eCódigo 2FA incorrecto."
   not-registered: "{prefix}&#fd5e5eNo tienes cuenta. Regístrate con &#e39fff/register <contraseña> <contraseña>"
+  session-restored: "{prefix}&#91f251Bienvenido de vuelta, {player}. Tu sesión seguía activa."
 
 register:
   usage: "{prefix}&#fd5e5eUso: &#e39fff/register <contraseña> <repite la contraseña>"
@@ -51,12 +55,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eDemasiados intentos fallidos. Espera &#5e9dfd{seconds} segundos&#fd5e5e."
-  captcha-required: "{prefix}&#fdba5eResuelve el captcha para continuar: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251Verificación en dos pasos activada."
   disabled: "{prefix}&#91f251Verificación en dos pasos desactivada."
   setup-secret: "{prefix}&#fdba5eTu clave 2FA: &#fd8ddb{secret} &#fdba5e(añádela a tu app de autenticación y confirma con &#e39fff/2fa confirm <código>&#fdba5e)"
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eLa autenticación en dos pasos está desactivada en este servidor."
   confirm-usage: "{prefix}&#fd5e5eUso: &#e39fff/2fa confirm <código>"
   already-enabled: "{prefix}&#fd5e5eYa tienes la verificación en dos pasos activada."
   not-enabled: "{prefix}&#fd5e5eNo tienes la verificación en dos pasos activada."

@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eهذا الأمر مخصص للاعبين فقط."
+
 login:
   usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/login <كلمة المرور>"
   wrong-password: "{prefix}&#fd5e5eكلمة مرور خاطئة. المحاولات المتبقية: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5eأدخل أيضًا رمز 2FA الخاص بك: &#e39fff/login <كلمة المرور> <الرمز>"
   wrong-totp: "{prefix}&#fd5e5eرمز 2FA غير صحيح."
   not-registered: "{prefix}&#fd5e5eليس لديك حساب. سجّل باستخدام &#e39fff/register <كلمة المرور> <كلمة المرور>"
+  session-restored: "{prefix}&#91f251مرحبا بعودتك يا {player}. جلستك ما زالت فعالة."
 
 register:
   usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/register <كلمة المرور> <تكرار كلمة المرور>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eعدد كبير جدًا من المحاولات الفاشلة. انتظر &#5e9dfd{seconds} ثانية&#fd5e5e."
-  captcha-required: "{prefix}&#fdba5eحل رمز التحقق للمتابعة: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251تم تفعيل المصادقة الثنائية."
   disabled: "{prefix}&#91f251تم إلغاء تفعيل المصادقة الثنائية."
   setup-secret: "{prefix}&#fdba5eمفتاح 2FA الخاص بك: &#fd8ddb{secret} &#fdba5e(أضفه إلى تطبيق المصادقة الخاص بك وأكّد باستخدام &#e39fff/2fa confirm <الرمز>&#fdba5e)"
+  usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eالمصادقة الثنائية معطلة في هذا الخادم."
   confirm-usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/2fa confirm <الرمز>"
   already-enabled: "{prefix}&#fd5e5eلديك بالفعل مصادقة ثنائية مفعّلة."
   not-enabled: "{prefix}&#fd5e5eليس لديك مصادقة ثنائية مفعّلة."

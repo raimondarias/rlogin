@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5e只有玩家才能使用该命令。"
+
 login:
   usage: "{prefix}&#fd5e5e用法: &#e39fff/login <密码>"
   wrong-password: "{prefix}&#fd5e5e密码错误。剩余尝试次数: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5e还需要输入你的2FA验证码: &#e39fff/login <密码> <验证码>"
   wrong-totp: "{prefix}&#fd5e5e2FA验证码错误。"
   not-registered: "{prefix}&#fd5e5e你还没有账号。请使用 &#e39fff/register <密码> <密码> &#fd5e5e注册"
+  session-restored: "{prefix}&#91f251欢迎回来，{player}。你的会话仍然有效。"
 
 register:
   usage: "{prefix}&#fd5e5e用法: &#e39fff/register <密码> <重复密码>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5e失败尝试次数过多。请等待 &#5e9dfd{seconds} 秒&#fd5e5e。"
-  captcha-required: "{prefix}&#fdba5e请解决验证码以继续: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251双重验证已启用。"
   disabled: "{prefix}&#91f251双重验证已禁用。"
   setup-secret: "{prefix}&#fdba5e你的2FA密钥: &#fd8ddb{secret} &#fdba5e（将其添加到你的验证器应用中，并使用 &#e39fff/2fa confirm <验证码>&#fdba5e 确认）"
+  usage: "{prefix}&#fd5e5e用法：&#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5e本服务器已关闭两步验证。"
   confirm-usage: "{prefix}&#fd5e5e用法: &#e39fff/2fa confirm <验证码>"
   already-enabled: "{prefix}&#fd5e5e你已经启用了双重验证。"
   not-enabled: "{prefix}&#fd5e5e你还没有启用双重验证。"

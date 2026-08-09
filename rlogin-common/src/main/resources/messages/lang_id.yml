@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eHanya pemain yang dapat menggunakan perintah ini."
+
 login:
   usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/login <kata sandi>"
   wrong-password: "{prefix}&#fd5e5eKata sandi salah. Percobaan tersisa: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5eMasukkan juga kode 2FA kamu: &#e39fff/login <kata sandi> <kode>"
   wrong-totp: "{prefix}&#fd5e5eKode 2FA salah."
   not-registered: "{prefix}&#fd5e5eKamu belum punya akun. Daftar dengan &#e39fff/register <kata sandi> <kata sandi>"
+  session-restored: "{prefix}&#91f251Selamat datang kembali, {player}. Sesimu masih aktif."
 
 register:
   usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/register <kata sandi> <ulangi kata sandi>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eTerlalu banyak percobaan gagal. Tunggu &#5e9dfd{seconds} detik&#fd5e5e."
-  captcha-required: "{prefix}&#fdba5eSelesaikan captcha untuk melanjutkan: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251Autentikasi dua faktor diaktifkan."
   disabled: "{prefix}&#91f251Autentikasi dua faktor dinonaktifkan."
   setup-secret: "{prefix}&#fdba5eKunci 2FA kamu: &#fd8ddb{secret} &#fdba5e(tambahkan ke aplikasi autentikator dan konfirmasi dengan &#e39fff/2fa confirm <kode>&#fdba5e)"
+  usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eAutentikasi dua faktor dinonaktifkan di server ini."
   confirm-usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/2fa confirm <kode>"
   already-enabled: "{prefix}&#fd5e5eKamu sudah mengaktifkan autentikasi dua faktor."
   not-enabled: "{prefix}&#fd5e5eKamu belum mengaktifkan autentikasi dua faktor."

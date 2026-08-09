@@ -21,11 +21,11 @@ public final class TotpCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Solo un jugador puede usar este comando.");
+            sender.sendMessage(plugin.messages().get("general.player-only"));
             return true;
         }
         if (!plugin.config().totpEnabled()) {
-            player.sendMessage(plugin.messages().get("admin.no-permission"));
+            player.sendMessage(plugin.messages().get("totp.server-disabled"));
             return true;
         }
         if (!plugin.authSessions().isAuthenticated(player.getUniqueId())) {
@@ -33,7 +33,7 @@ public final class TotpCommand implements CommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            player.sendMessage("/2fa <enable|disable|confirm> [code]");
+            player.sendMessage(plugin.messages().get("totp.usage"));
             return true;
         }
 
@@ -41,17 +41,30 @@ public final class TotpCommand implements CommandExecutor {
             case "enable" -> enable(player);
             case "confirm" -> confirm(player, args);
             case "disable" -> disable(player);
-            default -> player.sendMessage("/2fa <enable|disable|confirm> [code]");
+            default -> player.sendMessage(plugin.messages().get("totp.usage"));
         }
         return true;
     }
 
+    /**
+     * Refuses to start over for someone who already finished setting 2FA up.
+     * Without that check, a second {@code /2fa enable} silently replaces the
+     * secret and every code their authenticator app produces stops working,
+     * with nothing on screen to explain why.
+     */
     private void enable(Player player) {
-        plugin.accountService().beginTotpSetup(player.getUniqueId()).thenAccept(secret ->
-                plugin.scheduler().runForPlayer(player, () -> {
-                    player.sendMessage(plugin.messages().get("totp.setup-secret", Map.of("secret", secret)));
-                    player.sendMessage(Totp.buildOtpAuthUri(plugin.config().totpIssuer(), player.getName(), secret));
-                }));
+        plugin.accountService().find(player.getUniqueId()).thenAccept(existing -> {
+            if (existing.isPresent() && existing.get().totpEnabled()) {
+                plugin.scheduler().runForPlayer(player, () ->
+                        player.sendMessage(plugin.messages().get("totp.already-enabled")));
+                return;
+            }
+            plugin.accountService().beginTotpSetup(player.getUniqueId()).thenAccept(secret ->
+                    plugin.scheduler().runForPlayer(player, () -> {
+                        player.sendMessage(plugin.messages().get("totp.setup-secret", Map.of("secret", secret)));
+                        player.sendMessage(Totp.buildOtpAuthUri(plugin.config().totpIssuer(), player.getName(), secret));
+                    }));
+        });
     }
 
     private void confirm(Player player, String[] args) {
@@ -61,11 +74,21 @@ public final class TotpCommand implements CommandExecutor {
         }
         plugin.accountService().confirmTotp(player.getUniqueId(), args[1]).thenAccept(ok ->
                 plugin.scheduler().runForPlayer(player, () -> player.sendMessage(
-                        plugin.messages().get(ok ? "totp.enabled" : "totp.confirm-usage"))));
+                        // A wrong code is a wrong code, not a usage mistake — saying "here's how to
+                        // type it" to someone who typed it correctly but stale is just confusing.
+                        plugin.messages().get(ok ? "totp.enabled" : "login.wrong-totp"))));
     }
 
     private void disable(Player player) {
-        plugin.accountService().disableTotp(player.getUniqueId()).thenRun(() ->
-                plugin.scheduler().runForPlayer(player, () -> player.sendMessage(plugin.messages().get("totp.disabled"))));
+        plugin.accountService().find(player.getUniqueId()).thenAccept(existing -> {
+            if (existing.isEmpty() || !existing.get().totpEnabled()) {
+                plugin.scheduler().runForPlayer(player, () ->
+                        player.sendMessage(plugin.messages().get("totp.not-enabled")));
+                return;
+            }
+            plugin.accountService().disableTotp(player.getUniqueId()).thenRun(() ->
+                    plugin.scheduler().runForPlayer(player, () ->
+                            player.sendMessage(plugin.messages().get("totp.disabled"))));
+        });
     }
 }

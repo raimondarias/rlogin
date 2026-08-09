@@ -47,7 +47,7 @@ class AccountServiceTest {
     @Test
     void registerThenLoginWithCorrectPasswordSucceeds() {
         UUID uuid = UUID.randomUUID();
-        var registerResult = accountService.register(uuid, "Steve", "hunter22", "hunter22").join();
+        var registerResult = accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
         assertEquals(AccountService.RegisterResult.SUCCESS, registerResult);
 
         var outcome = accountService.login(uuid, "hunter22", null, "127.0.0.1").join();
@@ -57,14 +57,14 @@ class AccountServiceTest {
     @Test
     void registeringTwiceFails() {
         UUID uuid = UUID.randomUUID();
-        accountService.register(uuid, "Steve", "hunter22", "hunter22").join();
-        var second = accountService.register(uuid, "Steve", "otraClave1", "otraClave1").join();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
+        var second = accountService.register(uuid, "Steve", "otraClave1", "otraClave1", "203.0.113.7").join();
         assertEquals(AccountService.RegisterResult.ALREADY_REGISTERED, second);
     }
 
     @Test
     void registerWithMismatchedPasswordsFails() {
-        var result = accountService.register(UUID.randomUUID(), "Steve", "hunter22", "otraCosa").join();
+        var result = accountService.register(UUID.randomUUID(), "Steve", "hunter22", "otraCosa", "203.0.113.7").join();
         assertEquals(AccountService.RegisterResult.PASSWORDS_DONT_MATCH, result);
     }
 
@@ -77,7 +77,7 @@ class AccountServiceTest {
     @Test
     void wrongPasswordDecrementsAttemptsLeft() {
         UUID uuid = UUID.randomUUID();
-        accountService.register(uuid, "Steve", "hunter22", "hunter22").join();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
 
         var outcome = accountService.login(uuid, "incorrecta", null, "127.0.0.1").join();
         assertEquals(AccountService.LoginResult.WRONG_PASSWORD, outcome.result());
@@ -87,7 +87,7 @@ class AccountServiceTest {
     @Test
     void accountLocksAfterTooManyFailedAttempts() {
         UUID uuid = UUID.randomUUID();
-        accountService.register(uuid, "Steve", "hunter22", "hunter22").join();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
 
         accountService.login(uuid, "wrong1", null, "127.0.0.1").join();
         accountService.login(uuid, "wrong2", null, "127.0.0.1").join();
@@ -110,7 +110,7 @@ class AccountServiceTest {
     @Test
     void changePasswordWorksWithCorrectOldPassword() {
         UUID uuid = UUID.randomUUID();
-        accountService.register(uuid, "Steve", "viejaClave1", "viejaClave1").join();
+        accountService.register(uuid, "Steve", "viejaClave1", "viejaClave1", "203.0.113.7").join();
 
         boolean changed = accountService.changePassword(uuid, "viejaClave1", "nuevaClave2").join();
         assertTrue(changed);
@@ -122,7 +122,7 @@ class AccountServiceTest {
     @Test
     void changePasswordFailsWithWrongOldPassword() {
         UUID uuid = UUID.randomUUID();
-        accountService.register(uuid, "Steve", "viejaClave1", "viejaClave1").join();
+        accountService.register(uuid, "Steve", "viejaClave1", "viejaClave1", "203.0.113.7").join();
 
         boolean changed = accountService.changePassword(uuid, "incorrecta", "nuevaClave2").join();
         assertEquals(false, changed);
@@ -131,7 +131,7 @@ class AccountServiceTest {
     @Test
     void unregisterDeletesAccount() {
         UUID uuid = UUID.randomUUID();
-        accountService.register(uuid, "Steve", "hunter22", "hunter22").join();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
         accountService.unregister(uuid).join();
 
         var outcome = accountService.login(uuid, "hunter22", null, "127.0.0.1").join();

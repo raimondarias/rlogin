@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eNur ein Spieler kann diesen Befehl verwenden."
+
 login:
   usage: "{prefix}&#fd5e5eVerwendung: &#e39fff/login <Passwort>"
   wrong-password: "{prefix}&#fd5e5eFalsches Passwort. Verbleibende Versuche: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5eGib auch deinen 2FA-Code ein: &#e39fff/login <Passwort> <Code>"
   wrong-totp: "{prefix}&#fd5e5eFalscher 2FA-Code."
   not-registered: "{prefix}&#fd5e5eDu hast noch kein Konto. Registriere dich mit &#e39fff/register <Passwort> <Passwort>"
+  session-restored: "{prefix}&#91f251Willkommen zurück, {player}. Deine Sitzung war noch aktiv."
 
 register:
   usage: "{prefix}&#fd5e5eVerwendung: &#e39fff/register <Passwort> <Passwort wiederholen>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eZu viele fehlgeschlagene Versuche. Warte &#5e9dfd{seconds} Sekunden&#fd5e5e."
-  captcha-required: "{prefix}&#fdba5eLöse das Captcha, um fortzufahren: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251Zwei-Faktor-Authentifizierung aktiviert."
   disabled: "{prefix}&#91f251Zwei-Faktor-Authentifizierung deaktiviert."
   setup-secret: "{prefix}&#fdba5eDein 2FA-Schlüssel: &#fd8ddb{secret} &#fdba5e(füge ihn deiner Authenticator-App hinzu und bestätige mit &#e39fff/2fa confirm <Code>&#fdba5e)"
+  usage: "{prefix}&#fd5e5eVerwendung: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eDie Zwei-Faktor-Authentifizierung ist auf diesem Server deaktiviert."
   confirm-usage: "{prefix}&#fd5e5eVerwendung: &#e39fff/2fa confirm <Code>"
   already-enabled: "{prefix}&#fd5e5eDu hast die Zwei-Faktor-Authentifizierung bereits aktiviert."
   not-enabled: "{prefix}&#fd5e5eDu hast die Zwei-Faktor-Authentifizierung nicht aktiviert."

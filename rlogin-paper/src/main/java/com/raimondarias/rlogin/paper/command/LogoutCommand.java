@@ -17,7 +17,7 @@ public final class LogoutCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Solo un jugador puede usar este comando.");
+            sender.sendMessage(plugin.messages().get("general.player-only"));
             return true;
         }
         if (!plugin.authSessions().isAuthenticated(player.getUniqueId())) {

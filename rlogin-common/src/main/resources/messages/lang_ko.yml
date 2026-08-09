@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5e이 명령어는 플레이어만 사용할 수 있습니다."
+
 login:
   usage: "{prefix}&#fd5e5e사용법: &#e39fff/login <비밀번호>"
   wrong-password: "{prefix}&#fd5e5e비밀번호가 틀렸습니다. 남은 시도 횟수: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5e2FA 코드도 입력하세요: &#e39fff/login <비밀번호> <코드>"
   wrong-totp: "{prefix}&#fd5e5e2FA 코드가 틀렸습니다."
   not-registered: "{prefix}&#fd5e5e계정이 없습니다. &#e39fff/register <비밀번호> <비밀번호> &#fd5e5e로 가입하세요"
+  session-restored: "{prefix}&#91f251다시 오신 것을 환영합니다, {player}. 세션이 아직 유효했습니다."
 
 register:
   usage: "{prefix}&#fd5e5e사용법: &#e39fff/register <비밀번호> <비밀번호 확인>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5e실패한 시도가 너무 많습니다. &#5e9dfd{seconds}초&#fd5e5e 기다려주세요."
-  captcha-required: "{prefix}&#fdba5e계속하려면 캡차를 해결하세요: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f2512단계 인증이 활성화되었습니다."
   disabled: "{prefix}&#91f2512단계 인증이 비활성화되었습니다."
   setup-secret: "{prefix}&#fdba5e회원님의 2FA 키: &#fd8ddb{secret} &#fdba5e(인증 앱에 추가한 후 &#e39fff/2fa confirm <코드>&#fdba5e 로 확인하세요)"
+  usage: "{prefix}&#fd5e5e사용법: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5e이 서버에서는 2단계 인증이 비활성화되어 있습니다."
   confirm-usage: "{prefix}&#fd5e5e사용법: &#e39fff/2fa confirm <코드>"
   already-enabled: "{prefix}&#fd5e5e이미 2단계 인증이 활성화되어 있습니다."
   not-enabled: "{prefix}&#fd5e5e2단계 인증이 활성화되어 있지 않습니다."

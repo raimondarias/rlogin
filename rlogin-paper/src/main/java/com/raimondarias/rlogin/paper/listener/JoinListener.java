@@ -12,6 +12,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -75,6 +76,12 @@ public final class JoinListener implements Listener {
         // the /login, /register commands take it from here once they enter the world.
     }
 
+    private void debug(String message) {
+        if (plugin.config().debug()) {
+            plugin.getLogger().info("[debug] " + message);
+        }
+    }
+
     /**
      * Whether "this UUID isn't the offline one for this name" still means
      * somebody verified the account against Mojang.
@@ -85,12 +92,6 @@ public final class JoinListener implements Listener {
      * login to anyone who connects. There, only the cryptographic proof
      * recorded by {@code HybridVerificationTracker} counts.</p>
      */
-    private void debug(String message) {
-        if (plugin.config().debug()) {
-            plugin.getLogger().info("[debug] " + message);
-        }
-    }
-
     private boolean uuidCanProvePremium() {
         return !plugin.config().standaloneHybridModeEnabled()
                 || plugin.config().uuidType() != UuidType.RANDOM;
@@ -132,15 +133,25 @@ public final class JoinListener implements Listener {
     }
 
     /**
-     * Tells a premium player they were logged in for them — otherwise being
-     * let straight in is indistinguishable from rLogin not being installed.
-     * Everyone else gets nothing here: someone who typed /login already got
-     * their confirmation from the command itself, and a restored "remember
-     * me" session is meant to be invisible.
+     * Tells a player who wasn't asked for a password why. Being let straight
+     * in with no explanation is indistinguishable from rLogin not being
+     * installed, and the two silent paths are silent for different reasons,
+     * so they say different things.
+     *
+     * <p>Nothing is said for {@link AuthReason#PASSWORD} (the command already
+     * confirmed it), {@link AuthReason#FORCED_BY_ADMIN} (same) or
+     * {@link AuthReason#BYPASS_PERMISSION} (that's for NPCs and bots, which
+     * have nobody to tell).</p>
      */
     private void announceAutoLogin(Player player, AuthReason reason) {
-        if (reason != null && reason.isAutomaticPremium()) {
+        if (reason == null) {
+            return;
+        }
+        if (reason.isAutomaticPremium()) {
             player.sendMessage(plugin.messages().get("premium.auto-login-message"));
+        } else if (reason == AuthReason.REMEMBERED_SESSION) {
+            player.sendMessage(plugin.messages().get("login.session-restored",
+                    Map.of("player", player.getName())));
         }
     }
 

@@ -1,19 +1,26 @@
 # ============================================================
 #  rLogin (Paper/Folia) — configuration
 #  https://github.com/raimondarias/rlogin
+#
+#  You do not need to change anything here to get started: the
+#  defaults are the recommended setup for a single server. The one
+#  thing worth reading is premium.standalone-hybrid-mode below, which
+#  is what lets premium players join without typing a password.
 # ============================================================
 
 general:
-  # Primary language is English. Spanish is bundled too (and more
-  # translations may be added over time) — set the language code that
-  # matches one of the messages_<code>.yml files copied next to this one.
+  # Any of the 17 languages in the messages/ folder next to this file:
+  # en, es, pt_BR, de, fr, ru, zh_CN, pl, it, nl, tr, uk, ja, ko, ar, vi, id
+  # To add your own, drop a lang_<code>.yml in that folder and name it here.
   language: en
+  # Explains in the console why each connection was let in, asked for a
+  # password, or refused. Off by default because it's one line per login;
+  # turn it on when something isn't behaving and you want to know why.
   debug: false
 
 database:
-  # sqlite -> zero configuration, great for a single server.
-  # mysql  -> recommended if several Paper/Folia backends must share the
-  #           same accounts.
+  # sqlite -> zero configuration, the right choice for a single server.
+  # mysql  -> only needed if several servers must share the same accounts.
   type: sqlite
   sqlite:
     file: rlogin.db
@@ -27,70 +34,93 @@ database:
     pool-size: 10
 
 premium:
-  # Auto-login for premium (Java-original) accounts. Behind Velocity this
-  # is decided there via Modern Forwarding; standalone, it falls back to
-  # the Mojang API.
+  # Premium (Java-original) accounts join without typing anything.
   auto-login: true
+  # How long to wait for Mojang before giving up on one lookup.
   api-timeout-ms: 3000
-  # What to do if the Mojang API doesn't respond in time or is down:
-  #   fail-open   -> treat as cracked, ask for /login (recommended)
-  #   fail-closed -> reject the connection until the API is back
+  # What to do when Mojang doesn't answer in time or is down:
+  #   fail-open   -> treat the player as cracked and ask for /login (recommended)
+  #   fail-closed -> refuse the connection until Mojang is reachable again
   api-failure-policy: fail-open
+  # How long a name's premium/cracked status is remembered, so Mojang isn't
+  # asked again on every single connection.
   cache-ttl-minutes: 60
-  # Disallows /register on a name that belongs to a real premium account,
-  # so its legitimate owner never loses the ability to auto-login with it.
+  # Refuses /register on a name that belongs to a real premium account, so
+  # its owner never loses the ability to auto-login with it. Turn this off
+  # only if you deliberately want cracked players to claim premium names.
   protect-premium-names: true
-  # EXPERIMENTAL. Lets premium accounts auto-login AND cracked accounts use
-  # /login-/register on the SAME standalone backend (online-mode: false, no
-  # Velocity in front) — like nLogin Premium's standalone mode. Requires the
-  # separate PacketEvents plugin (https://modrinth.com/plugin/packetevents,
-  # not bundled) to already be installed; without it this does nothing, no
-  # error, no crash. If you run (or can run) Velocity in front of your
-  # backend(s) instead, that path is more mature and is the recommended
-  # default — see the README's "How premium auto-login works" section.
+
+  # ---- Premium auto-login WITHOUT a proxy -------------------------------
+  # Normally, combining "premium joins with no password" and "cracked joins
+  # with one" needs a Velocity proxy in front, because online-mode is a
+  # single server-wide switch. Turn this on and rLogin performs Mojang's
+  # verification itself, so both work on ONE server with online-mode: false
+  # and nothing in front of it.
+  #
+  # Requires the free PacketEvents plugin, which is NOT bundled:
+  #   https://modrinth.com/plugin/packetevents
+  # Without it this does nothing at all — no error, no crash, just a line in
+  # the console telling you it stayed off.
+  #
+  # Leave it false if you run Velocity: there the proxy already does this,
+  # and having both do it would mean verifying twice.
   standalone-hybrid-mode: false
+
   # Which UUID a player ends up with. Only applies to a standalone server
   # (online-mode: false, no proxy) — behind Velocity the identity is already
-  # decided before rLogin sees the connection.
+  # decided before rLogin ever sees the connection.
   #
   #   real     Verified premium players join with their REAL Mojang UUID;
   #            everyone else keeps the offline one. The only mode where
   #            "premium Steve" and "cracked Steve" are separate accounts,
   #            and where your other plugins (permissions, economy, bans) see
-  #            the same UUID they'd see on any online-mode server.
+  #            the same UUID they would on any online-mode server.
   #   cracked  Everyone gets the offline UUID derived from their name,
   #            premium included. Auto-login still works. Use this to keep an
-  #            existing offline-mode world/database working untouched.
+  #            existing offline-mode world and database working untouched.
   #            ("offline" is accepted as a synonym.)
   #   random   A random UUID generated the first time each name connects and
   #            reused from then on, for premium and cracked alike. Lets a
   #            player move between premium and cracked without losing data.
+  #
+  # Changing this on a server that already has players changes who they are:
+  # they will look like brand-new players to every other plugin. Use
+  # /rlogin changeuuid to carry an account across if you do.
   uuid-type: real
 
 session:
-  # "Remember me": if the player reconnects from the same IP within this
-  # window, they won't be asked to /login again.
+  # "Remember me": a player who already logged in and reconnects from the
+  # same IP within this window isn't asked for their password again.
   remember-me: true
   remember-me-minutes: 30
 
 security:
+  # Slows down password guessing: after too many wrong attempts the account
+  # is locked for a while, and each further failure locks it for longer.
   bruteforce:
     enabled: true
     max-attempts: 5
     lockout-seconds: 60
+    # Each additional failure multiplies the lockout by this, up to the max.
     lockout-multiplier: 2.0
     max-lockout-seconds: 3600
+  # Optional second factor via any authenticator app (Google Authenticator,
+  # Aegis, 1Password...). Players opt in themselves with /2fa enable.
   totp:
     enabled: true
+    # The name players see for this server inside their authenticator app.
     issuer: rLogin
   password:
     min-length: 5
     max-length: 30
+    # How slow password hashing is, which is what makes stolen hashes hard
+    # to crack. Each +1 doubles the time. 10 is a good balance; going much
+    # higher will make logins noticeably slow on a weak CPU.
     bcrypt-cost: 10
 
 limbo:
-  # While not authenticated: the player is frozen in place (no teleport to
-  # a separate limbo world) and can only use the commands in this list.
+  # Until they log in, players are frozen where they are (no separate limbo
+  # world) and can only run the commands listed here.
   freeze: true
   allowed-commands:
     - /login
@@ -98,15 +128,23 @@ limbo:
     - /register
     - /reg
     - /2fa
+  # How often to remind them to log in, in seconds.
   reminder-interval-seconds: 5
 
 bedrock:
-  # Players connecting via Geyser/Floodgate are treated as premium auto-login.
+  # Bedrock players arriving through Geyser/Floodgate are already verified
+  # by Microsoft, so they're treated like premium and never asked to log in.
   floodgate-auto-login: true
+  # Must match the "username-prefix" in Floodgate's own config.
   prefix: "."
 
 update-checker:
+  # Checks GitHub once at startup and prints a line if a newer release
+  # exists. Nothing is sent about your server, and nothing is downloaded.
   enabled: true
 
 metrics:
+  # Anonymous statistics via bStats (https://bstats.org): server count,
+  # Minecraft and Java version, and which of rLogin's modes are in use.
+  # No player data, no IPs, no account information.
   bstats: true

@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eChỉ người chơi mới có thể dùng lệnh này."
+
 login:
   usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/login <mật khẩu>"
   wrong-password: "{prefix}&#fd5e5eSai mật khẩu. Số lần thử còn lại: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5eNhập thêm mã 2FA của bạn: &#e39fff/login <mật khẩu> <mã>"
   wrong-totp: "{prefix}&#fd5e5eSai mã 2FA."
   not-registered: "{prefix}&#fd5e5eBạn chưa có tài khoản. Đăng ký bằng &#e39fff/register <mật khẩu> <mật khẩu>"
+  session-restored: "{prefix}&#91f251Chào mừng trở lại, {player}. Phiên của bạn vẫn còn hiệu lực."
 
 register:
   usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/register <mật khẩu> <nhập lại mật khẩu>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eQuá nhiều lần thử thất bại. Đợi &#5e9dfd{seconds} giây&#fd5e5e."
-  captcha-required: "{prefix}&#fdba5eGiải captcha để tiếp tục: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251Đã bật xác thực hai yếu tố."
   disabled: "{prefix}&#91f251Đã tắt xác thực hai yếu tố."
   setup-secret: "{prefix}&#fdba5eKhóa 2FA của bạn: &#fd8ddb{secret} &#fdba5e(thêm vào ứng dụng xác thực và xác nhận bằng &#e39fff/2fa confirm <mã>&#fdba5e)"
+  usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eXác thực hai bước đã bị tắt trên máy chủ này."
   confirm-usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/2fa confirm <mã>"
   already-enabled: "{prefix}&#fd5e5eBạn đã bật xác thực hai yếu tố rồi."
   not-enabled: "{prefix}&#fd5e5eBạn chưa bật xác thực hai yếu tố."

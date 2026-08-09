@@ -7,6 +7,7 @@ import com.raimondarias.rlogin.common.auth.SessionService;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.raimondarias.rlogin.common.db.StorageFactory;
 import com.raimondarias.rlogin.common.i18n.Messages;
+import com.raimondarias.rlogin.common.update.UpdateChecker;
 import com.raimondarias.rlogin.velocity.command.RLoginVelocityCommand;
 import com.raimondarias.rlogin.velocity.listener.LobbyListener;
 import com.raimondarias.rlogin.velocity.listener.PreLoginListener;
@@ -35,11 +36,18 @@ import java.nio.file.Path;
 @Plugin(
         id = "rlogin",
         name = "rLogin",
-        version = "1.0.0",
+        version = RLoginVelocityPlugin.PLUGIN_VERSION,
         authors = {"raimondarias"},
         description = "Automatic premium auto-login + password login for cracked accounts (Paper, Velocity, Folia)"
 )
 public final class RLoginVelocityPlugin {
+
+    /**
+     * Velocity's annotation needs a compile-time constant, and the update
+     * checker needs the same value at runtime — declaring it once is what
+     * stops the two from drifting apart.
+     */
+    public static final String PLUGIN_VERSION = "1.0.0";
 
     public static final MinecraftChannelIdentifier SYNC_CHANNEL = MinecraftChannelIdentifier.create("rlogin", "sync");
 
@@ -85,6 +93,23 @@ public final class RLoginVelocityPlugin {
         logger.info("rLogin (Velocity) ready. Premium auto-login: {} | Remembered-session lobby bypass: {}",
                 config.premiumAutoLogin() ? "enabled" : "disabled",
                 sessionService != null ? "enabled" : "disabled");
+
+        checkForUpdates();
+    }
+
+    /**
+     * Same check the Paper side does, so a network doesn't end up with the
+     * proxy and the backends on different versions without anyone noticing.
+     * Best-effort: never blocks startup, never complains if it can't reach
+     * GitHub.
+     */
+    private void checkForUpdates() {
+        if (!config.updateCheckerEnabled()) {
+            return;
+        }
+        new UpdateChecker(PLUGIN_VERSION).check().thenAccept(update -> update.ifPresent(found ->
+                logger.info("rLogin {} is available (you're on {}): {}",
+                        found.latestVersion(), found.currentVersion(), found.url())));
     }
 
     @Subscribe

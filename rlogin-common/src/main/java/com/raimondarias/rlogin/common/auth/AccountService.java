@@ -72,7 +72,17 @@ public final class AccountService {
         });
     }
 
-    public CompletableFuture<RegisterResult> register(UUID uuid, String username, String password, String confirm) {
+    /**
+     * @param ip the address they registered from, stored as the account's
+     *           last-seen address. It matters beyond bookkeeping: standalone
+     *           hybrid mode uses it to recognise a returning cracked player
+     *           and skip the premium handshake for them. Leaving it null
+     *           until their first {@code /login} would mean a player who
+     *           registers and is then carried by "remember me" never gets
+     *           recognised at all.
+     */
+    public CompletableFuture<RegisterResult> register(UUID uuid, String username, String password, String confirm,
+                                                       String ip) {
         if (!password.equals(confirm)) {
             return CompletableFuture.completedFuture(RegisterResult.PASSWORDS_DONT_MATCH);
         }
@@ -89,7 +99,7 @@ public final class AccountService {
                 }
                 Instant now = Instant.now();
                 RLoginAccount account = new RLoginAccount(uuid, username, false, hasher.hash(password),
-                        PasswordHasher.ALGO_ID, null, false, null, now, now, 0, null);
+                        PasswordHasher.ALGO_ID, null, false, ip, now, now, 0, null);
                 return storage.save(account).thenApply(saved -> RegisterResult.SUCCESS);
             });
         });

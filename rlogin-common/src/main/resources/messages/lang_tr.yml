@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eBu komutu yalnızca bir oyuncu kullanabilir."
+
 login:
   usage: "{prefix}&#fd5e5eKullanım: &#e39fff/login <şifre>"
   wrong-password: "{prefix}&#fd5e5eYanlış şifre. Kalan deneme: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5e2FA kodunu da gir: &#e39fff/login <şifre> <kod>"
   wrong-totp: "{prefix}&#fd5e5eYanlış 2FA kodu."
   not-registered: "{prefix}&#fd5e5eBir hesabın yok. &#e39fff/register <şifre> <şifre> &#fd5e5eile kayıt ol"
+  session-restored: "{prefix}&#91f251Tekrar hoş geldin, {player}. Oturumun hâlâ açıktı."
 
 register:
   usage: "{prefix}&#fd5e5eKullanım: &#e39fff/register <şifre> <şifreyi tekrarla>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eÇok fazla başarısız deneme. &#5e9dfd{seconds} saniye&#fd5e5e bekle."
-  captcha-required: "{prefix}&#fdba5eDevam etmek için captcha'yı çöz: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251İki faktörlü kimlik doğrulama etkinleştirildi."
   disabled: "{prefix}&#91f251İki faktörlü kimlik doğrulama devre dışı bırakıldı."
   setup-secret: "{prefix}&#fdba5e2FA anahtarın: &#fd8ddb{secret} &#fdba5e(kimlik doğrulama uygulamana ekle ve &#e39fff/2fa confirm <kod>&#fdba5e ile onayla)"
+  usage: "{prefix}&#fd5e5eKullanım: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eBu sunucuda iki adımlı doğrulama devre dışı."
   confirm-usage: "{prefix}&#fd5e5eKullanım: &#e39fff/2fa confirm <kod>"
   already-enabled: "{prefix}&#fd5e5eİki faktörlü kimlik doğrulaman zaten etkin."
   not-enabled: "{prefix}&#fd5e5eİki faktörlü kimlik doğrulaman etkin değil."

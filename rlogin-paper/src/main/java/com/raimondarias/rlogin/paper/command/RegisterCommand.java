@@ -22,7 +22,7 @@ public final class RegisterCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only a player can use this command.");
+            sender.sendMessage(plugin.messages().get("general.player-only"));
             return true;
         }
         if (plugin.authSessions().isAuthenticated(player.getUniqueId())) {
@@ -41,7 +41,7 @@ public final class RegisterCommand implements CommandExecutor {
 
     public static void attemptRegister(RLoginPaperPlugin plugin, Player player, String password, String confirm) {
         String ip = LoginCommand.ipOf(player);
-        plugin.accountService().register(player.getUniqueId(), player.getName(), password, confirm)
+        plugin.accountService().register(player.getUniqueId(), player.getName(), password, confirm, ip)
                 .thenAccept(result -> plugin.scheduler().runForPlayer(player, () -> handleResult(plugin, player, result, ip)));
     }
 

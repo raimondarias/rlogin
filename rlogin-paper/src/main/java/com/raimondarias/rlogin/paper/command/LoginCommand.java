@@ -22,7 +22,7 @@ public final class LoginCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Only a player can use this command.");
+            sender.sendMessage(plugin.messages().get("general.player-only"));
             return true;
         }
         if (plugin.authSessions().isAuthenticated(player.getUniqueId())) {

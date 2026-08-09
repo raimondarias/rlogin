@@ -9,6 +9,9 @@
 
 prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
 
+general:
+  player-only: "{prefix}&#fd5e5eЦю команду може використовувати лише гравець."
+
 login:
   usage: "{prefix}&#fd5e5eВикористання: &#e39fff/login <пароль>"
   wrong-password: "{prefix}&#fd5e5eНевірний пароль. Залишилось спроб: &#fd8ddb{attempts}"
@@ -17,6 +20,7 @@ login:
   need-totp: "{prefix}&#fdba5eТакож введіть код 2FA: &#e39fff/login <пароль> <код>"
   wrong-totp: "{prefix}&#fd5e5eНевірний код 2FA."
   not-registered: "{prefix}&#fd5e5eУ вас немає акаунта. Зареєструйтесь через &#e39fff/register <пароль> <пароль>"
+  session-restored: "{prefix}&#91f251З поверненням, {player}. Ваша сесія ще активна."
 
 register:
   usage: "{prefix}&#fd5e5eВикористання: &#e39fff/register <пароль> <повторіть пароль>"
@@ -46,12 +50,13 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eЗабагато невдалих спроб. Зачекайте &#5e9dfd{seconds} секунд&#fd5e5e."
-  captcha-required: "{prefix}&#fdba5eРозв'яжіть капчу, щоб продовжити: &#fd8ddb{captcha}"
 
 totp:
   enabled: "{prefix}&#91f251Двофакторну автентифікацію увімкнено."
   disabled: "{prefix}&#91f251Двофакторну автентифікацію вимкнено."
   setup-secret: "{prefix}&#fdba5eВаш ключ 2FA: &#fd8ddb{secret} &#fdba5e(додайте його у застосунок-автентифікатор і підтвердьте через &#e39fff/2fa confirm <код>&#fdba5e)"
+  usage: "{prefix}&#fd5e5eВикористання: &#e39fff/2fa <enable|disable|confirm> [code]"
+  server-disabled: "{prefix}&#fdba5eДвофакторна автентифікація вимкнена на цьому сервері."
   confirm-usage: "{prefix}&#fd5e5eВикористання: &#e39fff/2fa confirm <код>"
   already-enabled: "{prefix}&#fd5e5eУ вас вже увімкнена двофакторна автентифікація."
   not-enabled: "{prefix}&#fd5e5eУ вас не увімкнена двофакторна автентифікація."
