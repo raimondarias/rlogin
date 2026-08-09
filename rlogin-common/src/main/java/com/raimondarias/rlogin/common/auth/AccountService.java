@@ -6,6 +6,8 @@ import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.raimondarias.rlogin.common.security.AuthMeLegacyHash;
 import com.raimondarias.rlogin.common.security.BruteforceGuard;
 import com.raimondarias.rlogin.common.security.IpThrottle;
+import com.raimondarias.rlogin.common.security.PasswordPolicy;
+import com.raimondarias.rlogin.common.security.RegistrationLimiter;
 import com.raimondarias.rlogin.common.security.PasswordHasher;
 import com.raimondarias.rlogin.common.security.PremiumNameGuard;
 import com.raimondarias.rlogin.common.security.Totp;
@@ -23,7 +25,8 @@ import java.util.concurrent.CompletableFuture;
 public final class AccountService {
 
     public enum RegisterResult {
-        SUCCESS, ALREADY_REGISTERED, PASSWORDS_DONT_MATCH, INVALID_LENGTH, PREMIUM_PROTECTED
+        SUCCESS, ALREADY_REGISTERED, PASSWORDS_DONT_MATCH, INVALID_LENGTH, PREMIUM_PROTECTED,
+        TOO_MANY_FROM_IP, PASSWORD_TOO_COMMON, PASSWORD_IS_NAME
     }
 
     public enum LoginResult {
@@ -41,6 +44,8 @@ public final class AccountService {
     private final PasswordHasher hasher;
     private final BruteforceGuard bruteforceGuard;
     private final IpThrottle ipThrottle;
+    private final RegistrationLimiter registrationLimiter;
+    private final PasswordPolicy passwordPolicy;
     private final PremiumNameGuard premiumNameGuard;
 
     public AccountService(Storage storage, RLoginConfig config, PremiumNameGuard premiumNameGuard) {
@@ -49,6 +54,8 @@ public final class AccountService {
         this.hasher = new PasswordHasher(config.bcryptCost());
         this.bruteforceGuard = new BruteforceGuard(config);
         this.ipThrottle = new IpThrottle(config, bruteforceGuard);
+        this.registrationLimiter = new RegistrationLimiter(config);
+        this.passwordPolicy = new PasswordPolicy(config);
         this.premiumNameGuard = premiumNameGuard;
     }
 
@@ -89,8 +96,20 @@ public final class AccountService {
         if (!password.equals(confirm)) {
             return CompletableFuture.completedFuture(RegisterResult.PASSWORDS_DONT_MATCH);
         }
-        if (password.length() < config.passwordMinLength() || password.length() > config.passwordMaxLength()) {
-            return CompletableFuture.completedFuture(RegisterResult.INVALID_LENGTH);
+        RegisterResult rejection = switch (passwordPolicy.check(password, username)) {
+            case TOO_SHORT, TOO_LONG -> RegisterResult.INVALID_LENGTH;
+            case TOO_COMMON -> RegisterResult.PASSWORD_TOO_COMMON;
+            case SAME_AS_NAME -> RegisterResult.PASSWORD_IS_NAME;
+            case OK -> null;
+        };
+        if (rejection != null) {
+            return CompletableFuture.completedFuture(rejection);
+        }
+        // Checked before touching the database: refusing the flood is the point, and
+        // a lookup per attempt is the cost this is meant to avoid paying.
+        Instant attemptedAt = Instant.now();
+        if (!registrationLimiter.isAllowed(ip, attemptedAt)) {
+            return CompletableFuture.completedFuture(RegisterResult.TOO_MANY_FROM_IP);
         }
         return storage.findByUuid(uuid).thenCompose(existing -> {
             if (existing.isPresent()) {
@@ -103,7 +122,12 @@ public final class AccountService {
                 Instant now = Instant.now();
                 RLoginAccount account = new RLoginAccount(uuid, username, false, hasher.hash(password),
                         PasswordHasher.ALGO_ID, null, false, ip, now, now, 0, null);
-                return storage.save(account).thenApply(saved -> RegisterResult.SUCCESS);
+                return storage.save(account).thenApply(saved -> {
+                    // Only successful creations count: a refused attempt is somebody
+                    // getting it wrong, not somebody consuming what this protects.
+                    registrationLimiter.recordRegistration(ip, now);
+                    return RegisterResult.SUCCESS;
+                });
             });
         });
     }
@@ -169,8 +193,25 @@ public final class AccountService {
         return storage.save(updated).thenApply(saved -> new LoginOutcome(reason, saved, 0, attemptsLeft));
     }
 
+    /**
+     * Deletes the account, and with it the password and any TOTP secret —
+     * they live on the same row, so there is nothing left to disable
+     * separately.
+     *
+     * <p>The "remember me" session goes too. It outlives the account
+     * otherwise: nothing links the two tables, and the session check asks
+     * only whether one is valid for this UUID and address, not whether the
+     * account still exists. An unregistered player reconnecting from the same
+     * address would be waved straight in, with no account and no prompt to
+     * make one.</p>
+     */
+    /** How long this address must wait before it may create another account. */
+    public long secondsUntilRegistrationAllowed(String ip) {
+        return registrationLimiter.secondsUntilAllowed(ip, Instant.now());
+    }
+
     public CompletableFuture<Void> unregister(UUID uuid) {
-        return storage.delete(uuid);
+        return storage.delete(uuid).thenCompose(ignored -> storage.clearSession(uuid));
     }
 
     public enum ChangeIdentityResult {

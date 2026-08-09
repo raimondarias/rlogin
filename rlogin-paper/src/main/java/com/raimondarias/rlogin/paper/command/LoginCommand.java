@@ -50,6 +50,7 @@ public final class LoginCommand implements CommandExecutor {
         switch (outcome.result()) {
             case SUCCESS -> {
                 plugin.authSessions().markAuthenticated(player.getUniqueId(), AuthReason.PASSWORD);
+                plugin.fireAuthenticated(player, AuthReason.PASSWORD, true);
                 player.sendMessage(plugin.messages().get("login.success", Map.of("player", player.getName())));
                 plugin.sessionService().remember(player.getUniqueId(), ip, plugin.getServer().getName());
                 plugin.notifyProxyAuthenticated(player);

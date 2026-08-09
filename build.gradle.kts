@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = "com.raimondarias.rlogin"
-    version = "1.1.1"
+    version = "1.1.2"
 
     repositories {
         mavenCentral()
@@ -41,5 +41,21 @@ subprojects {
 
     tasks.withType<ProcessResources> {
         filteringCharset = "UTF-8"
+    }
+}
+
+// Published so third-party plugins can compile against rLogin instead of
+// copying its class names and hoping. JitPack builds these from a git tag,
+// which means no credentials to hold and no artifact that can drift from the
+// source it claims to come from.
+configure(listOf(project(":rlogin-api"), project(":rlogin-paper"))) {
+    apply(plugin = "maven-publish")
+    extensions.configure<PublishingExtension> {
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["java"])
+                artifactId = project.name
+            }
+        }
     }
 }

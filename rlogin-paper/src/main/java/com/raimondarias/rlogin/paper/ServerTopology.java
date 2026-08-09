@@ -54,11 +54,26 @@ public enum ServerTopology {
      * works on any fork without touching version-specific internals.
      */
     public static ServerTopology detect(JavaPlugin plugin) {
-        if (Bukkit.getOnlineMode()) {
+        Path serverRoot = serverRoot(plugin);
+        boolean forwarding = serverRoot != null
+                && (velocityForwarding(serverRoot) || bungeeCordForwarding(serverRoot));
+        return decide(Bukkit.getOnlineMode(), forwarding);
+    }
+
+    /**
+     * The decision itself, separated from reading the files it depends on so
+     * it can be checked without a running server. Every branch here changes
+     * whether rLogin verifies a connection, which is not something to find
+     * out from a bug report.
+     *
+     * @param forwarding whether anything upstream is forwarding player
+     *                   identities to this server
+     */
+    static ServerTopology decide(boolean onlineMode, boolean forwarding) {
+        if (onlineMode) {
             return ONLINE_MODE;
         }
-        Path serverRoot = serverRoot(plugin);
-        if (serverRoot != null && (velocityForwarding(serverRoot) || bungeeCordForwarding(serverRoot))) {
+        if (forwarding) {
             return BEHIND_PROXY;
         }
         // Also the answer when the layout is unrecognisable: assuming "no proxy" makes rLogin

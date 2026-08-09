@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eLes mots de passe ne correspondent pas."
   password-too-short: "{prefix}&#fd5e5eLe mot de passe doit contenir au moins &#fd8ddb{min}&#fd5e5e caractères."
   premium-name-protected: "{prefix}&#fd5e5eCe nom appartient à un compte premium. Si c'est le tien, connecte-toi avec le client Minecraft original."
+  too-many-from-ip: "{prefix}&#fd5e5eTrop de comptes ont été créés depuis ton adresse. Réessaie dans &#fd8ddb{seconds}&#fd5e5es."
+  password-too-common: "{prefix}&#fd5e5eCe mot de passe est l'un des plus courants qui soient. Choisis-en un autre."
+  password-is-name: "{prefix}&#fd5e5eTon mot de passe ne peut pas être ton propre pseudo."
   success: "{prefix}&#91f251Inscription terminée. Bienvenue &#fd8ddb{player}&#91f251 !"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Téléporté au spawn de &#fd8ddb{role}&#91f251 : &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e n'a pas de spawn défini."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e pointe vers le monde &#fd8ddb{world}&#fd5e5e, qui n'est pas chargé. Les joueurs resteraient où ils sont."
+
+recovery:
+  usage: "{prefix}&#fd5e5eUtilisation : /recover <code> <nouveau mot de passe>"
+  disabled: "{prefix}&#fdba5eLa récupération de compte est désactivée sur ce serveur."
+  already-logged-in: "{prefix}&#fdba5eTu es déjà connecté. Utilise /changepassword."
+  no-codes: "{prefix}&#fd5e5eCe compte n'a plus de codes de récupération. Contacte un administrateur."
+  wrong-code: "{prefix}&#fd5e5eCe code de récupération n'est pas valide."
+  success: "{prefix}&#91f251Compte récupéré. Ton mot de passe a été changé et la 2FA désactivée. Il reste &#fd8ddb{remaining}&#91f251 codes."
+  none-left: "{prefix}&#fdba5eC'était ton dernier code. Demande-en une nouvelle série à un administrateur."
+  issued-header: "{prefix}&#fdba5eCodes de récupération - note-les maintenant :"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Ils ne te seront plus montrés. Chacun fonctionne une fois et permet de définir un nouveau mot de passe."

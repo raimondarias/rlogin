@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eПаролі не збігаються."
   password-too-short: "{prefix}&#fd5e5eПароль має містити щонайменше &#fd8ddb{min}&#fd5e5e символів."
   premium-name-protected: "{prefix}&#fd5e5eЦе ім'я належить преміум-акаунту. Якщо це ваш нік, підключіться через оригінальний клієнт Minecraft."
+  too-many-from-ip: "{prefix}&#fd5e5eЗ вашої адреси створено забагато акаунтів. Спробуйте за &#fd8ddb{seconds}&#fd5e5eс."
+  password-too-common: "{prefix}&#fd5e5eЦей пароль — один із найпоширеніших. Оберіть інший."
+  password-is-name: "{prefix}&#fd5e5eПароль не може збігатися з вашим ніком."
   success: "{prefix}&#91f251Реєстрацію завершено. Ласкаво просимо, &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Телепортовано на спавн &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e: спавн не задано."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e вказує на світ &#fd8ddb{world}&#fd5e5e, який не завантажено. Гравці лишилися б на місці."
+
+recovery:
+  usage: "{prefix}&#fd5e5eВикористання: /recover <код> <новий пароль>"
+  disabled: "{prefix}&#fdba5eВідновлення акаунта на цьому сервері вимкнено."
+  already-logged-in: "{prefix}&#fdba5eВи вже увійшли. Використайте /changepassword."
+  no-codes: "{prefix}&#fd5e5eУ цього акаунта не залишилося кодів відновлення. Зверніться до адміністратора."
+  wrong-code: "{prefix}&#fd5e5eЦей код відновлення недійсний."
+  success: "{prefix}&#91f251Акаунт відновлено. Пароль змінено, 2FA вимкнено. Залишилось кодів: &#fd8ddb{remaining}&#91f251."
+  none-left: "{prefix}&#fdba5eЦе був останній код. Попросіть в адміністратора новий набір."
+  issued-header: "{prefix}&#fdba5eКоди відновлення - запишіть їх зараз:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Більше їх не покажуть. Кожен працює один раз і дозволяє задати новий пароль."

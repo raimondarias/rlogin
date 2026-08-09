@@ -34,6 +34,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5ePasswords don't match."
   password-too-short: "{prefix}&#fd5e5ePassword must be at least &#fd8ddb{min}&#fd5e5e characters long."
   premium-name-protected: "{prefix}&#fd5e5eThat name belongs to a premium account. If it's yours, connect with the original Minecraft client."
+  too-many-from-ip: "{prefix}&#fd5e5eToo many accounts have been created from your address. Try again in &#fd8ddb{seconds}&#fd5e5es."
+  password-too-common: "{prefix}&#fd5e5eThat password is one of the most common there is. Pick another one."
+  password-is-name: "{prefix}&#fd5e5eYour password can't be your own name."
   success: "{prefix}&#91f251Registration complete. Welcome &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -116,3 +119,15 @@ setup:
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&lServer misconfigured\n\n&#d4d9d8This server is missing a required plugin, so nobody can connect.\n&#fdba5eTell an administrator to install PacketEvents:\n&#e39fff{link}"
   online-mode-conflict: "&#fd5e5e&lServer misconfigured\n\n&#d4d9d8This server has online-mode enabled, so players without a Minecraft account cannot connect at all.\n&#fdba5eTell an administrator to set online-mode to false."
+
+recovery:
+  usage: "{prefix}&#fd5e5eUsage: /recover <code> <new password>"
+  disabled: "{prefix}&#fdba5eAccount recovery is turned off on this server."
+  already-logged-in: "{prefix}&#fdba5eYou're already logged in. Use /changepassword instead."
+  no-codes: "{prefix}&#fd5e5eThis account has no recovery codes left. Ask an administrator."
+  wrong-code: "{prefix}&#fd5e5eThat recovery code isn't valid."
+  success: "{prefix}&#91f251Account recovered. Your password has been changed, and 2FA was turned off. &#fd8ddb{remaining}&#91f251 codes left."
+  none-left: "{prefix}&#fdba5eThat was your last code. Ask an administrator for a new set."
+  issued-header: "{prefix}&#fdba5eRecovery codes - write these down now:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8You will not be shown these again. Each one works once, and lets you set a new password if you forget it."

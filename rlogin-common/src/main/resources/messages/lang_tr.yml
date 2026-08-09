@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eŞifreler eşleşmiyor."
   password-too-short: "{prefix}&#fd5e5eŞifre en az &#fd8ddb{min}&#fd5e5e karakter olmalı."
   premium-name-protected: "{prefix}&#fd5e5eBu isim premium bir hesaba ait. Eğer senin ise, orijinal Minecraft istemcisiyle bağlan."
+  too-many-from-ip: "{prefix}&#fd5e5eAdresinden çok fazla hesap oluşturuldu. &#fd8ddb{seconds}&#fd5e5esn sonra tekrar dene."
+  password-too-common: "{prefix}&#fd5e5eBu şifre var olan en yaygın şifrelerden biri. Başka bir tane seç."
+  password-is-name: "{prefix}&#fd5e5eŞifren kendi adın olamaz."
   success: "{prefix}&#91f251Kayıt tamamlandı. Hoş geldin &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251&#fd8ddb{role}&#91f251 spawnına ışınlandın: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e için spawn ayarlanmamış."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e &#fd8ddb{world}&#fd5e5e dünyasını gösteriyor ama o dünya yüklü değil. Oyuncular oldukları yerde kalırdı."
+
+recovery:
+  usage: "{prefix}&#fd5e5eKullanım: /recover <kod> <yeni şifre>"
+  disabled: "{prefix}&#fdba5eHesap kurtarma bu sunucuda kapalı."
+  already-logged-in: "{prefix}&#fdba5eZaten giriş yaptın. /changepassword kullan."
+  no-codes: "{prefix}&#fd5e5eBu hesapta kurtarma kodu kalmadı. Bir yöneticiye başvur."
+  wrong-code: "{prefix}&#fd5e5eBu kurtarma kodu geçerli değil."
+  success: "{prefix}&#91f251Hesap kurtarıldı. Şifren değişti ve 2FA kapatıldı. &#fd8ddb{remaining}&#91f251 kod kaldı."
+  none-left: "{prefix}&#fdba5eBu son kodundu. Bir yöneticiden yeni bir set iste."
+  issued-header: "{prefix}&#fdba5eKurtarma kodları - şimdi bir yere yaz:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Bunlar bir daha gösterilmeyecek. Her biri bir kez çalışır ve yeni şifre belirlemeni sağlar."

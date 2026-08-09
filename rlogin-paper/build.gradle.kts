@@ -9,6 +9,9 @@ dependencies {
     compileOnly(libs.log4j.core)
     // Shaded (see rlogin-plugin): bStats mandates a relocated copy per plugin.
     implementation(libs.bstats.bukkit)
+
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 tasks.processResources {

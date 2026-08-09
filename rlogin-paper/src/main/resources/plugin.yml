@@ -28,6 +28,9 @@ commands:
     usage: /2fa <enable|disable|confirm> [code]
   premium:
     description: Check your account's premium status
+  recover:
+    description: Recover your account with a one-time code
+    usage: /recover <code> <new password>
   rlogin:
     description: General rLogin command (includes all of the above plus administration)
     aliases: [rl]

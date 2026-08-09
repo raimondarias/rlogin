@@ -11,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -42,6 +44,8 @@ public abstract class AbstractSqlStorage implements Storage {
 
     protected abstract String createSessionsTableSql();
 
+    protected abstract String createRecoveryCodesTableSql();
+
     @Override
     public CompletableFuture<Void> init() {
         return CompletableFuture.runAsync(() -> {
@@ -49,9 +53,10 @@ public abstract class AbstractSqlStorage implements Storage {
             try (Connection c = dataSource.getConnection(); Statement st = c.createStatement()) {
                 st.execute(createAccountsTableSql());
                 st.execute(createSessionsTableSql());
+                st.execute(createRecoveryCodesTableSql());
                 st.execute("CREATE INDEX IF NOT EXISTS idx_rlogin_accounts_username ON rlogin_accounts (username)");
             } catch (SQLException e) {
-                throw new RuntimeException("No se pudo inicializar la base de datos de rLogin", e);
+                throw new RuntimeException("Could not initialise rLogin's database", e);
             }
         }, executor);
     }
@@ -168,9 +173,14 @@ public abstract class AbstractSqlStorage implements Storage {
     public CompletableFuture<Void> delete(UUID uuid) {
         return CompletableFuture.runAsync(() -> {
             try (Connection c = dataSource.getConnection();
-                 PreparedStatement ps = c.prepareStatement("DELETE FROM rlogin_accounts WHERE uuid = ?")) {
+                 PreparedStatement ps = c.prepareStatement("DELETE FROM rlogin_accounts WHERE uuid = ?");
+                 PreparedStatement codes = c.prepareStatement("DELETE FROM rlogin_recovery_codes WHERE uuid = ?")) {
                 ps.setString(1, uuid.toString());
                 ps.executeUpdate();
+                // Nothing links the tables, so the codes would outlive the account and
+                // still open a door into whatever is registered under that UUID next.
+                codes.setString(1, uuid.toString());
+                codes.executeUpdate();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -213,6 +223,68 @@ public abstract class AbstractSqlStorage implements Storage {
                 try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();
                 }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> replaceRecoveryCodes(UUID uuid, List<String> hashes) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection c = dataSource.getConnection()) {
+                // Replaced as a set: issuing a new batch has to retire the old one, or a
+                // player who regenerates their codes leaves the previous list still valid.
+                try (PreparedStatement clear =
+                             c.prepareStatement("DELETE FROM rlogin_recovery_codes WHERE uuid = ?")) {
+                    clear.setString(1, uuid.toString());
+                    clear.executeUpdate();
+                }
+                try (PreparedStatement ps = c.prepareStatement(
+                        "INSERT INTO rlogin_recovery_codes (uuid, code_hash, used_at) VALUES (?, ?, NULL)")) {
+                    for (String hash : hashes) {
+                        ps.setString(1, uuid.toString());
+                        ps.setString(2, hash);
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<List<String>> unusedRecoveryCodeHashes(UUID uuid) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "SELECT code_hash FROM rlogin_recovery_codes WHERE uuid = ? AND used_at IS NULL")) {
+                ps.setString(1, uuid.toString());
+                List<String> out = new ArrayList<>();
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        out.add(rs.getString("code_hash"));
+                    }
+                }
+                return out;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> consumeRecoveryCode(UUID uuid, String hash) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "UPDATE rlogin_recovery_codes SET used_at = ? WHERE uuid = ? AND code_hash = ?")) {
+                ps.setLong(1, Instant.now().toEpochMilli());
+                ps.setString(2, uuid.toString());
+                ps.setString(3, hash);
+                ps.executeUpdate();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

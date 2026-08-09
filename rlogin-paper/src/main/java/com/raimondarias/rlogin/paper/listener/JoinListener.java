@@ -159,6 +159,7 @@ public final class JoinListener implements Listener {
         }
         if (player.hasPermission("rlogin.bypass")) {
             plugin.authSessions().markAuthenticated(uuid, AuthReason.BYPASS_PERMISSION);
+            plugin.fireAuthenticated(player, AuthReason.BYPASS_PERMISSION, true);
             return;
         }
         plugin.limboService().freeze(player);
@@ -183,12 +184,21 @@ public final class JoinListener implements Listener {
         AuthReason reason = plugin.authSessions().reasonFor(uuid);
         if (plugin.topology() != ServerTopology.BEHIND_PROXY) {
             announceAutoLogin(player, reason);
+            plugin.fireAuthenticated(player, reason, true);
             return;
         }
         plugin.scheduler().runForPlayerLater(player, 20L, () -> {
-            if (player.isOnline() && !plugin.authSessions().wasAlreadyGreeted(uuid)) {
+            if (!player.isOnline()) {
+                return;
+            }
+            boolean firstServer = !plugin.authSessions().wasAlreadyGreeted(uuid);
+            if (firstServer) {
                 announceAutoLogin(player, reason);
             }
+            // Fired on every backend, unlike the greeting: a listener handing out a
+            // scoreboard needs to run wherever the player lands, and the flag lets it
+            // tell a fresh arrival from a hop.
+            plugin.fireAuthenticated(player, reason, firstServer);
         });
     }
 

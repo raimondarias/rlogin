@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eLe password non coincidono."
   password-too-short: "{prefix}&#fd5e5eLa password deve contenere almeno &#fd8ddb{min}&#fd5e5e caratteri."
   premium-name-protected: "{prefix}&#fd5e5eQuesto nome appartiene a un account premium. Se è tuo, connettiti con il client Minecraft originale."
+  too-many-from-ip: "{prefix}&#fd5e5eTroppi account creati dal tuo indirizzo. Riprova tra &#fd8ddb{seconds}&#fd5e5es."
+  password-too-common: "{prefix}&#fd5e5eQuella password è tra le più comuni che esistano. Scegline un'altra."
+  password-is-name: "{prefix}&#fd5e5eLa tua password non può essere il tuo stesso nome."
   success: "{prefix}&#91f251Registrazione completata. Benvenuto &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Teletrasportato allo spawn di &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e non ha uno spawn impostato."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e punta al mondo &#fd8ddb{world}&#fd5e5e, che non è caricato. I giocatori resterebbero dove sono."
+
+recovery:
+  usage: "{prefix}&#fd5e5eUso: /recover <codice> <nuova password>"
+  disabled: "{prefix}&#fdba5eIl recupero degli account è disattivato su questo server."
+  already-logged-in: "{prefix}&#fdba5eHai già effettuato l'accesso. Usa /changepassword."
+  no-codes: "{prefix}&#fd5e5eQuesto account non ha più codici di recupero. Parla con un amministratore."
+  wrong-code: "{prefix}&#fd5e5eQuel codice di recupero non è valido."
+  success: "{prefix}&#91f251Account recuperato. La password è stata cambiata e la 2FA disattivata. Restano &#fd8ddb{remaining}&#91f251 codici."
+  none-left: "{prefix}&#fdba5eEra il tuo ultimo codice. Chiedi a un amministratore una nuova serie."
+  issued-header: "{prefix}&#fdba5eCodici di recupero - segnateli adesso:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Non ti verranno mostrati di nuovo. Ognuno vale una volta e ti permette di impostare una nuova password."

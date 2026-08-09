@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eكلمتا المرور غير متطابقتين."
   password-too-short: "{prefix}&#fd5e5eيجب أن تتكون كلمة المرور من &#fd8ddb{min}&#fd5e5e حرفًا على الأقل."
   premium-name-protected: "{prefix}&#fd5e5eهذا الاسم يخص حسابًا مميزًا (premium). إذا كان اسمك، فاتصل باستخدام عميل Minecraft الأصلي."
+  too-many-from-ip: "{prefix}&#fd5e5eتم إنشاء حسابات كثيرة جداً من عنوانك. حاول بعد &#fd8ddb{seconds}&#fd5e5e ثانية."
+  password-too-common: "{prefix}&#fd5e5eكلمة المرور هذه من أكثر الكلمات شيوعاً. اختر غيرها."
+  password-is-name: "{prefix}&#fd5e5eلا يمكن أن تكون كلمة مرورك هي اسمك نفسه."
   success: "{prefix}&#91f251اكتمل التسجيل. مرحبًا &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251تم النقل إلى نقطة ظهور &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e ليس لها نقطة ظهور."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e تشير إلى العالم &#fd8ddb{world}&#fd5e5e غير المحمّل. سيبقى اللاعبون مكانهم."
+
+recovery:
+  usage: "{prefix}&#fd5e5eالاستخدام: /recover <الرمز> <كلمة المرور الجديدة>"
+  disabled: "{prefix}&#fdba5eاستعادة الحساب معطّلة في هذا الخادم."
+  already-logged-in: "{prefix}&#fdba5eأنت مسجّل الدخول بالفعل. استخدم /changepassword."
+  no-codes: "{prefix}&#fd5e5eلم يتبقَّ لهذا الحساب رموز استعادة. راجع أحد المسؤولين."
+  wrong-code: "{prefix}&#fd5e5eرمز الاستعادة هذا غير صالح."
+  success: "{prefix}&#91f251تمت استعادة الحساب. غُيّرت كلمة المرور وأُوقف التحقق بخطوتين. تبقّى &#fd8ddb{remaining}&#91f251 رموز."
+  none-left: "{prefix}&#fdba5eكان ذلك آخر رمز لديك. اطلب من المسؤول مجموعة جديدة."
+  issued-header: "{prefix}&#fdba5eرموز الاستعادة - دوّنها الآن:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8لن تُعرض مرة أخرى. كل رمز يعمل مرة واحدة ويتيح لك تعيين كلمة مرور جديدة إن نسيتها."

@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eHasła się nie zgadzają."
   password-too-short: "{prefix}&#fd5e5eHasło musi mieć co najmniej &#fd8ddb{min}&#fd5e5e znaków."
   premium-name-protected: "{prefix}&#fd5e5eTen nick należy do konta premium. Jeśli to twój nick, połącz się za pomocą oryginalnego klienta Minecraft."
+  too-many-from-ip: "{prefix}&#fd5e5eZ twojego adresu utworzono zbyt wiele kont. Spróbuj za &#fd8ddb{seconds}&#fd5e5es."
+  password-too-common: "{prefix}&#fd5e5eTo hasło jest jednym z najpopularniejszych, jakie istnieją. Wybierz inne."
+  password-is-name: "{prefix}&#fd5e5eTwoje hasło nie może być twoją własną nazwą."
   success: "{prefix}&#91f251Rejestracja zakończona. Witaj &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Teleportowano na spawn &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e nie ma ustawionego spawnu."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e wskazuje na świat &#fd8ddb{world}&#fd5e5e, który nie jest załadowany. Gracze zostaliby tam, gdzie są."
+
+recovery:
+  usage: "{prefix}&#fd5e5eUżycie: /recover <kod> <nowe hasło>"
+  disabled: "{prefix}&#fdba5eOdzyskiwanie konta jest wyłączone na tym serwerze."
+  already-logged-in: "{prefix}&#fdba5eJesteś już zalogowany. Użyj /changepassword."
+  no-codes: "{prefix}&#fd5e5eTo konto nie ma już kodów odzyskiwania. Zwróć się do administratora."
+  wrong-code: "{prefix}&#fd5e5eTen kod odzyskiwania jest nieprawidłowy."
+  success: "{prefix}&#91f251Konto odzyskane. Hasło zostało zmienione, a 2FA wyłączone. Pozostało &#fd8ddb{remaining}&#91f251 kodów."
+  none-left: "{prefix}&#fdba5eTo był twój ostatni kod. Poproś administratora o nowy zestaw."
+  issued-header: "{prefix}&#fdba5eKody odzyskiwania - zapisz je teraz:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Nie zostaną pokazane ponownie. Każdy działa raz i pozwala ustawić nowe hasło."

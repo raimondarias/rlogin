@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eWachtwoorden komen niet overeen."
   password-too-short: "{prefix}&#fd5e5eWachtwoord moet minstens &#fd8ddb{min}&#fd5e5e tekens lang zijn."
   premium-name-protected: "{prefix}&#fd5e5eDeze naam behoort tot een premium account. Als het jouw naam is, verbind dan met de originele Minecraft-client."
+  too-many-from-ip: "{prefix}&#fd5e5eEr zijn te veel accounts aangemaakt vanaf jouw adres. Probeer het over &#fd8ddb{seconds}&#fd5e5es opnieuw."
+  password-too-common: "{prefix}&#fd5e5eDat wachtwoord is een van de meest voorkomende die er zijn. Kies een ander."
+  password-is-name: "{prefix}&#fd5e5eJe wachtwoord mag niet je eigen naam zijn."
   success: "{prefix}&#91f251Registratie voltooid. Welkom &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Geteleporteerd naar de &#fd8ddb{role}&#91f251-spawn: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e heeft geen spawn ingesteld."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e wijst naar wereld &#fd8ddb{world}&#fd5e5e, die niet geladen is. Spelers zouden blijven waar ze zijn."
+
+recovery:
+  usage: "{prefix}&#fd5e5eGebruik: /recover <code> <nieuw wachtwoord>"
+  disabled: "{prefix}&#fdba5eAccountherstel staat uit op deze server."
+  already-logged-in: "{prefix}&#fdba5eJe bent al ingelogd. Gebruik /changepassword."
+  no-codes: "{prefix}&#fd5e5eDit account heeft geen herstelcodes meer. Vraag een beheerder."
+  wrong-code: "{prefix}&#fd5e5eDie herstelcode is niet geldig."
+  success: "{prefix}&#91f251Account hersteld. Je wachtwoord is gewijzigd en 2FA is uitgezet. Nog &#fd8ddb{remaining}&#91f251 codes over."
+  none-left: "{prefix}&#fdba5eDat was je laatste code. Vraag een beheerder om een nieuwe set."
+  issued-header: "{prefix}&#fdba5eHerstelcodes - schrijf ze nu op:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Je krijgt ze niet nog een keer te zien. Elke code werkt één keer en laat je een nieuw wachtwoord instellen."

@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eパスワードが一致しません。"
   password-too-short: "{prefix}&#fd5e5eパスワードは&#fd8ddb{min}&#fd5e5e文字以上である必要があります。"
   premium-name-protected: "{prefix}&#fd5e5eその名前はプレミアムアカウントに属しています。あなたのものであれば、正規のMinecraftクライアントで接続してください。"
+  too-many-from-ip: "{prefix}&#fd5e5eあなたのアドレスから作成されたアカウントが多すぎます。&#fd8ddb{seconds}&#fd5e5e秒後にお試しください。"
+  password-too-common: "{prefix}&#fd5e5eそのパスワードは最もよく使われるものの一つです。別のものを選んでください。"
+  password-is-name: "{prefix}&#fd5e5eパスワードに自分の名前は使えません。"
   success: "{prefix}&#91f251登録が完了しました。ようこそ &#fd8ddb{player}&#91f251！"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251&#fd8ddb{role}&#91f251 のスポーンにテレポートしました: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e にスポーンが設定されていません。"
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e はワールド &#fd8ddb{world}&#fd5e5e を指していますが、読み込まれていません。プレイヤーはその場に留まります。"
+
+recovery:
+  usage: "{prefix}&#fd5e5e使い方: /recover <コード> <新しいパスワード>"
+  disabled: "{prefix}&#fdba5eこのサーバーではアカウント復旧が無効になっています。"
+  already-logged-in: "{prefix}&#fdba5eすでにログインしています。/changepassword を使ってください。"
+  no-codes: "{prefix}&#fd5e5eこのアカウントには復旧コードが残っていません。管理者に連絡してください。"
+  wrong-code: "{prefix}&#fd5e5eその復旧コードは無効です。"
+  success: "{prefix}&#91f251アカウントを復旧しました。パスワードを変更し、2FA を解除しました。残り &#fd8ddb{remaining}&#91f251 個。"
+  none-left: "{prefix}&#fdba5eそれが最後のコードでした。管理者に新しいコードを依頼してください。"
+  issued-header: "{prefix}&#fdba5e復旧コード - 今すぐ控えてください:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8二度と表示されません。それぞれ一度だけ使え、パスワードを忘れたときに再設定できます。"

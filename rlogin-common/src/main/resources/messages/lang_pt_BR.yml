@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eAs senhas não coincidem."
   password-too-short: "{prefix}&#fd5e5eA senha deve ter pelo menos &#fd8ddb{min}&#fd5e5e caracteres."
   premium-name-protected: "{prefix}&#fd5e5eEsse nome pertence a uma conta premium. Se for sua, conecte-se com o cliente original do Minecraft."
+  too-many-from-ip: "{prefix}&#fd5e5eMuitas contas foram criadas a partir do seu endereço. Tente em &#fd8ddb{seconds}&#fd5e5es."
+  password-too-common: "{prefix}&#fd5e5eEssa senha é uma das mais comuns que existem. Escolha outra."
+  password-is-name: "{prefix}&#fd5e5eSua senha não pode ser o seu próprio nome."
   success: "{prefix}&#91f251Registro concluído. Bem-vindo &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Teletransportado para o spawn de &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e não tem spawn definido."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e aponta para o mundo &#fd8ddb{world}&#fd5e5e, que não está carregado. Os jogadores ficariam onde estão."
+
+recovery:
+  usage: "{prefix}&#fd5e5eUso: /recover <código> <nova senha>"
+  disabled: "{prefix}&#fdba5eA recuperação de contas está desativada neste servidor."
+  already-logged-in: "{prefix}&#fdba5eVocê já entrou. Use /changepassword."
+  no-codes: "{prefix}&#fd5e5eEsta conta não tem mais códigos de recuperação. Fale com um administrador."
+  wrong-code: "{prefix}&#fd5e5eEsse código de recuperação não é válido."
+  success: "{prefix}&#91f251Conta recuperada. Sua senha foi alterada e o 2FA foi desativado. Restam &#fd8ddb{remaining}&#91f251 códigos."
+  none-left: "{prefix}&#fdba5eEsse era seu último código. Peça um novo conjunto a um administrador."
+  issued-header: "{prefix}&#fdba5eCódigos de recuperação - anote agora:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Eles não serão mostrados de novo. Cada um serve uma vez e permite definir uma nova senha se você esquecê-la."

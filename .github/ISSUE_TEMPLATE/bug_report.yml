@@ -1,0 +1,60 @@
+name: Bug report
+description: Something isn't behaving the way it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Most reports are answered by the startup line and a debug log, so the
+        two fields asking for them are the ones worth filling in carefully.
+
+  - type: textarea
+    id: startup
+    attributes:
+      label: The startup line rLogin prints
+      description: The whole line, from `rLogin ready.` onwards. It reports your setup, database, auth-mode and whether Floodgate was found.
+      placeholder: "[rLogin] rLogin ready. Folia: false | Database: sqlite | Setup: standalone-offline | Auth mode: auto | ..."
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happens
+    attributes:
+      label: What happens, and what you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to reproduce it
+      placeholder: |
+        1. Connect as a non-premium account
+        2. Run /register hunter2 hunter2
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: debug
+    attributes:
+      label: Console output with general.debug set to true
+      description: Set `general.debug: true`, run `/rlogin reload`, reconnect, and paste what appears. It explains why each connection was let in, asked for a password, or refused.
+      render: text
+
+  - type: input
+    id: version
+    attributes:
+      label: rLogin version
+      placeholder: "1.1.2"
+    validations:
+      required: true
+
+  - type: input
+    id: server
+    attributes:
+      label: Server software and version
+      placeholder: "Paper 1.21.4, or Velocity 3.4.0"
+    validations:
+      required: true

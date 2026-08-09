@@ -34,6 +34,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eLas contraseñas no coinciden."
   password-too-short: "{prefix}&#fd5e5eLa contraseña debe tener al menos &#fd8ddb{min}&#fd5e5e caracteres."
   premium-name-protected: "{prefix}&#fd5e5eEse nombre pertenece a una cuenta premium. Si es tuya, conéctate desde el cliente original de Minecraft."
+  too-many-from-ip: "{prefix}&#fd5e5eSe han creado demasiadas cuentas desde tu dirección. Inténtalo en &#fd8ddb{seconds}&#fd5e5es."
+  password-too-common: "{prefix}&#fd5e5eEsa contraseña es de las más comunes que hay. Elige otra."
+  password-is-name: "{prefix}&#fd5e5eTu contraseña no puede ser tu propio nombre."
   success: "{prefix}&#91f251Registro completado. ¡Bienvenido &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -115,3 +118,15 @@ spawn:
   teleported: "{prefix}&#91f251Teletransportado al spawn de &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e no tiene spawn definido."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e apunta al mundo &#fd8ddb{world}&#fd5e5e, que no está cargado. Los jugadores se quedarían donde están."
+
+recovery:
+  usage: "{prefix}&#fd5e5eUso: /recover <código> <nueva contraseña>"
+  disabled: "{prefix}&#fdba5eLa recuperación de cuentas está desactivada en este servidor."
+  already-logged-in: "{prefix}&#fdba5eYa has iniciado sesión. Usa /changepassword."
+  no-codes: "{prefix}&#fd5e5eA esta cuenta no le quedan códigos de recuperación. Habla con un administrador."
+  wrong-code: "{prefix}&#fd5e5eEse código de recuperación no es válido."
+  success: "{prefix}&#91f251Cuenta recuperada. Tu contraseña ha cambiado y el 2FA se ha desactivado. Te quedan &#fd8ddb{remaining}&#91f251 códigos."
+  none-left: "{prefix}&#fdba5eEse era tu último código. Pídele a un administrador un juego nuevo."
+  issued-header: "{prefix}&#fdba5eCódigos de recuperación - apúntalos ahora:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8No se te volverán a mostrar. Cada uno sirve una vez y te permite poner una contraseña nueva si la olvidas."

@@ -3,6 +3,7 @@ package com.raimondarias.rlogin.paper;
 import com.raimondarias.rlogin.api.db.Storage;
 import com.raimondarias.rlogin.common.auth.AccountService;
 import com.raimondarias.rlogin.common.auth.PremiumChecker;
+import com.raimondarias.rlogin.common.auth.RecoveryService;
 import com.raimondarias.rlogin.common.auth.SessionService;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.raimondarias.rlogin.common.db.StorageFactory;
@@ -19,6 +20,9 @@ import com.raimondarias.rlogin.paper.command.LoginCommand;
 import com.raimondarias.rlogin.paper.command.LogoutCommand;
 import com.raimondarias.rlogin.paper.command.PremiumInfoCommand;
 import com.raimondarias.rlogin.paper.command.RLoginAdminCommand;
+import com.raimondarias.rlogin.paper.api.RLoginAuthenticateEvent;
+import com.raimondarias.rlogin.paper.api.RLoginRegisterEvent;
+import com.raimondarias.rlogin.paper.command.RecoverCommand;
 import com.raimondarias.rlogin.paper.command.RegisterCommand;
 import com.raimondarias.rlogin.paper.command.TotpCommand;
 import com.raimondarias.rlogin.paper.hybrid.HybridAuthListener;
@@ -57,6 +61,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
     private PremiumChecker premiumChecker;
     private AccountService accountService;
     private SessionService sessionService;
+    private RecoveryService recoveryService;
     private ImporterRegistry importerRegistry;
     private MigrationService migrationService;
     private FloodgateSupport floodgate;
@@ -180,6 +185,9 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         PremiumNameGuard premiumNameGuard = new PremiumNameGuard(config, premiumChecker);
         this.accountService = new AccountService(storage, config, premiumNameGuard);
         this.sessionService = new SessionService(storage, config);
+        this.recoveryService = new RecoveryService(storage, config,
+                new com.raimondarias.rlogin.common.security.PasswordHasher(config.bcryptCost()),
+                new com.raimondarias.rlogin.common.security.PasswordPolicy(config));
         this.importerRegistry = new ImporterRegistry();
         this.migrationService = new MigrationService(storage);
         this.floodgate = new FloodgateSupport();
@@ -196,6 +204,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         getCommand("logout").setExecutor(new LogoutCommand(this));
         getCommand("2fa").setExecutor(new TotpCommand(this));
         getCommand("premium").setExecutor(new PremiumInfoCommand(this));
+        getCommand("recover").setExecutor(new RecoverCommand(this));
 
         RLoginAdminCommand adminCommand = new RLoginAdminCommand(this);
         getCommand("rlogin").setExecutor(adminCommand);
@@ -331,6 +340,21 @@ public final class RLoginPaperPlugin extends JavaPlugin {
 
     public SessionService sessionService() {
         return sessionService;
+    }
+
+    /**
+     * Announces to other plugins that this player is authenticated and can
+     * finally be given things. Always called on the player's own thread, so
+     * listeners may touch the world -- on Folia too.
+     */
+    public void fireAuthenticated(Player player, com.raimondarias.rlogin.api.AuthReason reason,
+                                  boolean firstServerOfSession) {
+        getServer().getPluginManager().callEvent(
+                new RLoginAuthenticateEvent(player, reason, firstServerOfSession));
+    }
+
+    public RecoveryService recoveryService() {
+        return recoveryService;
     }
 
     public PremiumChecker premiumChecker() {

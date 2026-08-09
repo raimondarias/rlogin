@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or setup help
+    url: https://discord.gg/5tuSrNRk3a
+    about: Faster than an issue for "is this normal?" and configuration questions.
+  - name: Documentation
+    url: https://pyrelight.mintlify.app/rlogin/introduction
+    about: Every setting, all commands and permissions, and troubleshooting.
+  - name: Security vulnerability
+    url: https://github.com/pyrelightmc/rlogin/security/advisories/new
+    about: Report privately, never as a public issue.

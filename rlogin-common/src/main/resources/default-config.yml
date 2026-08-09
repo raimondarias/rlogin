@@ -130,6 +130,14 @@ security:
     enabled: true
     # The name players see for this server inside their authenticator app.
     issuer: rLogin
+  # Caps how many accounts one address may create. The bruteforce limit above
+  # guards the other direction -- guessing a password that already exists --
+  # and neither covers the other. Without this, one address can create
+  # accounts as fast as it can send packets, claiming every name on the server
+  # and growing the database without bound. Set max-per-ip: 0 to disable.
+  registration:
+    max-per-ip: 3
+    window-minutes: 60
   password:
     min-length: 5
     max-length: 30
@@ -137,6 +145,18 @@ security:
     # to crack. Each +1 doubles the time. 10 is a good balance; going much
     # higher will make logins noticeably slow on a weak CPU.
     bcrypt-cost: 10
+    # Refuses the passwords that sit at the top of every breach list, and a
+    # password that is just the player's own name. Costs them one retry;
+    # accepting one costs them the account, and people reuse passwords.
+    reject-common: true
+  # One-time codes shown once at registration. A player who forgets their
+  # password -- or loses the phone with their 2FA on it -- spends one with
+  # /recover and sets a new password, instead of needing an admin. Without
+  # them the only fix is deleting the account, which hands the name to
+  # whoever registers it next.
+  recovery:
+    enabled: true
+    codes: 5
 
 limbo:
   # Until they log in, players are frozen where they are (no separate limbo
@@ -148,6 +168,7 @@ limbo:
     - /register
     - /reg
     - /2fa
+    - /recover
   # How often to remind them to log in, in seconds.
   reminder-interval-seconds: 5
   # Kick a player who never logs in, after this many seconds. A connection

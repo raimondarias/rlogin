@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5e两次输入的密码不一致。"
   password-too-short: "{prefix}&#fd5e5e密码长度至少需要 &#fd8ddb{min} &#fd5e5e个字符。"
   premium-name-protected: "{prefix}&#fd5e5e该用户名属于正版账号。如果这是你的用户名，请使用原版Minecraft客户端连接。"
+  too-many-from-ip: "{prefix}&#fd5e5e你的地址创建了太多账户。请在 &#fd8ddb{seconds}&#fd5e5e 秒后重试。"
+  password-too-common: "{prefix}&#fd5e5e该密码是最常见的密码之一，请换一个。"
+  password-is-name: "{prefix}&#fd5e5e密码不能是你自己的名字。"
   success: "{prefix}&#91f251注册完成。欢迎 &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251已传送到 &#fd8ddb{role}&#91f251 出生点：&#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e 没有设置出生点。"
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e 指向世界 &#fd8ddb{world}&#fd5e5e，但该世界未加载。玩家将停留在原地。"
+
+recovery:
+  usage: "{prefix}&#fd5e5e用法：/recover <代码> <新密码>"
+  disabled: "{prefix}&#fdba5e本服务器已关闭账户找回功能。"
+  already-logged-in: "{prefix}&#fdba5e你已经登录了，请使用 /changepassword。"
+  no-codes: "{prefix}&#fd5e5e该账户已没有剩余的找回代码，请联系管理员。"
+  wrong-code: "{prefix}&#fd5e5e该找回代码无效。"
+  success: "{prefix}&#91f251账户已找回。密码已更改，两步验证已关闭。剩余 &#fd8ddb{remaining}&#91f251 个代码。"
+  none-left: "{prefix}&#fdba5e那是你最后一个代码，请向管理员申请一组新的。"
+  issued-header: "{prefix}&#fdba5e找回代码 - 请立刻抄下来："
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8这些不会再显示。每个只能用一次，忘记密码时可用来设置新密码。"

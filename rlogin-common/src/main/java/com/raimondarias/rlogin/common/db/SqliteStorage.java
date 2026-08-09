@@ -63,4 +63,16 @@ public final class SqliteStorage extends AbstractSqlStorage {
                 )
                 """;
     }
+
+    @Override
+    protected String createRecoveryCodesTableSql() {
+        return """
+                CREATE TABLE IF NOT EXISTS rlogin_recovery_codes (
+                    uuid VARCHAR(36) NOT NULL,
+                    code_hash VARCHAR(255) NOT NULL,
+                    used_at BIGINT,
+                    PRIMARY KEY (uuid, code_hash)
+                )
+                """;
+    }
 }

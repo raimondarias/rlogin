@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eDie Passwörter stimmen nicht überein."
   password-too-short: "{prefix}&#fd5e5eDas Passwort muss mindestens &#fd8ddb{min}&#fd5e5e Zeichen lang sein."
   premium-name-protected: "{prefix}&#fd5e5eDieser Name gehört zu einem Premium-Konto. Falls er dir gehört, verbinde dich mit dem originalen Minecraft-Client."
+  too-many-from-ip: "{prefix}&#fd5e5eVon deiner Adresse wurden zu viele Konten erstellt. Versuch es in &#fd8ddb{seconds}&#fd5e5es erneut."
+  password-too-common: "{prefix}&#fd5e5eDieses Passwort gehört zu den häufigsten überhaupt. Wähle ein anderes."
+  password-is-name: "{prefix}&#fd5e5eDein Passwort darf nicht dein eigener Name sein."
   success: "{prefix}&#91f251Registrierung abgeschlossen. Willkommen &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Zum &#fd8ddb{role}&#91f251-Spawn teleportiert: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e hat keinen Spawn gesetzt."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e zeigt auf Welt &#fd8ddb{world}&#fd5e5e, die nicht geladen ist. Spieler würden bleiben, wo sie sind."
+
+recovery:
+  usage: "{prefix}&#fd5e5eVerwendung: /recover <Code> <neues Passwort>"
+  disabled: "{prefix}&#fdba5eDie Kontowiederherstellung ist auf diesem Server deaktiviert."
+  already-logged-in: "{prefix}&#fdba5eDu bist bereits angemeldet. Nutze /changepassword."
+  no-codes: "{prefix}&#fd5e5eDieses Konto hat keine Wiederherstellungscodes mehr. Wende dich an einen Administrator."
+  wrong-code: "{prefix}&#fd5e5eDieser Wiederherstellungscode ist ungültig."
+  success: "{prefix}&#91f251Konto wiederhergestellt. Dein Passwort wurde geändert und 2FA deaktiviert. Noch &#fd8ddb{remaining}&#91f251 Codes übrig."
+  none-left: "{prefix}&#fdba5eDas war dein letzter Code. Bitte einen Administrator um einen neuen Satz."
+  issued-header: "{prefix}&#fdba5eWiederherstellungscodes - schreib sie dir jetzt auf:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Sie werden dir nicht noch einmal gezeigt. Jeder funktioniert einmal und lässt dich ein neues Passwort setzen."

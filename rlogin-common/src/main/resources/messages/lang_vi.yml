@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eMật khẩu không khớp."
   password-too-short: "{prefix}&#fd5e5eMật khẩu phải có ít nhất &#fd8ddb{min}&#fd5e5e ký tự."
   premium-name-protected: "{prefix}&#fd5e5eTên này thuộc về một tài khoản premium. Nếu đó là của bạn, hãy kết nối bằng client Minecraft gốc."
+  too-many-from-ip: "{prefix}&#fd5e5eQuá nhiều tài khoản đã được tạo từ địa chỉ của bạn. Thử lại sau &#fd8ddb{seconds}&#fd5e5es."
+  password-too-common: "{prefix}&#fd5e5eMật khẩu đó là một trong những mật khẩu phổ biến nhất. Hãy chọn cái khác."
+  password-is-name: "{prefix}&#fd5e5eMật khẩu của bạn không thể là chính tên của bạn."
   success: "{prefix}&#91f251Đăng ký hoàn tất. Chào mừng &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Đã dịch chuyển tới điểm hồi sinh &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e chưa có điểm hồi sinh."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e trỏ tới thế giới &#fd8ddb{world}&#fd5e5e chưa được tải. Người chơi sẽ ở nguyên chỗ cũ."
+
+recovery:
+  usage: "{prefix}&#fd5e5eCách dùng: /recover <mã> <mật khẩu mới>"
+  disabled: "{prefix}&#fdba5eKhôi phục tài khoản đang tắt trên máy chủ này."
+  already-logged-in: "{prefix}&#fdba5eBạn đã đăng nhập rồi. Hãy dùng /changepassword."
+  no-codes: "{prefix}&#fd5e5eTài khoản này không còn mã khôi phục. Hãy liên hệ quản trị viên."
+  wrong-code: "{prefix}&#fd5e5eMã khôi phục đó không hợp lệ."
+  success: "{prefix}&#91f251Đã khôi phục tài khoản. Mật khẩu đã đổi và 2FA đã tắt. Còn &#fd8ddb{remaining}&#91f251 mã."
+  none-left: "{prefix}&#fdba5eĐó là mã cuối cùng của bạn. Hãy xin quản trị viên một bộ mới."
+  issued-header: "{prefix}&#fdba5eMã khôi phục - hãy ghi lại ngay:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Chúng sẽ không hiện lại. Mỗi mã dùng một lần và cho phép đặt mật khẩu mới nếu bạn quên."

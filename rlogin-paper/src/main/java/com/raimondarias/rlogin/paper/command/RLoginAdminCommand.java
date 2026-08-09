@@ -126,6 +126,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
         plugin.accountService().forceLogin(target.getUniqueId(), LoginCommand.ipOf(target)).thenAccept(account ->
                 plugin.scheduler().runForPlayer(target, () -> {
                     plugin.authSessions().markAuthenticated(target.getUniqueId(), AuthReason.FORCED_BY_ADMIN);
+                    plugin.fireAuthenticated(target, AuthReason.FORCED_BY_ADMIN, true);
                     target.sendMessage(plugin.messages().get("login.success", Map.of("player", target.getName())));
                     sender.sendMessage(plugin.messages().get("admin.force-logged-in", Map.of("player", target.getName())));
                     plugin.notifyProxyAuthenticated(target);

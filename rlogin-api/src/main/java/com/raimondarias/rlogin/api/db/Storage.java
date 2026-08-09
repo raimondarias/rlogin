@@ -37,6 +37,20 @@ public interface Storage extends AutoCloseable {
 
     CompletableFuture<Void> clearSession(UUID uuid);
 
+    /**
+     * Replaces this account's recovery codes with the given bcrypt hashes.
+     * The plaintext codes are shown to the player once and never stored:
+     * a recovery code that can be read out of the database is a password
+     * that bypasses the password.
+     */
+    CompletableFuture<Void> replaceRecoveryCodes(UUID uuid, java.util.List<String> hashes);
+
+    /** Every unused code hash for this account, for verification. */
+    CompletableFuture<java.util.List<String>> unusedRecoveryCodeHashes(UUID uuid);
+
+    /** Marks one code hash used. Single-use is the whole point of a recovery code. */
+    CompletableFuture<Void> consumeRecoveryCode(UUID uuid, String hash);
+
     CompletableFuture<Void> purgeExpiredSessions(Instant now);
 
     @Override

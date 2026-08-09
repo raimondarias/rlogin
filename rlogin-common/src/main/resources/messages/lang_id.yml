@@ -29,6 +29,9 @@ register:
   passwords-dont-match: "{prefix}&#fd5e5eKata sandi tidak cocok."
   password-too-short: "{prefix}&#fd5e5eKata sandi harus minimal &#fd8ddb{min}&#fd5e5e karakter."
   premium-name-protected: "{prefix}&#fd5e5eNama ini milik akun premium. Jika ini milikmu, sambungkan dengan client Minecraft asli."
+  too-many-from-ip: "{prefix}&#fd5e5eTerlalu banyak akun dibuat dari alamatmu. Coba lagi dalam &#fd8ddb{seconds}&#fd5e5es."
+  password-too-common: "{prefix}&#fd5e5eKata sandi itu termasuk yang paling umum. Pilih yang lain."
+  password-is-name: "{prefix}&#fd5e5eKata sandimu tidak boleh berupa namamu sendiri."
   success: "{prefix}&#91f251Pendaftaran selesai. Selamat datang &#fd8ddb{player}&#91f251!"
 
 logout:
@@ -110,3 +113,15 @@ spawn:
   teleported: "{prefix}&#91f251Diteleportasi ke spawn &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
   teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e belum punya spawn."
   teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e menunjuk ke dunia &#fd8ddb{world}&#fd5e5e yang belum dimuat. Pemain akan tetap di tempatnya."
+
+recovery:
+  usage: "{prefix}&#fd5e5ePenggunaan: /recover <kode> <kata sandi baru>"
+  disabled: "{prefix}&#fdba5ePemulihan akun dimatikan di server ini."
+  already-logged-in: "{prefix}&#fdba5eKamu sudah masuk. Gunakan /changepassword."
+  no-codes: "{prefix}&#fd5e5eAkun ini tidak punya sisa kode pemulihan. Hubungi administrator."
+  wrong-code: "{prefix}&#fd5e5eKode pemulihan itu tidak valid."
+  success: "{prefix}&#91f251Akun dipulihkan. Kata sandi diubah dan 2FA dimatikan. Sisa &#fd8ddb{remaining}&#91f251 kode."
+  none-left: "{prefix}&#fdba5eItu kode terakhirmu. Minta administrator satu set baru."
+  issued-header: "{prefix}&#fdba5eKode pemulihan - catat sekarang:"
+  issued-entry: "&#fd8ddb  {code}"
+  issued-footer: "{prefix}&#d4d9d8Ini tidak akan ditampilkan lagi. Tiap kode berlaku sekali dan bisa dipakai menyetel kata sandi baru."

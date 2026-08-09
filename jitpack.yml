@@ -1,0 +1,7 @@
+# JitPack builds this repo from a tag when someone depends on it. Its default
+# JDK is older than the toolchain requires, and Gradle itself will not start
+# on the JDK 25 that this project's own toolchain targets bytecode-wise.
+jdk:
+  - openjdk21
+install:
+  - ./gradlew :rlogin-api:publishToMavenLocal :rlogin-paper:publishToMavenLocal

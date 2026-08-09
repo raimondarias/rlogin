@@ -1,0 +1,47 @@
+# Cuts a release from a tag, so the jar people download is always the jar that
+# was built from the tagged commit. Doing it by hand is how a release ends up
+# carrying a build from a working tree nobody can reproduce.
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build and test
+        run: ./gradlew build
+
+      # The tag is the source of truth. A tag that disagrees with the version in
+      # the build is a release that reports the wrong version to the update
+      # checker, which is worse than a failed workflow.
+      - name: Check the tag matches the build version
+        run: |
+          BUILT=$(ls rlogin-plugin/build/libs/rLogin-*.jar | sed 's|.*/rLogin-||;s|\.jar$||')
+          TAGGED="${GITHUB_REF_NAME#v}"
+          if [ "$BUILT" != "$TAGGED" ]; then
+            echo "Tag $GITHUB_REF_NAME builds rLogin-$BUILT.jar; these must agree." >&2
+            exit 1
+          fi
+
+      - name: Publish the release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: rLogin ${{ github.ref_name }}
+          files: rlogin-plugin/build/libs/rLogin-*.jar
+          generate_release_notes: true
+          fail_on_unmatched_files: true

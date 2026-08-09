@@ -176,6 +176,31 @@ public final class RLoginConfig {
         return doc.getString("security.totp.issuer", "rLogin");
     }
 
+    /** A max of 0 turns the registration cap off entirely. */
+    public boolean registrationLimitEnabled() {
+        return registrationsMaxPerIp() > 0;
+    }
+
+    public int registrationsMaxPerIp() {
+        return doc.getInt("security.registration.max-per-ip", 3);
+    }
+
+    public int registrationsWindowMinutes() {
+        return doc.getInt("security.registration.window-minutes", 60);
+    }
+
+    public boolean recoveryCodesEnabled() {
+        return doc.getBoolean("security.recovery.enabled", true);
+    }
+
+    public int recoveryCodeCount() {
+        return doc.getInt("security.recovery.codes", 5);
+    }
+
+    public boolean rejectCommonPasswords() {
+        return doc.getBoolean("security.password.reject-common", true);
+    }
+
     public int passwordMinLength() {
         return doc.getInt("security.password.min-length", 5);
     }

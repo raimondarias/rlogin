@@ -3,6 +3,7 @@ package com.raimondarias.rlogin.paper.command;
 import com.raimondarias.rlogin.api.AuthReason;
 import com.raimondarias.rlogin.common.auth.AccountService;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
+import com.raimondarias.rlogin.paper.api.RLoginRegisterEvent;
 import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -49,16 +50,29 @@ public final class RegisterCommand implements CommandExecutor {
         switch (result) {
             case SUCCESS -> {
                 plugin.authSessions().markAuthenticated(player.getUniqueId(), AuthReason.PASSWORD);
+                plugin.fireAuthenticated(player, AuthReason.PASSWORD, true);
+                plugin.getServer().getPluginManager().callEvent(new RLoginRegisterEvent(player));
                 player.sendMessage(plugin.messages().get("register.success", Map.of("player", player.getName())));
                 plugin.sessionService().remember(player.getUniqueId(), ip, plugin.getServer().getName());
                 plugin.notifyProxyAuthenticated(player);
                 plugin.spawnManager().teleportForRole(player, SpawnManager.Role.REGISTER);
+                // Issued now, while they are looking at the screen. There is no second
+                // chance to show them, and the moment they need one is the moment they
+                // cannot log in to ask.
+                plugin.recoveryService().issueCodes(player.getUniqueId()).thenAccept(codes ->
+                        plugin.scheduler().runForPlayer(player,
+                                () -> RecoverCommand.presentCodes(plugin, player, codes)));
             }
             case ALREADY_REGISTERED -> player.sendMessage(plugin.messages().get("register.already-registered"));
             case PASSWORDS_DONT_MATCH -> player.sendMessage(plugin.messages().get("register.passwords-dont-match"));
             case INVALID_LENGTH -> player.sendMessage(plugin.messages().get("register.password-too-short",
                     Map.of("min", String.valueOf(plugin.config().passwordMinLength()))));
             case PREMIUM_PROTECTED -> player.sendMessage(plugin.messages().get("register.premium-name-protected"));
+            case PASSWORD_TOO_COMMON -> player.sendMessage(plugin.messages().get("register.password-too-common"));
+            case PASSWORD_IS_NAME -> player.sendMessage(plugin.messages().get("register.password-is-name"));
+            case TOO_MANY_FROM_IP -> player.sendMessage(plugin.messages().get("register.too-many-from-ip",
+                    Map.of("seconds", String.valueOf(
+                            plugin.accountService().secondsUntilRegistrationAllowed(ip)))));
         }
     }
 }
