@@ -6,74 +6,111 @@
 
 **Premium players join without typing anything. Everyone else logs in with a password.**
 
-Authentication for Paper, Folia and Velocity — including on a standalone `online-mode: false` server, with real Mojang UUIDs and skins.
+[![Documentation](https://img.shields.io/badge/Read%20the-Documentation-ef7025?style=for-the-badge&logo=gitbook&logoColor=white)](https://pyrelight.mintlify.app/rlogin/introduction)
+[![Discord](https://img.shields.io/badge/Chat%20with%20us%20on-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/5tuSrNRk3a)
+[![GitHub](https://img.shields.io/badge/Source%20on-GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pyrelightmc/rlogin)
 
-[![Hangar](https://img.shields.io/badge/Hangar-Download-004ee9?logo=papermc&logoColor=white&style=for-the-badge)](https://hangar.papermc.io/raimondarias/rlg)
-[![Modrinth](https://img.shields.io/modrinth/dt/rlg?logo=modrinth&logoColor=white&label=Modrinth&color=00AF5C&style=for-the-badge)](https://modrinth.com/plugin/rlg)
-[![Docs](https://img.shields.io/badge/Docs-pyrelight-ef7025?logo=readthedocs&logoColor=white&style=for-the-badge)](https://pyrelight.mintlify.app/rlogin/introduction)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/5tuSrNRk3a)
-[![Stars](https://img.shields.io/github/stars/pyrelightmc/rlogin?logo=github&logoColor=white&label=Stars&color=eec9bc&style=for-the-badge)](https://github.com/pyrelightmc/rlogin/stargazers)
-[![License](https://img.shields.io/github/license/pyrelightmc/rlogin?color=4fa1ab&style=for-the-badge)](LICENSE)
+[![Hangar](https://img.shields.io/badge/Download%20on-Hangar-004ee9?style=for-the-badge&logo=papermc&logoColor=white)](https://hangar.papermc.io/raimondarias/rlg)
+[![Modrinth](https://img.shields.io/modrinth/dt/rlg?style=for-the-badge&logo=modrinth&logoColor=white&label=Modrinth&color=00AF5C)](https://modrinth.com/plugin/rlg)
+[![Stars](https://img.shields.io/github/stars/pyrelightmc/rlogin?style=for-the-badge&logo=github&logoColor=white&label=Stars&color=eec9bc)](https://github.com/pyrelightmc/rlogin/stargazers)
+[![License](https://img.shields.io/github/license/pyrelightmc/rlogin?style=for-the-badge&color=4fa1ab)](LICENSE)
 
 </div>
 
----
+## What is rLogin?
 
-Most authentication plugins make you choose: run `online-mode: true` and lose
-every player without an account, or run offline and ask everybody for a
-password — the owners of real accounts included.
+Most authentication plugins make you choose: run `online-mode: true` and lose every
+player without an account, or run offline and ask everybody for a password — the
+owners of real accounts included.
 
-rLogin does neither. It verifies premium accounts against Mojang itself, so
-they are let straight in with **their genuine UUID and skin**, while everyone
-else registers with a password as usual. It works the same on a single server
-as it does behind a proxy, and 17 languages ship with it.
+rLogin does neither. It verifies premium accounts against Mojang itself, so they are
+let straight in with **their genuine UUID and skin**, while everyone else registers
+with a password as usual. It works the same on a single server as it does behind a
+proxy, and 17 languages ship with it.
 
-## Requirements
+## Where can I use rLogin?
 
-| | |
-|---|---|
-| **Server** | Paper, Folia or Velocity (3.x and 4.x) |
-| **Minecraft** | 1.21 or newer |
-| **Java** | 21 or newer |
-| **[PacketEvents](https://modrinth.com/plugin/packetevents)** | Required on a standalone `online-mode: false` server — that is where rLogin does the Mojang verification itself. Not needed behind a proxy or with `online-mode: true`. |
+<div align="center">
+
+[![Paper](https://img.shields.io/badge/Available%20for-Paper-2c2c2c?style=for-the-badge&logo=papermc&logoColor=white)](https://papermc.io)
+[![Purpur](https://img.shields.io/badge/Available%20for-Purpur-c68fff?style=for-the-badge&logoColor=white)](https://purpurmc.org)
+[![Folia](https://img.shields.io/badge/Available%20for-Folia-1f8a70?style=for-the-badge&logo=papermc&logoColor=white)](https://papermc.io/software/folia)
+[![Velocity](https://img.shields.io/badge/Available%20for-Velocity-1899d6?style=for-the-badge&logo=papermc&logoColor=white)](https://papermc.io/software/velocity)
+
+</div>
+
+One download, `rLogin-<version>.jar`, runs on all of them — the same file goes into a
+Paper/Folia server's `plugins/` and into a Velocity proxy's. Velocity **3.x and 4.x**
+both work.
+
+## Features
+
+- **Real Mojang UUIDs and skins** on a standalone `online-mode: false` server
+- **Password login** for everyone else — frozen in place until they register
+- **Two-factor authentication** (TOTP) through any authenticator app
+- **"Remember me"** sessions, so a quick reconnect doesn't ask again
+- **Brute-force protection** with escalating lockouts by address, never by account
+- **Premium name protection** — cracked players can't claim a real account's name
+- **Passwords never reach your logs**, and that is not a setting anyone can turn off
+- **17 languages**, every message editable
+- **Spawn points** for joining, first join, logging in and registering
+- **Bedrock support** through Geyser/Floodgate
+- **AuthMe import**, hashes included
+- **MySQL or SQLite**
 
 ## Installation
 
-There is **one** download, `rLogin-<version>.jar`, and it runs on both
-platforms — the same file goes into a Paper/Folia server's `plugins/` and into
-a Velocity proxy's.
+1. Drop `rLogin-<version>.jar` into `plugins/` on every server, proxy included.
+2. Set `online-mode=false` — in `server.properties`, and in `velocity.toml` if you run
+   a proxy.
+3. Standalone? Install [PacketEvents](https://modrinth.com/plugin/packetevents) next
+   to it.
+4. Start. There is nothing else to configure.
 
-1. Drop `rLogin-<version>.jar` into `plugins/` on every server. Running a proxy?
-   The same jar goes into the proxy's `plugins/` too.
-2. Set `online-mode=false` — in `server.properties`, and in `velocity.toml` if
-   you run a proxy. rLogin refuses to start otherwise, because with it on the
-   server turns away every non-premium player before rLogin is consulted.
-3. Standalone? Install
-   [PacketEvents](https://modrinth.com/plugin/packetevents) next to it.
-4. Start the server. There is nothing else to configure — premium auto-login
-   turns itself on wherever it is needed.
+### What online-mode has to be
 
-Premium-only server? Set `general.auth-mode: online` instead, and keep
-`online-mode` on — there rLogin lets the server do the verifying.
+rLogin refuses every connection when these disagree, and says so — a silent
+half-working server is worse than one that won't start.
 
-Everything else — MySQL, 2FA, the authentication lobby, spawn points,
-importing from AuthMe — is optional and documented below.
+| `general.auth-mode` | `server.properties` | `velocity.toml` | PacketEvents |
+|---|---|---|---|
+| `auto` (default) | `online-mode=false` | `online-mode = false` | Standalone only |
+| `offline` | `online-mode=false` | `online-mode = false` | Never |
+| `online` | `online-mode=true` | `online-mode = true` | Never |
+
+With online-mode on, the server or proxy turns away every player without a Minecraft
+account **before rLogin is consulted at all**. On a server built for those players
+that is the whole audience gone.
 
 ## Documentation
 
-**[pyrelight.mintlify.app](https://pyrelight.mintlify.app/rlogin/introduction)** —
-installation, every setting explained, commands, permissions, and
-troubleshooting.
+Every setting, all commands and permissions, and troubleshooting:
+**[pyrelight.mintlify.app](https://pyrelight.mintlify.app/rlogin/introduction)**
 
-Downloads: [Hangar](https://hangar.papermc.io/raimondarias/rlg) ·
-[Modrinth](https://modrinth.com/plugin/rlg) ·
-[GitHub Releases](https://github.com/pyrelightmc/rlogin/releases)
+## What if I need support?
 
-## Support
-
-Questions, bug reports and feature requests are welcome in
-[Discord](https://discord.gg/5tuSrNRk3a), or as a
+Join the [Discord](https://discord.gg/5tuSrNRk3a) and we will help you out, or open a
 [GitHub issue](https://github.com/pyrelightmc/rlogin/issues).
+
+## Sponsors
+
+Thanks to the following sponsor for supporting this project:
+
+<div align="center">
+
+[<img src="assets/xerohost.png" alt="XeroHost" height="46">](https://xerohost.net)
+
+</div>
+
+## Statistics
+
+<div align="center">
+
+[![rLogin Paper](https://bstats.org/signatures/bukkit/rLogin%20Paper.svg)](https://bstats.org/plugin/bukkit/rLogin%20Paper/33271)
+
+[![rLogin Velocity](https://bstats.org/signatures/velocity/rLogin%20Velocity.svg)](https://bstats.org/plugin/velocity/rLogin%20Velocity/33272)
+
+</div>
 
 ## Building from source
 
@@ -82,10 +119,10 @@ Questions, bug reports and feature requests are welcome in
 ```
 
 Requires JDK 21. The distributable lands in `rlogin-plugin/build/libs/` as
-`rLogin-<version>.jar`; the per-module jars next to it are intermediate build
-output, not releases.
+`rLogin-<version>.jar`; the per-module jars next to it are intermediate build output,
+not releases.
 
 ## License
 
-[MIT](LICENSE) © Raimond Arias. PacketEvents is a separate GPL-3.0 plugin that
-rLogin talks to at runtime; it is never bundled.
+[MIT](LICENSE) © Raimond Arias. PacketEvents is a separate GPL-3.0 plugin that rLogin
+talks to at runtime; it is never bundled.
