@@ -52,7 +52,7 @@ public final class LimboService {
             if (!player.isOnline() || plugin.authSessions().isAuthenticated(player.getUniqueId())) {
                 return;
             }
-            player.kick(plugin.messages().get("limbo.login-timeout"));
+            player.kickPlayer(plugin.messages().get("limbo.login-timeout"));
         });
     }
 }

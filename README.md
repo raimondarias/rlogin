@@ -1,14 +1,16 @@
 <div align="center">
 
+<img src="assets/rlogin.svg" alt="rLogin" width="120" height="120">
+
 # rLogin
 
 **Premium players join without typing anything. Everyone else logs in with a password.**
 
 Authentication for Paper, Folia and Velocity — including on a standalone `online-mode: false` server, with real Mojang UUIDs and skins.
 
-[![Modrinth](https://img.shields.io/modrinth/dt/rlogin?logo=modrinth&logoColor=white&label=Modrinth&color=00AF5C&style=for-the-badge)](https://modrinth.com/plugin/rlogin)
+[![Modrinth](https://img.shields.io/modrinth/dt/rlg?logo=modrinth&logoColor=white&label=Modrinth&color=00AF5C&style=for-the-badge)](https://modrinth.com/plugin/rlg)
 [![Hangar](https://img.shields.io/badge/Hangar-Download-004ee9?logo=papermc&logoColor=white&style=for-the-badge)](https://hangar.papermc.io/raimondarias/rlg)
-[![Docs](https://img.shields.io/badge/Docs-pyrelight-ef7025?logo=readthedocs&logoColor=white&style=for-the-badge)](https://pyrelight.mintlify.app)
+[![Docs](https://img.shields.io/badge/Docs-pyrelight-ef7025?logo=readthedocs&logoColor=white&style=for-the-badge)](https://pyrelight.mintlify.app/rlogin/introduction)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/5tuSrNRk3a)
 [![Stars](https://img.shields.io/github/stars/raimondarias/rlogin?logo=github&logoColor=white&label=Stars&color=eec9bc&style=for-the-badge)](https://github.com/raimondarias/rlogin/stargazers)
 [![License](https://img.shields.io/github/license/raimondarias/rlogin?color=4fa1ab&style=for-the-badge)](LICENSE)
@@ -37,8 +39,12 @@ as it does behind a proxy, and 17 languages ship with it.
 
 ## Installation
 
-1. Drop `rlogin-paper.jar` into `plugins/` on every backend server. Running a
-   proxy? Also drop `rlogin-velocity.jar` into the proxy's `plugins/`.
+There is **one** download, `rLogin-<version>.jar`, and it runs on both
+platforms — the same file goes into a Paper/Folia server's `plugins/` and into
+a Velocity proxy's.
+
+1. Drop `rLogin-<version>.jar` into `plugins/` on every server. Running a proxy?
+   The same jar goes into the proxy's `plugins/` too.
 2. Standalone `online-mode: false`? Install
    [PacketEvents](https://modrinth.com/plugin/packetevents) next to it.
 3. Start the server. There is nothing to configure — premium auto-login turns
@@ -49,8 +55,9 @@ importing from AuthMe — is optional and documented below.
 
 ## Documentation
 
-**[pyrelight.mintlify.app](https://pyrelight.mintlify.app)** — installation,
-every setting explained, commands, permissions, and troubleshooting.
+**[pyrelight.mintlify.app](https://pyrelight.mintlify.app/rlogin/introduction)** —
+installation, every setting explained, commands, permissions, and
+troubleshooting.
 
 ## Support
 
@@ -64,8 +71,9 @@ Questions, bug reports and feature requests are welcome in
 ./gradlew build
 ```
 
-Requires JDK 21. The jars land in `rlogin-paper/build/libs/` and
-`rlogin-velocity/build/libs/`.
+Requires JDK 21. The distributable lands in `rlogin-plugin/build/libs/` as
+`rLogin-<version>.jar`; the per-module jars next to it are intermediate build
+output, not releases.
 
 ## License
 
