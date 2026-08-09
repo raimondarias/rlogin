@@ -40,6 +40,32 @@ premium:
   # Disallows /register on a name that belongs to a real premium account,
   # so its legitimate owner never loses the ability to auto-login with it.
   protect-premium-names: true
+  # EXPERIMENTAL. Lets premium accounts auto-login AND cracked accounts use
+  # /login-/register on the SAME standalone backend (online-mode: false, no
+  # Velocity in front) — like nLogin Premium's standalone mode. Requires the
+  # separate PacketEvents plugin (https://modrinth.com/plugin/packetevents,
+  # not bundled) to already be installed; without it this does nothing, no
+  # error, no crash. If you run (or can run) Velocity in front of your
+  # backend(s) instead, that path is more mature and is the recommended
+  # default — see the README's "How premium auto-login works" section.
+  standalone-hybrid-mode: false
+  # Which UUID a player ends up with. Only applies to a standalone server
+  # (online-mode: false, no proxy) — behind Velocity the identity is already
+  # decided before rLogin sees the connection.
+  #
+  #   real     Verified premium players join with their REAL Mojang UUID;
+  #            everyone else keeps the offline one. The only mode where
+  #            "premium Steve" and "cracked Steve" are separate accounts,
+  #            and where your other plugins (permissions, economy, bans) see
+  #            the same UUID they'd see on any online-mode server.
+  #   cracked  Everyone gets the offline UUID derived from their name,
+  #            premium included. Auto-login still works. Use this to keep an
+  #            existing offline-mode world/database working untouched.
+  #            ("offline" is accepted as a synonym.)
+  #   random   A random UUID generated the first time each name connects and
+  #            reused from then on, for premium and cracked alike. Lets a
+  #            player move between premium and cracked without losing data.
+  uuid-type: real
 
 session:
   # "Remember me": if the player reconnects from the same IP within this

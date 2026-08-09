@@ -3,6 +3,21 @@
 paper-api = "1.21.4-R0.1-SNAPSHOT"
 velocity-api = "3.4.0-SNAPSHOT"
 folia-api = "1.21.4-R0.1-SNAPSHOT"
+# Adventure: also compileOnly/provided — both Paper and Velocity already bundle
+# these at runtime and expose them to plugin classloaders, same as paper-api.
+adventure = "4.17.0"
+# PacketEvents: also compileOnly — a SOFT dependency (never shaded, never required).
+# Only used by rlogin-paper's optional standalone hybrid-auth mode
+# (premium.standalone-hybrid-mode in config.yml); needs the separate PacketEvents
+# plugin actually installed on the server to do anything. See PacketEventsSupport.
+packetevents = "2.13.0"
+# Log4j2: compileOnly as well — every Paper server already runs on it (it's what
+# backs the SLF4J logger the server writes commands through). Only used to filter
+# players' passwords out of the console, see CommandLogFilter.
+log4j = "2.24.3"
+# bStats: SHADED (and relocated below) — bStats requires every plugin to ship
+# its own relocated copy so plugins never fight over one shared class.
+bstats = "3.1.0"
 
 # --- Dependencias embebidas (shaded) ---
 hikaricp = "5.1.0"
@@ -20,6 +35,16 @@ shadow = "8.3.5"
 [libraries]
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper-api" }
 velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity-api" }
+
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+adventure-minimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
+adventure-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventure" }
+
+packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
+
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+
+bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
 
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }

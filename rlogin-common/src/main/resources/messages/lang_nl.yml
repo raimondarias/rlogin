@@ -1,0 +1,68 @@
+# rLogin berichten — Nederlands
+# Beschikbare placeholders afhankelijk van het bericht: {player} {seconds} {attempts} {min}
+#
+# Kleurformaten — vrij te combineren:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Klassieke codes: &a / §a (en &l, &n... voor stijlen, &r om te resetten)
+#   3. Hex (BungeeCord/Spigot-stijl, standaard gebruikt in dit bestand):
+#      &#RRGGBB, §x§R§R§G§G§B§B, of een losse #RRGGBB
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eGebruik: &#e39fff/login <wachtwoord>"
+  wrong-password: "{prefix}&#fd5e5eVerkeerd wachtwoord. Resterende pogingen: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eJe bent al ingelogd."
+  success: "{prefix}&#91f251Succesvol ingelogd. Welkom &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eVoer ook je 2FA-code in: &#e39fff/login <wachtwoord> <code>"
+  wrong-totp: "{prefix}&#fd5e5eVerkeerde 2FA-code."
+  not-registered: "{prefix}&#fd5e5eJe hebt geen account. Registreer met &#e39fff/register <wachtwoord> <wachtwoord>"
+
+register:
+  usage: "{prefix}&#fd5e5eGebruik: &#e39fff/register <wachtwoord> <herhaal wachtwoord>"
+  already-registered: "{prefix}&#fd5e5eDit account is al geregistreerd."
+  passwords-dont-match: "{prefix}&#fd5e5eWachtwoorden komen niet overeen."
+  password-too-short: "{prefix}&#fd5e5eWachtwoord moet minstens &#fd8ddb{min}&#fd5e5e tekens lang zijn."
+  premium-name-protected: "{prefix}&#fd5e5eDeze naam behoort tot een premium account. Als het jouw naam is, verbind dan met de originele Minecraft-client."
+  success: "{prefix}&#91f251Registratie voltooid. Welkom &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Uitgelogd."
+  not-logged-in: "{prefix}&#fd5e5eJe bent niet ingelogd."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eGebruik: &#e39fff/changepassword <huidig wachtwoord> <nieuw wachtwoord>"
+  success: "{prefix}&#91f251Wachtwoord succesvol bijgewerkt."
+  wrong-password: "{prefix}&#fd5e5eHet huidige wachtwoord is onjuist."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Premium account gedetecteerd, sessie automatisch gestart."
+  info-premium: "{prefix}&#91f251Je account is door Mojang geverifieerd als premium."
+  info-cracked: "{prefix}&#fdba5eJe account is niet premium, je hebt je eigen wachtwoord nodig."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eJe moet inloggen om te kunnen bewegen. Gebruik &#e39fff/login&#fdba5e of &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eDat kun je niet doen totdat je bent ingelogd."
+
+security:
+  locked-out: "{prefix}&#fd5e5eTe veel mislukte pogingen. Wacht &#5e9dfd{seconds} seconden&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eLos de captcha op om door te gaan: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Tweefactorauthenticatie ingeschakeld."
+  disabled: "{prefix}&#91f251Tweefactorauthenticatie uitgeschakeld."
+  setup-secret: "{prefix}&#fdba5eJe 2FA-sleutel: &#fd8ddb{secret} &#fdba5e(voeg deze toe aan je authenticator-app en bevestig met &#e39fff/2fa confirm <code>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eGebruik: &#e39fff/2fa confirm <code>"
+  already-enabled: "{prefix}&#fd5e5eJe hebt tweefactorauthenticatie al ingeschakeld."
+  not-enabled: "{prefix}&#fd5e5eJe hebt tweefactorauthenticatie niet ingeschakeld."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eJe hebt geen toestemming om dat te doen."
+  reloaded: "{prefix}&#91f251Configuratie opnieuw geladen."
+  unregistered: "{prefix}&#91f251Het account van &#fd8ddb{player} &#91f251is verwijderd."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251is geforceerd ingelogd."
+  player-not-found: "{prefix}&#fd5e5eSpeler niet gevonden."
+  migration-started: "{prefix}&#fdba5eAccounts importeren vanuit &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Import voltooid: &#fd8ddb{count} &#91f251accounts geïmporteerd."
+  migration-failed: "{prefix}&#fd5e5eImportfout: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, laatste login: &#5e9dfd{last-login}"

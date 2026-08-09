@@ -50,6 +50,17 @@ public record RLoginAccount(
                 ip, when, registeredAt, 0, null);
     }
 
+    /**
+     * Same account under a different identity. Used when a name changes
+     * hands — e.g. a cracked player who registered a name that its real
+     * premium owner later claims, and whose password/2FA has to follow them
+     * to whatever they play as now.
+     */
+    public RLoginAccount withIdentity(UUID newUuid, String newUsername) {
+        return new RLoginAccount(newUuid, newUsername, premium, passwordHash, hashAlgo, totpSecret, totpEnabled,
+                lastIp, lastLoginAt, registeredAt, failedAttempts, lockedUntil);
+    }
+
     public RLoginAccount withFailedAttempt(int attempts, Instant lockUntil) {
         return new RLoginAccount(uuid, username, premium, passwordHash, hashAlgo, totpSecret, totpEnabled,
                 lastIp, lastLoginAt, registeredAt, attempts, lockUntil);

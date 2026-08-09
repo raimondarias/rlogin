@@ -1,5 +1,7 @@
 package com.raimondarias.rlogin.paper.command;
 
+import com.raimondarias.rlogin.api.AuthReason;
+import com.raimondarias.rlogin.api.RLoginAccount;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
 import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.Bukkit;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +32,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
     private static final List<String> PLAYER_SUBCOMMANDS =
             List.of("login", "register", "changepassword", "logout", "2fa", "premium");
     private static final List<String> ADMIN_SUBCOMMANDS =
-            List.of("reload", "unregister", "forcelogin", "migrate", "info", "lang", "spawn");
+            List.of("reload", "unregister", "forcelogin", "migrate", "changeuuid", "info", "lang", "spawn");
     private static final List<String> SPAWN_ACTIONS =
             List.of("set", "list", "remove", "join", "firstjoin", "login", "register");
 
@@ -54,7 +57,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("rLogin — /rlogin <" + String.join("|", PLAYER_SUBCOMMANDS)
+            sender.sendMessage("rLogin - /rlogin <" + String.join("|", PLAYER_SUBCOMMANDS)
                     + (sender.hasPermission("rlogin.admin") ? "|" + String.join("|", ADMIN_SUBCOMMANDS) : "") + ">");
             return true;
         }
@@ -75,6 +78,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
             case "unregister" -> adminOnly(sender, () -> unregister(sender, rest));
             case "forcelogin" -> adminOnly(sender, () -> forceLogin(sender, rest));
             case "migrate" -> adminOnly(sender, () -> migrate(sender, rest));
+            case "changeuuid" -> adminOnly(sender, () -> changeUuid(sender, rest));
             case "info" -> adminOnly(sender, () -> info(sender, rest));
             case "spawn" -> adminOnly(sender, () -> spawn(sender, rest));
             case "lang" -> adminOnly(sender, () -> sender.sendMessage(
@@ -117,7 +121,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
         }
         plugin.accountService().forceLogin(target.getUniqueId(), LoginCommand.ipOf(target)).thenAccept(account ->
                 plugin.scheduler().runForPlayer(target, () -> {
-                    plugin.authSessions().markAuthenticated(target.getUniqueId());
+                    plugin.authSessions().markAuthenticated(target.getUniqueId(), AuthReason.FORCED_BY_ADMIN);
                     target.sendMessage(plugin.messages().get("login.success", Map.of("player", target.getName())));
                     sender.sendMessage(plugin.messages().get("admin.force-logged-in", Map.of("player", target.getName())));
                     plugin.notifyProxyAuthenticated(target);
@@ -143,6 +147,71 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(plugin.messages().get("admin.migration-done", Map.of("count", String.valueOf(result.imported()))));
             }
         });
+    }
+
+    /**
+     * {@code /rlogin changeuuid <from> <to>} — carries an account's
+     * credentials over to a different identity.
+     *
+     * <p>Exists for the one collision standalone hybrid mode makes possible:
+     * a cracked player registered a name, its real premium owner later
+     * claimed it, and because the owner arrives with their real Mojang UUID
+     * the two are now separate accounts by design. This is how the cracked
+     * player keeps their password and 2FA on whatever they play as now.</p>
+     *
+     * <p>Both arguments take a UUID or a name; what each one resolved to is
+     * echoed back before anything is written, because getting this wrong
+     * silently would be much worse than an extra line of output.</p>
+     */
+    private void changeUuid(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage("/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>");
+            sender.sendMessage("Moves the rLogin account (password, 2FA, registration date) to another UUID.");
+            sender.sendMessage("It does NOT move inventory, permissions or economy: those live in the world's");
+            sender.sendMessage("playerdata and in other plugins' storage, both keyed by UUID.");
+            return;
+        }
+        // Bukkit's own name->UUID lookup has to happen here, on the command thread,
+        // not inside the async database callbacks below.
+        UUID fromFallback = looksLikeUuid(args[0]) ? null : resolveUuid(args[0]);
+        UUID toFallback = looksLikeUuid(args[1]) ? null : resolveUuid(args[1]);
+        String newUsername = looksLikeUuid(args[1]) ? null : args[1];
+
+        resolveIdentity(args[0], fromFallback).thenCombine(resolveIdentity(args[1], toFallback), IdentityPair::new)
+                .thenCompose(pair -> {
+                    sender.sendMessage("changeuuid: " + args[0] + " -> " + pair.from());
+                    sender.sendMessage("            " + args[1] + " -> " + pair.to());
+                    return plugin.accountService().changeIdentity(pair.from(), pair.to(), newUsername);
+                })
+                .whenComplete((result, error) -> {
+                    if (error != null) {
+                        sender.sendMessage("changeuuid failed: " + error.getMessage());
+                        return;
+                    }
+                    sender.sendMessage(switch (result) {
+                        case SUCCESS -> "Account moved. If that player is connected, they need to rejoin.";
+                        case SOURCE_NOT_FOUND -> "No rLogin account found for " + args[0] + ".";
+                        case TARGET_ALREADY_EXISTS -> "The target already has an rLogin account. Refusing to merge "
+                                + "two accounts into one - delete it first with /rlogin unregister.";
+                        case SAME_IDENTITY -> "Source and target are the same UUID; nothing to do.";
+                    });
+                });
+    }
+
+    private record IdentityPair(UUID from, UUID to) {
+    }
+
+    /** rLogin's own record for that name wins over Bukkit's guess, which can't see accounts nobody has joined with. */
+    private CompletableFuture<UUID> resolveIdentity(String value, UUID bukkitFallback) {
+        if (bukkitFallback == null) {
+            return CompletableFuture.completedFuture(UUID.fromString(value));
+        }
+        return plugin.accountService().findByUsername(value)
+                .thenApply(existing -> existing.map(RLoginAccount::uuid).orElse(bukkitFallback));
+    }
+
+    private static boolean looksLikeUuid(String value) {
+        return value.length() == 36 && value.indexOf('-') == 8;
     }
 
     private void info(CommandSender sender, String[] args) {
@@ -211,7 +280,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
                 if (args.length < 2) {
                     var current = spawns.roleAssignment(role);
                     sender.sendMessage("rlogin." + action + " -> "
-                            + current.orElse("(not set — players stay where they logged out)"));
+                            + current.orElse("(not set - players stay where they logged out)"));
                     return;
                 }
                 if (args[1].equalsIgnoreCase("none")) {

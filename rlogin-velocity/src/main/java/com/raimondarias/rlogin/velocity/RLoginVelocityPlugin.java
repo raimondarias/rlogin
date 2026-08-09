@@ -1,8 +1,11 @@
 package com.raimondarias.rlogin.velocity;
 
 import com.google.inject.Inject;
+import com.raimondarias.rlogin.api.db.Storage;
 import com.raimondarias.rlogin.common.auth.PremiumChecker;
+import com.raimondarias.rlogin.common.auth.SessionService;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
+import com.raimondarias.rlogin.common.db.StorageFactory;
 import com.raimondarias.rlogin.common.i18n.Messages;
 import com.raimondarias.rlogin.velocity.command.RLoginVelocityCommand;
 import com.raimondarias.rlogin.velocity.listener.LobbyListener;
@@ -11,6 +14,7 @@ import com.raimondarias.rlogin.velocity.listener.SyncListener;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -48,6 +52,10 @@ public final class RLoginVelocityPlugin {
     private PremiumChecker premiumChecker;
     private SyncListener syncListener;
 
+    /** Only non-null when {@code database.enabled: true} in velocity-config.yml AND the connection succeeded. */
+    private Storage storage;
+    private SessionService sessionService;
+
     @Inject
     public RLoginVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
         this.server = server;
@@ -65,7 +73,7 @@ public final class RLoginVelocityPlugin {
 
         PreLoginListener preLoginListener = new PreLoginListener(config, premiumChecker, logger);
         this.syncListener = new SyncListener(server, config, preLoginListener);
-        LobbyListener lobbyListener = new LobbyListener(server, config, preLoginListener, logger);
+        LobbyListener lobbyListener = new LobbyListener(server, config, preLoginListener, sessionService, logger);
 
         server.getEventManager().register(this, preLoginListener);
         server.getEventManager().register(this, syncListener);
@@ -74,8 +82,17 @@ public final class RLoginVelocityPlugin {
         CommandManager commands = server.getCommandManager();
         commands.register(commands.metaBuilder("rlogin").plugin(this).build(), new RLoginVelocityCommand(this));
 
-        logger.info("rLogin (Velocity) ready. Premium auto-login: {}",
-                config.premiumAutoLogin() ? "enabled" : "disabled");
+        logger.info("rLogin (Velocity) ready. Premium auto-login: {} | Remembered-session lobby bypass: {}",
+                config.premiumAutoLogin() ? "enabled" : "disabled",
+                sessionService != null ? "enabled" : "disabled");
+    }
+
+    @Subscribe
+    public void onProxyShutdown(ProxyShutdownEvent event) {
+        if (premiumChecker != null) {
+            premiumChecker.shutdown();
+        }
+        closeStorage();
     }
 
     private boolean loadConfig() {
@@ -87,7 +104,44 @@ public final class RLoginVelocityPlugin {
         }
         this.messages = Messages.load(dataDirectory, config.language());
         this.premiumChecker = new PremiumChecker(config);
+        setUpOptionalDatabase();
         return true;
+    }
+
+    /**
+     * The proxy never needs the database for its core job (premium
+     * detection is per-connection, cross-backend trust travels over the
+     * rlogin:sync channel). This only wires a read-only session lookup so
+     * {@link LobbyListener} can skip the auth-lobby hop for players with a
+     * still-valid "remember me" session — see velocity-config.yml's
+     * {@code database} section. Any failure here is logged and swallowed:
+     * it must never prevent the proxy (or auto-login) from working.
+     */
+    private void setUpOptionalDatabase() {
+        closeStorage();
+        if (!config.databaseEnabled()) {
+            return;
+        }
+        try {
+            Storage newStorage = StorageFactory.create(config, dataDirectory);
+            newStorage.init().join();
+            this.storage = newStorage;
+            this.sessionService = new SessionService(storage, config);
+        } catch (Exception e) {
+            logger.warn("Could not connect to the database configured under 'database:' in velocity-config.yml "
+                    + "— the auth-lobby will keep routing remembered sessions through auth-server as before. Cause: {}",
+                    e.getMessage());
+            this.storage = null;
+            this.sessionService = null;
+        }
+    }
+
+    private void closeStorage() {
+        if (storage != null) {
+            storage.close();
+            storage = null;
+        }
+        sessionService = null;
     }
 
     public void reload() {

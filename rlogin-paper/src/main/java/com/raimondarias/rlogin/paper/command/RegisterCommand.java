@@ -1,5 +1,6 @@
 package com.raimondarias.rlogin.paper.command;
 
+import com.raimondarias.rlogin.api.AuthReason;
 import com.raimondarias.rlogin.common.auth.AccountService;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
 import com.raimondarias.rlogin.paper.spawn.SpawnManager;
@@ -34,17 +35,20 @@ public final class RegisterCommand implements CommandExecutor {
         }
         String password = args[0];
         String confirm = args[1];
-        String ip = LoginCommand.ipOf(player);
-
-        plugin.accountService().register(player.getUniqueId(), player.getName(), password, confirm)
-                .thenAccept(result -> plugin.scheduler().runForPlayer(player, () -> handleResult(player, result, ip)));
+        attemptRegister(plugin, player, password, confirm);
         return true;
     }
 
-    private void handleResult(Player player, AccountService.RegisterResult result, String ip) {
+    public static void attemptRegister(RLoginPaperPlugin plugin, Player player, String password, String confirm) {
+        String ip = LoginCommand.ipOf(player);
+        plugin.accountService().register(player.getUniqueId(), player.getName(), password, confirm)
+                .thenAccept(result -> plugin.scheduler().runForPlayer(player, () -> handleResult(plugin, player, result, ip)));
+    }
+
+    public static void handleResult(RLoginPaperPlugin plugin, Player player, AccountService.RegisterResult result, String ip) {
         switch (result) {
             case SUCCESS -> {
-                plugin.authSessions().markAuthenticated(player.getUniqueId());
+                plugin.authSessions().markAuthenticated(player.getUniqueId(), AuthReason.PASSWORD);
                 player.sendMessage(plugin.messages().get("register.success", Map.of("player", player.getName())));
                 plugin.sessionService().remember(player.getUniqueId(), ip, plugin.getServer().getName());
                 plugin.notifyProxyAuthenticated(player);

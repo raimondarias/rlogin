@@ -15,5 +15,19 @@ public enum AuthReason {
     /** Valid "remember me" session by IP+UUID within the configured window. */
     REMEMBERED_SESSION,
     /** An admin forced the login manually. */
-    FORCED_BY_ADMIN
+    FORCED_BY_ADMIN,
+    /** Holds {@code rlogin.bypass} — never asked to log in in the first place (NPCs, test bots). */
+    BYPASS_PERMISSION;
+
+    /**
+     * Whether this is an account Mojang (or Floodgate, for Bedrock) already
+     * vouched for, so the player was let in without typing anything — the
+     * ones worth telling the player about on join.
+     */
+    public boolean isAutomaticPremium() {
+        return this == PREMIUM_FORWARDED
+                || this == PREMIUM_MOJANG_API
+                || this == PREMIUM_SERVER_ONLINE_MODE
+                || this == FLOODGATE;
+    }
 }

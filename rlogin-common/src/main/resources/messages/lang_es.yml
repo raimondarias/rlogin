@@ -1,0 +1,73 @@
+# Mensajes de rLogin — Español
+# Placeholders disponibles según el mensaje: {player} {seconds} {attempts} {min}
+#
+# Formatos de color — se pueden mezclar libremente, los tres funcionan en cualquier texto:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Códigos clásicos: &a / §a (y &l, &n... para estilos, &r para reset)
+#   3. Hex (estilo BungeeCord/Spigot, el que usa este archivo por defecto):
+#      &#RRGGBB, §x§R§R§G§G§B§B, o un #RRGGBB suelto
+#
+# Paleta que sigue este archivo:
+#   comandos   #e39fff   valores/variables #fd8ddb   errores      #fd5e5e
+#   éxito      #91f251   advertencias      #fdba5e   tiempo       #5e9dfd
+#   neutral    #d4d9d8
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/login <contraseña>"
+  wrong-password: "{prefix}&#fd5e5eContraseña incorrecta. Intentos restantes: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eYa has iniciado sesión."
+  success: "{prefix}&#91f251Has iniciado sesión correctamente. ¡Bienvenido &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eIntroduce también tu código 2FA: &#e39fff/login <contraseña> <código>"
+  wrong-totp: "{prefix}&#fd5e5eCódigo 2FA incorrecto."
+  not-registered: "{prefix}&#fd5e5eNo tienes cuenta. Regístrate con &#e39fff/register <contraseña> <contraseña>"
+
+register:
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/register <contraseña> <repite la contraseña>"
+  already-registered: "{prefix}&#fd5e5eEsta cuenta ya está registrada."
+  passwords-dont-match: "{prefix}&#fd5e5eLas contraseñas no coinciden."
+  password-too-short: "{prefix}&#fd5e5eLa contraseña debe tener al menos &#fd8ddb{min}&#fd5e5e caracteres."
+  premium-name-protected: "{prefix}&#fd5e5eEse nombre pertenece a una cuenta premium. Si es tuya, conéctate desde el cliente original de Minecraft."
+  success: "{prefix}&#91f251Registro completado. ¡Bienvenido &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Sesión cerrada."
+  not-logged-in: "{prefix}&#fd5e5eNo has iniciado sesión."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/changepassword <contraseña actual> <contraseña nueva>"
+  success: "{prefix}&#91f251Contraseña actualizada correctamente."
+  wrong-password: "{prefix}&#fd5e5eLa contraseña actual no es correcta."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Cuenta premium detectada, sesión iniciada automáticamente."
+  info-premium: "{prefix}&#91f251Tu cuenta está verificada como premium por Mojang."
+  info-cracked: "{prefix}&#fdba5eTu cuenta es no-premium, necesitas contraseña propia."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eDebes iniciar sesión para poder moverte. Usa &#e39fff/login&#fdba5e o &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eNo puedes hacer eso hasta que inicies sesión."
+
+security:
+  locked-out: "{prefix}&#fd5e5eDemasiados intentos fallidos. Espera &#5e9dfd{seconds} segundos&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eResuelve el captcha para continuar: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Verificación en dos pasos activada."
+  disabled: "{prefix}&#91f251Verificación en dos pasos desactivada."
+  setup-secret: "{prefix}&#fdba5eTu clave 2FA: &#fd8ddb{secret} &#fdba5e(añádela a tu app de autenticación y confirma con &#e39fff/2fa confirm <código>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eUso: &#e39fff/2fa confirm <código>"
+  already-enabled: "{prefix}&#fd5e5eYa tienes la verificación en dos pasos activada."
+  not-enabled: "{prefix}&#fd5e5eNo tienes la verificación en dos pasos activada."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eNo tienes permiso para hacer eso."
+  reloaded: "{prefix}&#91f251Configuración recargada."
+  unregistered: "{prefix}&#91f251Cuenta de &#fd8ddb{player} &#91f251eliminada."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251ha sido autenticado a la fuerza."
+  player-not-found: "{prefix}&#fd5e5eJugador no encontrado."
+  migration-started: "{prefix}&#fdba5eImportando cuentas desde &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Importación completa: &#fd8ddb{count} &#91f251cuentas importadas."
+  migration-failed: "{prefix}&#fd5e5eError al importar: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, último login: &#5e9dfd{last-login}"

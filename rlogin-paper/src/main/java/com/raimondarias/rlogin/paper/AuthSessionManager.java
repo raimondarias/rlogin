@@ -1,9 +1,9 @@
 package com.raimondarias.rlogin.paper;
 
+import com.raimondarias.rlogin.api.AuthReason;
 import com.raimondarias.rlogin.paper.scheduler.SchedulerAdapter;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,16 +20,26 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class AuthSessionManager {
 
-    private final Set<UUID> authenticated = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, AuthReason> authenticated = new ConcurrentHashMap<>();
     private final Map<UUID, SchedulerAdapter.CancellableTask> reminderTasks = new ConcurrentHashMap<>();
 
-    public void markAuthenticated(UUID uuid) {
-        authenticated.add(uuid);
+    /**
+     * The reason is required rather than optional so every caller has to say
+     * <em>why</em> it is letting this player through — {@code JoinListener}
+     * uses it to decide what (if anything) to tell them on join.
+     */
+    public void markAuthenticated(UUID uuid, AuthReason reason) {
+        authenticated.put(uuid, reason);
         cancelReminder(uuid);
     }
 
     public boolean isAuthenticated(UUID uuid) {
-        return authenticated.contains(uuid);
+        return authenticated.containsKey(uuid);
+    }
+
+    /** Null if this player isn't authenticated (or already disconnected). */
+    public AuthReason reasonFor(UUID uuid) {
+        return authenticated.get(uuid);
     }
 
     public void trackReminder(UUID uuid, SchedulerAdapter.CancellableTask task) {

@@ -1,0 +1,68 @@
+# Повідомлення rLogin — Українська
+# Доступні плейсхолдери залежно від повідомлення: {player} {seconds} {attempts} {min}
+#
+# Формати кольору — можна вільно поєднувати:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Класичні коди: &a / §a (та &l, &n... для стилів, &r для скидання)
+#   3. Hex (у стилі BungeeCord/Spigot, використовується тут за замовчуванням):
+#      &#RRGGBB, §x§R§R§G§G§B§B, або просто #RRGGBB
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eВикористання: &#e39fff/login <пароль>"
+  wrong-password: "{prefix}&#fd5e5eНевірний пароль. Залишилось спроб: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eВи вже увійшли."
+  success: "{prefix}&#91f251Вхід виконано успішно. Ласкаво просимо, &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eТакож введіть код 2FA: &#e39fff/login <пароль> <код>"
+  wrong-totp: "{prefix}&#fd5e5eНевірний код 2FA."
+  not-registered: "{prefix}&#fd5e5eУ вас немає акаунта. Зареєструйтесь через &#e39fff/register <пароль> <пароль>"
+
+register:
+  usage: "{prefix}&#fd5e5eВикористання: &#e39fff/register <пароль> <повторіть пароль>"
+  already-registered: "{prefix}&#fd5e5eЦей акаунт вже зареєстровано."
+  passwords-dont-match: "{prefix}&#fd5e5eПаролі не збігаються."
+  password-too-short: "{prefix}&#fd5e5eПароль має містити щонайменше &#fd8ddb{min}&#fd5e5e символів."
+  premium-name-protected: "{prefix}&#fd5e5eЦе ім'я належить преміум-акаунту. Якщо це ваш нік, підключіться через оригінальний клієнт Minecraft."
+  success: "{prefix}&#91f251Реєстрацію завершено. Ласкаво просимо, &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Ви вийшли з акаунта."
+  not-logged-in: "{prefix}&#fd5e5eВи не увійшли."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eВикористання: &#e39fff/changepassword <поточний пароль> <новий пароль>"
+  success: "{prefix}&#91f251Пароль успішно змінено."
+  wrong-password: "{prefix}&#fd5e5eПоточний пароль невірний."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Виявлено преміум-акаунт, сесію розпочато автоматично."
+  info-premium: "{prefix}&#91f251Ваш акаунт підтверджено Mojang як преміум."
+  info-cracked: "{prefix}&#fdba5eВаш акаунт не преміум, потрібен власний пароль."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eВам потрібно увійти, щоб рухатися. Використовуйте &#e39fff/login&#fdba5e або &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eВи не можете зробити це, поки не увійдете."
+
+security:
+  locked-out: "{prefix}&#fd5e5eЗабагато невдалих спроб. Зачекайте &#5e9dfd{seconds} секунд&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eРозв'яжіть капчу, щоб продовжити: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Двофакторну автентифікацію увімкнено."
+  disabled: "{prefix}&#91f251Двофакторну автентифікацію вимкнено."
+  setup-secret: "{prefix}&#fdba5eВаш ключ 2FA: &#fd8ddb{secret} &#fdba5e(додайте його у застосунок-автентифікатор і підтвердьте через &#e39fff/2fa confirm <код>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eВикористання: &#e39fff/2fa confirm <код>"
+  already-enabled: "{prefix}&#fd5e5eУ вас вже увімкнена двофакторна автентифікація."
+  not-enabled: "{prefix}&#fd5e5eУ вас не увімкнена двофакторна автентифікація."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eУ вас немає прав для цього."
+  reloaded: "{prefix}&#91f251Конфігурацію перезавантажено."
+  unregistered: "{prefix}&#91f251Акаунт гравця &#fd8ddb{player} &#91f251видалено."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251примусово авторизовано."
+  player-not-found: "{prefix}&#fd5e5eГравця не знайдено."
+  migration-started: "{prefix}&#fdba5eІмпорт акаунтів з &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Імпорт завершено: &#fd8ddb{count} &#91f251акаунтів імпортовано."
+  migration-failed: "{prefix}&#fd5e5eПомилка імпорту: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> преміум: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, останній вхід: &#5e9dfd{last-login}"

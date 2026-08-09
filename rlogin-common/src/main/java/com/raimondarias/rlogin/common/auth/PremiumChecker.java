@@ -124,7 +124,8 @@ public final class PremiumChecker {
         return PremiumLookup.notPremium();
     }
 
-    private static UUID dashUuid(String raw32) {
+    /** Package-private: also reused by {@link MojangSessionVerifier}, same 32-char-hex-to-UUID need. */
+    static UUID dashUuid(String raw32) {
         String dashed = raw32.substring(0, 8) + "-" + raw32.substring(8, 12) + "-"
                 + raw32.substring(12, 16) + "-" + raw32.substring(16, 20) + "-" + raw32.substring(20);
         return UUID.fromString(dashed);

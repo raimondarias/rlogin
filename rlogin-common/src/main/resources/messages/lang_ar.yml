@@ -1,0 +1,68 @@
+# رسائل rLogin — العربية
+# المتغيرات المتاحة حسب الرسالة: {player} {seconds} {attempts} {min}
+#
+# صيغ الألوان — يمكن دمجها بحرية:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. الرموز الكلاسيكية: &a / §a (و &l, &n... للأنماط، &r لإعادة الضبط)
+#   3. Hex (بأسلوب BungeeCord/Spigot، وهو المستخدم افتراضيًا في هذا الملف):
+#      &#RRGGBB, §x§R§R§G§G§B§B, أو #RRGGBB منفردًا
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/login <كلمة المرور>"
+  wrong-password: "{prefix}&#fd5e5eكلمة مرور خاطئة. المحاولات المتبقية: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eلقد قمت بتسجيل الدخول بالفعل."
+  success: "{prefix}&#91f251تم تسجيل الدخول بنجاح. مرحبًا &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eأدخل أيضًا رمز 2FA الخاص بك: &#e39fff/login <كلمة المرور> <الرمز>"
+  wrong-totp: "{prefix}&#fd5e5eرمز 2FA غير صحيح."
+  not-registered: "{prefix}&#fd5e5eليس لديك حساب. سجّل باستخدام &#e39fff/register <كلمة المرور> <كلمة المرور>"
+
+register:
+  usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/register <كلمة المرور> <تكرار كلمة المرور>"
+  already-registered: "{prefix}&#fd5e5eهذا الحساب مسجل بالفعل."
+  passwords-dont-match: "{prefix}&#fd5e5eكلمتا المرور غير متطابقتين."
+  password-too-short: "{prefix}&#fd5e5eيجب أن تتكون كلمة المرور من &#fd8ddb{min}&#fd5e5e حرفًا على الأقل."
+  premium-name-protected: "{prefix}&#fd5e5eهذا الاسم يخص حسابًا مميزًا (premium). إذا كان اسمك، فاتصل باستخدام عميل Minecraft الأصلي."
+  success: "{prefix}&#91f251اكتمل التسجيل. مرحبًا &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251تم تسجيل الخروج."
+  not-logged-in: "{prefix}&#fd5e5eلم تقم بتسجيل الدخول."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/changepassword <كلمة المرور الحالية> <كلمة المرور الجديدة>"
+  success: "{prefix}&#91f251تم تحديث كلمة المرور بنجاح."
+  wrong-password: "{prefix}&#fd5e5eكلمة المرور الحالية غير صحيحة."
+
+premium:
+  auto-login-message: "{prefix}&#91f251تم اكتشاف حساب مميز، وبدأت الجلسة تلقائيًا."
+  info-premium: "{prefix}&#91f251تم التحقق من حسابك كحساب مميز بواسطة Mojang."
+  info-cracked: "{prefix}&#fdba5eحسابك ليس مميزًا، تحتاج إلى كلمة مرور خاصة بك."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eيجب عليك تسجيل الدخول حتى تتمكن من الحركة. استخدم &#e39fff/login&#fdba5e أو &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eلا يمكنك فعل ذلك حتى تسجل الدخول."
+
+security:
+  locked-out: "{prefix}&#fd5e5eعدد كبير جدًا من المحاولات الفاشلة. انتظر &#5e9dfd{seconds} ثانية&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eحل رمز التحقق للمتابعة: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251تم تفعيل المصادقة الثنائية."
+  disabled: "{prefix}&#91f251تم إلغاء تفعيل المصادقة الثنائية."
+  setup-secret: "{prefix}&#fdba5eمفتاح 2FA الخاص بك: &#fd8ddb{secret} &#fdba5e(أضفه إلى تطبيق المصادقة الخاص بك وأكّد باستخدام &#e39fff/2fa confirm <الرمز>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/2fa confirm <الرمز>"
+  already-enabled: "{prefix}&#fd5e5eلديك بالفعل مصادقة ثنائية مفعّلة."
+  not-enabled: "{prefix}&#fd5e5eليس لديك مصادقة ثنائية مفعّلة."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eليس لديك إذن للقيام بذلك."
+  reloaded: "{prefix}&#91f251تم إعادة تحميل الإعدادات."
+  unregistered: "{prefix}&#91f251تم حذف حساب &#fd8ddb{player}&#91f251."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251تم تسجيل دخوله بالإجبار."
+  player-not-found: "{prefix}&#fd5e5eاللاعب غير موجود."
+  migration-started: "{prefix}&#fdba5eجارٍ استيراد الحسابات من &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251اكتمل الاستيراد: تم استيراد &#fd8ddb{count} &#91f251حساب."
+  migration-failed: "{prefix}&#fd5e5eخطأ في الاستيراد: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> مميز: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, آخر تسجيل دخول: &#5e9dfd{last-login}"

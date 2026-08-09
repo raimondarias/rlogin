@@ -1,0 +1,68 @@
+# Messages rLogin — Français
+# Placeholders disponibles selon le message : {player} {seconds} {attempts} {min}
+#
+# Formats de couleur — mélangeables librement :
+#   1. MiniMessage (Kyori) : <red>, <#e39fff>, <bold>...
+#   2. Codes classiques : &a / §a (et &l, &n... pour les styles, &r pour réinitialiser)
+#   3. Hex (style BungeeCord/Spigot, utilisé par défaut ici) :
+#      &#RRGGBB, §x§R§R§G§G§B§B, ou un simple #RRGGBB
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eUtilisation : &#e39fff/login <mot de passe>"
+  wrong-password: "{prefix}&#fd5e5eMot de passe incorrect. Tentatives restantes : &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eTu es déjà connecté."
+  success: "{prefix}&#91f251Connexion réussie. Bienvenue &#fd8ddb{player}&#91f251 !"
+  need-totp: "{prefix}&#fdba5eEntre aussi ton code 2FA : &#e39fff/login <mot de passe> <code>"
+  wrong-totp: "{prefix}&#fd5e5eCode 2FA incorrect."
+  not-registered: "{prefix}&#fd5e5eTu n'as pas de compte. Inscris-toi avec &#e39fff/register <mot de passe> <mot de passe>"
+
+register:
+  usage: "{prefix}&#fd5e5eUtilisation : &#e39fff/register <mot de passe> <répéter le mot de passe>"
+  already-registered: "{prefix}&#fd5e5eCe compte est déjà enregistré."
+  passwords-dont-match: "{prefix}&#fd5e5eLes mots de passe ne correspondent pas."
+  password-too-short: "{prefix}&#fd5e5eLe mot de passe doit contenir au moins &#fd8ddb{min}&#fd5e5e caractères."
+  premium-name-protected: "{prefix}&#fd5e5eCe nom appartient à un compte premium. Si c'est le tien, connecte-toi avec le client Minecraft original."
+  success: "{prefix}&#91f251Inscription terminée. Bienvenue &#fd8ddb{player}&#91f251 !"
+
+logout:
+  success: "{prefix}&#91f251Déconnecté."
+  not-logged-in: "{prefix}&#fd5e5eTu n'es pas connecté."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eUtilisation : &#e39fff/changepassword <mot de passe actuel> <nouveau mot de passe>"
+  success: "{prefix}&#91f251Mot de passe mis à jour avec succès."
+  wrong-password: "{prefix}&#fd5e5eLe mot de passe actuel est incorrect."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Compte premium détecté, session démarrée automatiquement."
+  info-premium: "{prefix}&#91f251Ton compte est vérifié comme premium par Mojang."
+  info-cracked: "{prefix}&#fdba5eTon compte n'est pas premium, tu as besoin de ton propre mot de passe."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eTu dois te connecter pour pouvoir bouger. Utilise &#e39fff/login&#fdba5e ou &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eTu ne peux pas faire ça avant de te connecter."
+
+security:
+  locked-out: "{prefix}&#fd5e5eTrop de tentatives échouées. Attends &#5e9dfd{seconds} secondes&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eRésous le captcha pour continuer : &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Authentification à deux facteurs activée."
+  disabled: "{prefix}&#91f251Authentification à deux facteurs désactivée."
+  setup-secret: "{prefix}&#fdba5eTa clé 2FA : &#fd8ddb{secret} &#fdba5e(ajoute-la à ton application d'authentification et confirme avec &#e39fff/2fa confirm <code>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eUtilisation : &#e39fff/2fa confirm <code>"
+  already-enabled: "{prefix}&#fd5e5eTu as déjà activé l'authentification à deux facteurs."
+  not-enabled: "{prefix}&#fd5e5eTu n'as pas activé l'authentification à deux facteurs."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eTu n'as pas la permission de faire ça."
+  reloaded: "{prefix}&#91f251Configuration rechargée."
+  unregistered: "{prefix}&#91f251Le compte de &#fd8ddb{player} &#91f251a été supprimé."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251a été connecté de force."
+  player-not-found: "{prefix}&#fd5e5eJoueur introuvable."
+  migration-started: "{prefix}&#fdba5eImportation des comptes depuis &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Importation terminée : &#fd8ddb{count} &#91f251comptes importés."
+  migration-failed: "{prefix}&#fd5e5eErreur d'importation : &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> premium : &#fd8ddb{premium}&#d4d9d8, 2FA : &#fd8ddb{totp}&#d4d9d8, dernière connexion : &#5e9dfd{last-login}"

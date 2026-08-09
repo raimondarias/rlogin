@@ -1,0 +1,68 @@
+# Wiadomości rLogin — Polski
+# Dostępne placeholdery zależnie od wiadomości: {player} {seconds} {attempts} {min}
+#
+# Formaty kolorów — można dowolnie mieszać:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Klasyczne kody: &a / §a (oraz &l, &n... dla stylów, &r do resetu)
+#   3. Hex (styl BungeeCord/Spigot, domyślny w tym pliku):
+#      &#RRGGBB, §x§R§R§G§G§B§B, lub samo #RRGGBB
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eUżycie: &#e39fff/login <hasło>"
+  wrong-password: "{prefix}&#fd5e5eBłędne hasło. Pozostałe próby: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eJesteś już zalogowany."
+  success: "{prefix}&#91f251Zalogowano pomyślnie. Witaj &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5ePodaj również kod 2FA: &#e39fff/login <hasło> <kod>"
+  wrong-totp: "{prefix}&#fd5e5eBłędny kod 2FA."
+  not-registered: "{prefix}&#fd5e5eNie masz konta. Zarejestruj się za pomocą &#e39fff/register <hasło> <hasło>"
+
+register:
+  usage: "{prefix}&#fd5e5eUżycie: &#e39fff/register <hasło> <powtórz hasło>"
+  already-registered: "{prefix}&#fd5e5eTo konto jest już zarejestrowane."
+  passwords-dont-match: "{prefix}&#fd5e5eHasła się nie zgadzają."
+  password-too-short: "{prefix}&#fd5e5eHasło musi mieć co najmniej &#fd8ddb{min}&#fd5e5e znaków."
+  premium-name-protected: "{prefix}&#fd5e5eTen nick należy do konta premium. Jeśli to twój nick, połącz się za pomocą oryginalnego klienta Minecraft."
+  success: "{prefix}&#91f251Rejestracja zakończona. Witaj &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Wylogowano."
+  not-logged-in: "{prefix}&#fd5e5eNie jesteś zalogowany."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eUżycie: &#e39fff/changepassword <obecne hasło> <nowe hasło>"
+  success: "{prefix}&#91f251Hasło zostało pomyślnie zaktualizowane."
+  wrong-password: "{prefix}&#fd5e5eObecne hasło jest nieprawidłowe."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Wykryto konto premium, sesja rozpoczęta automatycznie."
+  info-premium: "{prefix}&#91f251Twoje konto zostało zweryfikowane przez Mojang jako premium."
+  info-cracked: "{prefix}&#fdba5eTwoje konto nie jest premium, potrzebujesz własnego hasła."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eMusisz się zalogować, aby móc się poruszać. Użyj &#e39fff/login&#fdba5e lub &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eNie możesz tego zrobić, dopóki się nie zalogujesz."
+
+security:
+  locked-out: "{prefix}&#fd5e5eZbyt wiele nieudanych prób. Poczekaj &#5e9dfd{seconds} sekund&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eRozwiąż captchę, aby kontynuować: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Weryfikacja dwuetapowa włączona."
+  disabled: "{prefix}&#91f251Weryfikacja dwuetapowa wyłączona."
+  setup-secret: "{prefix}&#fdba5eTwój klucz 2FA: &#fd8ddb{secret} &#fdba5e(dodaj go do aplikacji uwierzytelniającej i potwierdź za pomocą &#e39fff/2fa confirm <kod>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eUżycie: &#e39fff/2fa confirm <kod>"
+  already-enabled: "{prefix}&#fd5e5eMasz już włączoną weryfikację dwuetapową."
+  not-enabled: "{prefix}&#fd5e5eNie masz włączonej weryfikacji dwuetapowej."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eNie masz uprawnień, aby to zrobić."
+  reloaded: "{prefix}&#91f251Konfiguracja przeładowana."
+  unregistered: "{prefix}&#91f251Konto gracza &#fd8ddb{player} &#91f251zostało usunięte."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251został zalogowany na siłę."
+  player-not-found: "{prefix}&#fd5e5eNie znaleziono gracza."
+  migration-started: "{prefix}&#fdba5eImportowanie kont z &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Import zakończony: zaimportowano &#fd8ddb{count} &#91f251kont."
+  migration-failed: "{prefix}&#fd5e5eBłąd importu: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, ostatnie logowanie: &#5e9dfd{last-login}"

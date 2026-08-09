@@ -1,5 +1,7 @@
 package com.raimondarias.rlogin.common.config;
 
+import com.raimondarias.rlogin.common.auth.UuidType;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -44,7 +46,11 @@ public final class RLoginConfig {
         return doc.getBoolean("general.debug", false);
     }
 
-    // --- database (Paper/Folia only) ---
+    // --- database (always on for Paper/Folia; optional opt-in for Velocity, see velocity-config.yml) ---
+    public boolean databaseEnabled() {
+        return doc.getBoolean("database.enabled", true);
+    }
+
     public String databaseType() {
         return doc.getString("database.type", "sqlite");
     }
@@ -101,6 +107,25 @@ public final class RLoginConfig {
 
     public boolean protectPremiumNames() {
         return doc.getBoolean("premium.protect-premium-names", true);
+    }
+
+    /**
+     * Standalone hybrid mode (Paper/Folia only, no Velocity needed): premium
+     * accounts still auto-login and cracked accounts still get
+     * /login-/register even on a single online-mode:false backend with no
+     * proxy in front. Requires the separate PacketEvents plugin to be
+     * installed — silently does nothing without it (fail-closed), see
+     * PacketEventsSupport. Off by default: it's newer and more advanced than
+     * the Velocity-based path, which remains the recommended default for
+     * production networks.
+     */
+    public boolean standaloneHybridModeEnabled() {
+        return doc.getBoolean("premium.standalone-hybrid-mode", false);
+    }
+
+    /** Which UUID connecting players end up with; see {@link UuidType}. Defaults to {@code real}. */
+    public UuidType uuidType() {
+        return UuidType.parse(doc.getString("premium.uuid-type", "real"));
     }
 
     // --- session (Paper/Folia only) ---

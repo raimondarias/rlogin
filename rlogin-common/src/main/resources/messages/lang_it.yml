@@ -1,0 +1,68 @@
+# Messaggi rLogin — Italiano
+# Placeholder disponibili a seconda del messaggio: {player} {seconds} {attempts} {min}
+#
+# Formati colore — combinabili liberamente:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Codici classici: &a / §a (e &l, &n... per gli stili, &r per il reset)
+#   3. Hex (stile BungeeCord/Spigot, predefinito in questo file):
+#      &#RRGGBB, §x§R§R§G§G§B§B, oppure un #RRGGBB semplice
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/login <password>"
+  wrong-password: "{prefix}&#fd5e5ePassword errata. Tentativi rimasti: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eHai già effettuato l'accesso."
+  success: "{prefix}&#91f251Accesso effettuato con successo. Benvenuto &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eInserisci anche il tuo codice 2FA: &#e39fff/login <password> <codice>"
+  wrong-totp: "{prefix}&#fd5e5eCodice 2FA errato."
+  not-registered: "{prefix}&#fd5e5eNon hai un account. Registrati con &#e39fff/register <password> <password>"
+
+register:
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/register <password> <ripeti password>"
+  already-registered: "{prefix}&#fd5e5eQuesto account è già registrato."
+  passwords-dont-match: "{prefix}&#fd5e5eLe password non coincidono."
+  password-too-short: "{prefix}&#fd5e5eLa password deve contenere almeno &#fd8ddb{min}&#fd5e5e caratteri."
+  premium-name-protected: "{prefix}&#fd5e5eQuesto nome appartiene a un account premium. Se è tuo, connettiti con il client Minecraft originale."
+  success: "{prefix}&#91f251Registrazione completata. Benvenuto &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Disconnesso."
+  not-logged-in: "{prefix}&#fd5e5eNon hai effettuato l'accesso."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/changepassword <password attuale> <nuova password>"
+  success: "{prefix}&#91f251Password aggiornata con successo."
+  wrong-password: "{prefix}&#fd5e5eLa password attuale non è corretta."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Account premium rilevato, sessione avviata automaticamente."
+  info-premium: "{prefix}&#91f251Il tuo account è verificato come premium da Mojang."
+  info-cracked: "{prefix}&#fdba5eIl tuo account non è premium, hai bisogno di una password tua."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eDevi effettuare l'accesso per poterti muovere. Usa &#e39fff/login&#fdba5e o &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eNon puoi farlo finché non effettui l'accesso."
+
+security:
+  locked-out: "{prefix}&#fd5e5eTroppi tentativi falliti. Attendi &#5e9dfd{seconds} secondi&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eRisolvi il captcha per continuare: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Autenticazione a due fattori attivata."
+  disabled: "{prefix}&#91f251Autenticazione a due fattori disattivata."
+  setup-secret: "{prefix}&#fdba5eLa tua chiave 2FA: &#fd8ddb{secret} &#fdba5e(aggiungila alla tua app di autenticazione e conferma con &#e39fff/2fa confirm <codice>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eUso: &#e39fff/2fa confirm <codice>"
+  already-enabled: "{prefix}&#fd5e5eHai già attivato l'autenticazione a due fattori."
+  not-enabled: "{prefix}&#fd5e5eNon hai attivato l'autenticazione a due fattori."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eNon hai il permesso di farlo."
+  reloaded: "{prefix}&#91f251Configurazione ricaricata."
+  unregistered: "{prefix}&#91f251L'account di &#fd8ddb{player} &#91f251è stato eliminato."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251è stato autenticato forzatamente."
+  player-not-found: "{prefix}&#fd5e5eGiocatore non trovato."
+  migration-started: "{prefix}&#fdba5eImportazione account da &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Importazione completata: &#fd8ddb{count} &#91f251account importati."
+  migration-failed: "{prefix}&#fd5e5eErrore di importazione: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, ultimo accesso: &#5e9dfd{last-login}"

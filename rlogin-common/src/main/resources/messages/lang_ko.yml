@@ -1,0 +1,68 @@
+# rLogin 메시지 — 한국어
+# 메시지에 따라 사용 가능한 플레이스홀더: {player} {seconds} {attempts} {min}
+#
+# 색상 형식 — 자유롭게 조합 가능:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. 클래식 코드: &a / §a (스타일용 &l, &n..., 초기화용 &r)
+#   3. 헥스 (BungeeCord/Spigot 스타일, 이 파일의 기본값):
+#      &#RRGGBB, §x§R§R§G§G§B§B, 또는 단독 #RRGGBB
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5e사용법: &#e39fff/login <비밀번호>"
+  wrong-password: "{prefix}&#fd5e5e비밀번호가 틀렸습니다. 남은 시도 횟수: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5e이미 로그인되어 있습니다."
+  success: "{prefix}&#91f251로그인에 성공했습니다. 환영합니다, &#fd8ddb{player}&#91f251님!"
+  need-totp: "{prefix}&#fdba5e2FA 코드도 입력하세요: &#e39fff/login <비밀번호> <코드>"
+  wrong-totp: "{prefix}&#fd5e5e2FA 코드가 틀렸습니다."
+  not-registered: "{prefix}&#fd5e5e계정이 없습니다. &#e39fff/register <비밀번호> <비밀번호> &#fd5e5e로 가입하세요"
+
+register:
+  usage: "{prefix}&#fd5e5e사용법: &#e39fff/register <비밀번호> <비밀번호 확인>"
+  already-registered: "{prefix}&#fd5e5e이 계정은 이미 등록되어 있습니다."
+  passwords-dont-match: "{prefix}&#fd5e5e비밀번호가 일치하지 않습니다."
+  password-too-short: "{prefix}&#fd5e5e비밀번호는 최소 &#fd8ddb{min}&#fd5e5e자 이상이어야 합니다."
+  premium-name-protected: "{prefix}&#fd5e5e이 이름은 프리미엄 계정에 속해 있습니다. 본인 계정이라면 정품 Minecraft 클라이언트로 접속하세요."
+  success: "{prefix}&#91f251가입이 완료되었습니다. 환영합니다, &#fd8ddb{player}&#91f251님!"
+
+logout:
+  success: "{prefix}&#91f251로그아웃되었습니다."
+  not-logged-in: "{prefix}&#fd5e5e로그인되어 있지 않습니다."
+
+changepassword:
+  usage: "{prefix}&#fd5e5e사용법: &#e39fff/changepassword <현재 비밀번호> <새 비밀번호>"
+  success: "{prefix}&#91f251비밀번호가 성공적으로 변경되었습니다."
+  wrong-password: "{prefix}&#fd5e5e현재 비밀번호가 올바르지 않습니다."
+
+premium:
+  auto-login-message: "{prefix}&#91f251프리미엄 계정이 감지되어 세션이 자동으로 시작되었습니다."
+  info-premium: "{prefix}&#91f251회원님의 계정은 Mojang에서 프리미엄으로 확인되었습니다."
+  info-cracked: "{prefix}&#fdba5e회원님의 계정은 프리미엄이 아니므로 자신만의 비밀번호가 필요합니다."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5e움직이려면 로그인해야 합니다. &#e39fff/login&#fdba5e 또는 &#e39fff/register&#fdba5e 를 사용하세요."
+  action-blocked: "{prefix}&#fd5e5e로그인하기 전까지는 그 작업을 할 수 없습니다."
+
+security:
+  locked-out: "{prefix}&#fd5e5e실패한 시도가 너무 많습니다. &#5e9dfd{seconds}초&#fd5e5e 기다려주세요."
+  captcha-required: "{prefix}&#fdba5e계속하려면 캡차를 해결하세요: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f2512단계 인증이 활성화되었습니다."
+  disabled: "{prefix}&#91f2512단계 인증이 비활성화되었습니다."
+  setup-secret: "{prefix}&#fdba5e회원님의 2FA 키: &#fd8ddb{secret} &#fdba5e(인증 앱에 추가한 후 &#e39fff/2fa confirm <코드>&#fdba5e 로 확인하세요)"
+  confirm-usage: "{prefix}&#fd5e5e사용법: &#e39fff/2fa confirm <코드>"
+  already-enabled: "{prefix}&#fd5e5e이미 2단계 인증이 활성화되어 있습니다."
+  not-enabled: "{prefix}&#fd5e5e2단계 인증이 활성화되어 있지 않습니다."
+
+admin:
+  no-permission: "{prefix}&#fd5e5e그 작업을 수행할 권한이 없습니다."
+  reloaded: "{prefix}&#91f251설정이 다시 불러와졌습니다."
+  unregistered: "{prefix}&#91f251&#fd8ddb{player}&#91f251님의 계정이 삭제되었습니다."
+  force-logged-in: "{prefix}&#fd8ddb{player}&#91f251님이 강제로 로그인되었습니다."
+  player-not-found: "{prefix}&#fd5e5e플레이어를 찾을 수 없습니다."
+  migration-started: "{prefix}&#fdba5e&#fd8ddb{plugin}&#fdba5e에서 계정을 가져오는 중..."
+  migration-done: "{prefix}&#91f251가져오기 완료: &#fd8ddb{count}&#91f251개의 계정을 가져왔습니다."
+  migration-failed: "{prefix}&#fd5e5e가져오기 오류: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> 프리미엄: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, 마지막 로그인: &#5e9dfd{last-login}"

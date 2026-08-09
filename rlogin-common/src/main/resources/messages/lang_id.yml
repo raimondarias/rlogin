@@ -1,0 +1,68 @@
+# Pesan rLogin — Bahasa Indonesia
+# Placeholder yang tersedia tergantung pesan: {player} {seconds} {attempts} {min}
+#
+# Format warna — dapat digabung bebas:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Kode klasik: &a / §a (dan &l, &n... untuk gaya, &r untuk reset)
+#   3. Hex (gaya BungeeCord/Spigot, default di file ini):
+#      &#RRGGBB, §x§R§R§G§G§B§B, atau #RRGGBB tunggal
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/login <kata sandi>"
+  wrong-password: "{prefix}&#fd5e5eKata sandi salah. Percobaan tersisa: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eKamu sudah login."
+  success: "{prefix}&#91f251Berhasil login. Selamat datang &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eMasukkan juga kode 2FA kamu: &#e39fff/login <kata sandi> <kode>"
+  wrong-totp: "{prefix}&#fd5e5eKode 2FA salah."
+  not-registered: "{prefix}&#fd5e5eKamu belum punya akun. Daftar dengan &#e39fff/register <kata sandi> <kata sandi>"
+
+register:
+  usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/register <kata sandi> <ulangi kata sandi>"
+  already-registered: "{prefix}&#fd5e5eAkun ini sudah terdaftar."
+  passwords-dont-match: "{prefix}&#fd5e5eKata sandi tidak cocok."
+  password-too-short: "{prefix}&#fd5e5eKata sandi harus minimal &#fd8ddb{min}&#fd5e5e karakter."
+  premium-name-protected: "{prefix}&#fd5e5eNama ini milik akun premium. Jika ini milikmu, sambungkan dengan client Minecraft asli."
+  success: "{prefix}&#91f251Pendaftaran selesai. Selamat datang &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Berhasil logout."
+  not-logged-in: "{prefix}&#fd5e5eKamu belum login."
+
+changepassword:
+  usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/changepassword <kata sandi saat ini> <kata sandi baru>"
+  success: "{prefix}&#91f251Kata sandi berhasil diperbarui."
+  wrong-password: "{prefix}&#fd5e5eKata sandi saat ini salah."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Akun premium terdeteksi, sesi dimulai secara otomatis."
+  info-premium: "{prefix}&#91f251Akunmu terverifikasi sebagai premium oleh Mojang."
+  info-cracked: "{prefix}&#fdba5eAkunmu bukan premium, kamu memerlukan kata sandi sendiri."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eKamu harus login untuk bisa bergerak. Gunakan &#e39fff/login&#fdba5e atau &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eKamu tidak bisa melakukan itu sampai kamu login."
+
+security:
+  locked-out: "{prefix}&#fd5e5eTerlalu banyak percobaan gagal. Tunggu &#5e9dfd{seconds} detik&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eSelesaikan captcha untuk melanjutkan: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Autentikasi dua faktor diaktifkan."
+  disabled: "{prefix}&#91f251Autentikasi dua faktor dinonaktifkan."
+  setup-secret: "{prefix}&#fdba5eKunci 2FA kamu: &#fd8ddb{secret} &#fdba5e(tambahkan ke aplikasi autentikator dan konfirmasi dengan &#e39fff/2fa confirm <kode>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/2fa confirm <kode>"
+  already-enabled: "{prefix}&#fd5e5eKamu sudah mengaktifkan autentikasi dua faktor."
+  not-enabled: "{prefix}&#fd5e5eKamu belum mengaktifkan autentikasi dua faktor."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eKamu tidak punya izin untuk melakukan itu."
+  reloaded: "{prefix}&#91f251Konfigurasi dimuat ulang."
+  unregistered: "{prefix}&#91f251Akun &#fd8ddb{player} &#91f251telah dihapus."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251telah dipaksa login."
+  player-not-found: "{prefix}&#fd5e5ePemain tidak ditemukan."
+  migration-started: "{prefix}&#fdba5eMengimpor akun dari &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Impor selesai: &#fd8ddb{count} &#91f251akun berhasil diimpor."
+  migration-failed: "{prefix}&#fd5e5eKesalahan impor: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, login terakhir: &#5e9dfd{last-login}"

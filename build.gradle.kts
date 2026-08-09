@@ -4,11 +4,12 @@ plugins {
 
 allprojects {
     group = "com.raimondarias.rlogin"
-    version = "1.0.0-SNAPSHOT"
+    version = "1.0.0"
 
     repositories {
         mavenCentral()
         maven("https://repo.papermc.io/repository/maven-public/")
+        maven("https://repo.codemc.io/repository/maven-releases/") // PacketEvents
     }
 }
 

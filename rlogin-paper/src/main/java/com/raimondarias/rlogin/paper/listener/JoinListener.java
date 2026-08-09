@@ -1,5 +1,7 @@
 package com.raimondarias.rlogin.paper.listener;
 
+import com.raimondarias.rlogin.api.AuthReason;
+import com.raimondarias.rlogin.common.auth.UuidType;
 import com.raimondarias.rlogin.common.util.OfflineUuid;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
 import com.raimondarias.rlogin.paper.spawn.SpawnManager;
@@ -43,21 +45,69 @@ public final class JoinListener implements Listener {
                 && username.startsWith(plugin.config().floodgatePrefix())
                 && plugin.floodgate().isFloodgatePlayer(uuid);
 
-        boolean premium = floodgatePremium || !OfflineUuid.isOffline(uuid, username);
+        // Standalone hybrid-auth (premium.standalone-hybrid-mode): HybridAuthListener already
+        // cryptographically verified this connection against Mojang at the packet level, before
+        // Bukkit ever fired this event, and normally also gave it the real Mojang UUID — in
+        // which case the offline-UUID check below already says "premium" on its own. This flag
+        // covers the builds where that UUID couldn't be applied. The tracker itself always
+        // exists (cheap, no PacketEvents dependency); it's simply never populated when the
+        // feature is off or PacketEvents isn't installed.
+        boolean hybridVerified = plugin.hybridVerificationTracker().consumeIfVerified(username);
+
+        boolean premium = floodgatePremium || hybridVerified
+                || (uuidCanProvePremium() && !OfflineUuid.isOffline(uuid, username));
 
         if (premium) {
+            AuthReason reason = premiumReason(floodgatePremium, hybridVerified);
+            debug(username + " (" + uuid + ") let in without a password: " + reason);
             plugin.accountService().upsertPremium(uuid, username, ip).join();
-            plugin.authSessions().markAuthenticated(uuid);
+            plugin.authSessions().markAuthenticated(uuid, reason);
             return;
         }
 
         boolean remembered = plugin.sessionService().isRemembered(uuid, ip).join();
+        debug(username + " (" + uuid + ") needs a password; remembered session from " + ip + ": " + remembered);
         if (remembered) {
-            plugin.authSessions().markAuthenticated(uuid);
+            plugin.authSessions().markAuthenticated(uuid, AuthReason.REMEMBERED_SESSION);
             plugin.sessionService().remember(uuid, ip, plugin.getServer().getName());
         }
         // If neither premium nor remembered, the player stays pending: FreezeListener and
         // the /login, /register commands take it from here once they enter the world.
+    }
+
+    /**
+     * Whether "this UUID isn't the offline one for this name" still means
+     * somebody verified the account against Mojang.
+     *
+     * <p>It does in every case but one: {@link UuidType#RANDOM} assigns a
+     * non-offline UUID to <em>everyone</em>, cracked players included, so
+     * under that mode the comparison proves nothing and would hand a free
+     * login to anyone who connects. There, only the cryptographic proof
+     * recorded by {@code HybridVerificationTracker} counts.</p>
+     */
+    private void debug(String message) {
+        if (plugin.config().debug()) {
+            plugin.getLogger().info("[debug] " + message);
+        }
+    }
+
+    private boolean uuidCanProvePremium() {
+        return !plugin.config().standaloneHybridModeEnabled()
+                || plugin.config().uuidType() != UuidType.RANDOM;
+    }
+
+    /**
+     * Which flavour of "already verified, don't ask for a password" this is.
+     * Only used to report it; all three skip the login prompt identically.
+     * The last branch covers both a Velocity-forwarded connection and a
+     * server running {@code online-mode: true} — indistinguishable from here,
+     * and the player is told the same thing either way.
+     */
+    private static AuthReason premiumReason(boolean floodgate, boolean hybridVerified) {
+        if (floodgate) {
+            return AuthReason.FLOODGATE;
+        }
+        return hybridVerified ? AuthReason.PREMIUM_MOJANG_API : AuthReason.PREMIUM_FORWARDED;
     }
 
     @EventHandler
@@ -71,13 +121,27 @@ public final class JoinListener implements Listener {
         // last disconnected, which is Bukkit's own default behavior anyway.
 
         if (plugin.authSessions().isAuthenticated(uuid)) {
+            announceAutoLogin(player, plugin.authSessions().reasonFor(uuid));
             return;
         }
         if (player.hasPermission("rlogin.bypass")) {
-            plugin.authSessions().markAuthenticated(uuid);
+            plugin.authSessions().markAuthenticated(uuid, AuthReason.BYPASS_PERMISSION);
             return;
         }
         plugin.limboService().freeze(player);
+    }
+
+    /**
+     * Tells a premium player they were logged in for them — otherwise being
+     * let straight in is indistinguishable from rLogin not being installed.
+     * Everyone else gets nothing here: someone who typed /login already got
+     * their confirmation from the command itself, and a restored "remember
+     * me" session is meant to be invisible.
+     */
+    private void announceAutoLogin(Player player, AuthReason reason) {
+        if (reason != null && reason.isAutomaticPremium()) {
+            player.sendMessage(plugin.messages().get("premium.auto-login-message"));
+        }
     }
 
     @EventHandler

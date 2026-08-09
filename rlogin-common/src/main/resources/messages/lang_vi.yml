@@ -1,0 +1,68 @@
+# Tin nhắn rLogin — Tiếng Việt
+# Placeholder khả dụng tùy theo tin nhắn: {player} {seconds} {attempts} {min}
+#
+# Định dạng màu — có thể kết hợp tự do:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Mã cổ điển: &a / §a (và &l, &n... cho kiểu chữ, &r để đặt lại)
+#   3. Hex (kiểu BungeeCord/Spigot, mặc định trong tệp này):
+#      &#RRGGBB, §x§R§R§G§G§B§B, hoặc #RRGGBB đơn lẻ
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/login <mật khẩu>"
+  wrong-password: "{prefix}&#fd5e5eSai mật khẩu. Số lần thử còn lại: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eBạn đã đăng nhập rồi."
+  success: "{prefix}&#91f251Đăng nhập thành công. Chào mừng &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eNhập thêm mã 2FA của bạn: &#e39fff/login <mật khẩu> <mã>"
+  wrong-totp: "{prefix}&#fd5e5eSai mã 2FA."
+  not-registered: "{prefix}&#fd5e5eBạn chưa có tài khoản. Đăng ký bằng &#e39fff/register <mật khẩu> <mật khẩu>"
+
+register:
+  usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/register <mật khẩu> <nhập lại mật khẩu>"
+  already-registered: "{prefix}&#fd5e5eTài khoản này đã được đăng ký."
+  passwords-dont-match: "{prefix}&#fd5e5eMật khẩu không khớp."
+  password-too-short: "{prefix}&#fd5e5eMật khẩu phải có ít nhất &#fd8ddb{min}&#fd5e5e ký tự."
+  premium-name-protected: "{prefix}&#fd5e5eTên này thuộc về một tài khoản premium. Nếu đó là của bạn, hãy kết nối bằng client Minecraft gốc."
+  success: "{prefix}&#91f251Đăng ký hoàn tất. Chào mừng &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Đã đăng xuất."
+  not-logged-in: "{prefix}&#fd5e5eBạn chưa đăng nhập."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/changepassword <mật khẩu hiện tại> <mật khẩu mới>"
+  success: "{prefix}&#91f251Đổi mật khẩu thành công."
+  wrong-password: "{prefix}&#fd5e5eMật khẩu hiện tại không đúng."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Đã phát hiện tài khoản premium, phiên đăng nhập được bắt đầu tự động."
+  info-premium: "{prefix}&#91f251Tài khoản của bạn đã được Mojang xác minh là premium."
+  info-cracked: "{prefix}&#fdba5eTài khoản của bạn không phải premium, bạn cần mật khẩu riêng."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eBạn cần đăng nhập để có thể di chuyển. Dùng &#e39fff/login&#fdba5e hoặc &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eBạn không thể làm điều đó cho đến khi đăng nhập."
+
+security:
+  locked-out: "{prefix}&#fd5e5eQuá nhiều lần thử thất bại. Đợi &#5e9dfd{seconds} giây&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eGiải captcha để tiếp tục: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Đã bật xác thực hai yếu tố."
+  disabled: "{prefix}&#91f251Đã tắt xác thực hai yếu tố."
+  setup-secret: "{prefix}&#fdba5eKhóa 2FA của bạn: &#fd8ddb{secret} &#fdba5e(thêm vào ứng dụng xác thực và xác nhận bằng &#e39fff/2fa confirm <mã>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/2fa confirm <mã>"
+  already-enabled: "{prefix}&#fd5e5eBạn đã bật xác thực hai yếu tố rồi."
+  not-enabled: "{prefix}&#fd5e5eBạn chưa bật xác thực hai yếu tố."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eBạn không có quyền làm điều đó."
+  reloaded: "{prefix}&#91f251Đã tải lại cấu hình."
+  unregistered: "{prefix}&#91f251Tài khoản của &#fd8ddb{player} &#91f251đã bị xóa."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251đã được đăng nhập bắt buộc."
+  player-not-found: "{prefix}&#fd5e5eKhông tìm thấy người chơi."
+  migration-started: "{prefix}&#fdba5eĐang nhập tài khoản từ &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Nhập hoàn tất: đã nhập &#fd8ddb{count} &#91f251tài khoản."
+  migration-failed: "{prefix}&#fd5e5eLỗi nhập: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, đăng nhập gần nhất: &#5e9dfd{last-login}"

@@ -1,0 +1,68 @@
+# rLogin 消息 — 简体中文
+# 可用占位符视消息而定：{player} {seconds} {attempts} {min}
+#
+# 颜色格式 — 可自由混用：
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. 传统代码: &a / §a（以及 &l、&n 等样式，&r 重置）
+#   3. 十六进制（BungeeCord/Spigot 风格，本文件默认使用）:
+#      &#RRGGBB, §x§R§R§G§G§B§B, 或单独的 #RRGGBB
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5e用法: &#e39fff/login <密码>"
+  wrong-password: "{prefix}&#fd5e5e密码错误。剩余尝试次数: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5e你已经登录了。"
+  success: "{prefix}&#91f251登录成功。欢迎 &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5e还需要输入你的2FA验证码: &#e39fff/login <密码> <验证码>"
+  wrong-totp: "{prefix}&#fd5e5e2FA验证码错误。"
+  not-registered: "{prefix}&#fd5e5e你还没有账号。请使用 &#e39fff/register <密码> <密码> &#fd5e5e注册"
+
+register:
+  usage: "{prefix}&#fd5e5e用法: &#e39fff/register <密码> <重复密码>"
+  already-registered: "{prefix}&#fd5e5e该账号已注册。"
+  passwords-dont-match: "{prefix}&#fd5e5e两次输入的密码不一致。"
+  password-too-short: "{prefix}&#fd5e5e密码长度至少需要 &#fd8ddb{min} &#fd5e5e个字符。"
+  premium-name-protected: "{prefix}&#fd5e5e该用户名属于正版账号。如果这是你的用户名，请使用原版Minecraft客户端连接。"
+  success: "{prefix}&#91f251注册完成。欢迎 &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251已注销登录。"
+  not-logged-in: "{prefix}&#fd5e5e你还没有登录。"
+
+changepassword:
+  usage: "{prefix}&#fd5e5e用法: &#e39fff/changepassword <当前密码> <新密码>"
+  success: "{prefix}&#91f251密码修改成功。"
+  wrong-password: "{prefix}&#fd5e5e当前密码不正确。"
+
+premium:
+  auto-login-message: "{prefix}&#91f251检测到正版账号，已自动开始会话。"
+  info-premium: "{prefix}&#91f251你的账号已通过Mojang验证为正版。"
+  info-cracked: "{prefix}&#fdba5e你的账号不是正版，需要设置自己的密码。"
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5e你需要登录才能移动。请使用 &#e39fff/login&#fdba5e 或 &#e39fff/register&#fdba5e。"
+  action-blocked: "{prefix}&#fd5e5e在登录之前你不能这样做。"
+
+security:
+  locked-out: "{prefix}&#fd5e5e失败尝试次数过多。请等待 &#5e9dfd{seconds} 秒&#fd5e5e。"
+  captcha-required: "{prefix}&#fdba5e请解决验证码以继续: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251双重验证已启用。"
+  disabled: "{prefix}&#91f251双重验证已禁用。"
+  setup-secret: "{prefix}&#fdba5e你的2FA密钥: &#fd8ddb{secret} &#fdba5e（将其添加到你的验证器应用中，并使用 &#e39fff/2fa confirm <验证码>&#fdba5e 确认）"
+  confirm-usage: "{prefix}&#fd5e5e用法: &#e39fff/2fa confirm <验证码>"
+  already-enabled: "{prefix}&#fd5e5e你已经启用了双重验证。"
+  not-enabled: "{prefix}&#fd5e5e你还没有启用双重验证。"
+
+admin:
+  no-permission: "{prefix}&#fd5e5e你没有权限执行此操作。"
+  reloaded: "{prefix}&#91f251配置已重新加载。"
+  unregistered: "{prefix}&#91f251&#fd8ddb{player} &#91f251的账号已被删除。"
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251已被强制登录。"
+  player-not-found: "{prefix}&#fd5e5e未找到该玩家。"
+  migration-started: "{prefix}&#fdba5e正在从 &#fd8ddb{plugin} &#fdba5e导入账号..."
+  migration-done: "{prefix}&#91f251导入完成: 共导入 &#fd8ddb{count} &#91f251个账号。"
+  migration-failed: "{prefix}&#fd5e5e导入错误: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> 正版: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, 最后登录: &#5e9dfd{last-login}"

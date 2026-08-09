@@ -1,0 +1,68 @@
+# Сообщения rLogin — Русский
+# Доступные плейсхолдеры зависят от сообщения: {player} {seconds} {attempts} {min}
+#
+# Форматы цвета — можно свободно комбинировать:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Классические коды: &a / §a (и &l, &n... для стилей, &r для сброса)
+#   3. Hex (в стиле BungeeCord/Spigot, используется здесь по умолчанию):
+#      &#RRGGBB, §x§R§R§G§G§B§B, или просто #RRGGBB
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eИспользование: &#e39fff/login <пароль>"
+  wrong-password: "{prefix}&#fd5e5eНеверный пароль. Осталось попыток: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eВы уже авторизованы."
+  success: "{prefix}&#91f251Вход выполнен успешно. Добро пожаловать, &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eТакже введите код 2FA: &#e39fff/login <пароль> <код>"
+  wrong-totp: "{prefix}&#fd5e5eНеверный код 2FA."
+  not-registered: "{prefix}&#fd5e5eУ вас нет аккаунта. Зарегистрируйтесь через &#e39fff/register <пароль> <пароль>"
+
+register:
+  usage: "{prefix}&#fd5e5eИспользование: &#e39fff/register <пароль> <повторите пароль>"
+  already-registered: "{prefix}&#fd5e5eЭтот аккаунт уже зарегистрирован."
+  passwords-dont-match: "{prefix}&#fd5e5eПароли не совпадают."
+  password-too-short: "{prefix}&#fd5e5eПароль должен содержать не менее &#fd8ddb{min}&#fd5e5e символов."
+  premium-name-protected: "{prefix}&#fd5e5eЭто имя принадлежит премиум-аккаунту. Если это ваш ник, подключитесь через оригинальный клиент Minecraft."
+  success: "{prefix}&#91f251Регистрация завершена. Добро пожаловать, &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Вы вышли из аккаунта."
+  not-logged-in: "{prefix}&#fd5e5eВы не авторизованы."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eИспользование: &#e39fff/changepassword <текущий пароль> <новый пароль>"
+  success: "{prefix}&#91f251Пароль успешно изменён."
+  wrong-password: "{prefix}&#fd5e5eТекущий пароль неверен."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Обнаружен премиум-аккаунт, сессия начата автоматически."
+  info-premium: "{prefix}&#91f251Ваш аккаунт подтверждён Mojang как премиум."
+  info-cracked: "{prefix}&#fdba5eВаш аккаунт не премиум, вам нужен собственный пароль."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eВам нужно войти, чтобы двигаться. Используйте &#e39fff/login&#fdba5e или &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eВы не можете сделать это, пока не войдёте в аккаунт."
+
+security:
+  locked-out: "{prefix}&#fd5e5eСлишком много неудачных попыток. Подождите &#5e9dfd{seconds} секунд&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eРешите капчу, чтобы продолжить: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Двухфакторная аутентификация включена."
+  disabled: "{prefix}&#91f251Двухфакторная аутентификация отключена."
+  setup-secret: "{prefix}&#fdba5eВаш ключ 2FA: &#fd8ddb{secret} &#fdba5e(добавьте его в приложение-аутентификатор и подтвердите через &#e39fff/2fa confirm <код>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eИспользование: &#e39fff/2fa confirm <код>"
+  already-enabled: "{prefix}&#fd5e5eУ вас уже включена двухфакторная аутентификация."
+  not-enabled: "{prefix}&#fd5e5eУ вас не включена двухфакторная аутентификация."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eУ вас нет прав для этого."
+  reloaded: "{prefix}&#91f251Конфигурация перезагружена."
+  unregistered: "{prefix}&#91f251Аккаунт игрока &#fd8ddb{player} &#91f251удалён."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251принудительно авторизован."
+  player-not-found: "{prefix}&#fd5e5eИгрок не найден."
+  migration-started: "{prefix}&#fdba5eИмпорт аккаунтов из &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Импорт завершён: &#fd8ddb{count} &#91f251аккаунтов импортировано."
+  migration-failed: "{prefix}&#fd5e5eОшибка импорта: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> премиум: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, последний вход: &#5e9dfd{last-login}"

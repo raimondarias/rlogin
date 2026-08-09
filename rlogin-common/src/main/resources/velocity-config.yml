@@ -3,9 +3,11 @@
 #  https://github.com/raimondarias/rlogin
 #
 #  This file is intentionally smaller than the one on Paper/Folia: the
-#  proxy never touches the database or account records, it only decides
+#  proxy never touches account records (passwords, 2FA, etc.) — that's
+#  entirely owned by the Paper/Folia backends. It only decides
 #  online/offline-mode per connection and (optionally) routes players
-#  through an authentication lobby.
+#  through an authentication lobby. The optional `database` section below
+#  is a read-only convenience for that lobby routing, see its comment.
 # ============================================================
 
 general:
@@ -35,6 +37,42 @@ lobby:
   # get auto-transferred here right after a successful /login or /register
   # on auth-server. Leave empty to disable automatic transfers.
   default-server: ""
+
+database:
+  # Optional and OFF by default. Only useful if you set lobby.auth-server
+  # below: without it, a non-premium player with a still-valid "remember
+  # me" session briefly lands on auth-server before being transferred to
+  # lobby.default-server (the backend confirms the session over the
+  # rlogin:sync channel and Velocity transfers them right after). With it,
+  # Velocity checks the session itself BEFORE picking the initial server
+  # and sends them straight to default-server, skipping that hop.
+  #
+  # MUST point to the exact SAME database your Paper/Folia backends use
+  # (type/host/database/credentials all matching config.yml's `database`
+  # section there) — this is read-only from here, rLogin never writes
+  # accounts or sessions from the proxy. mysql is the only sane choice for
+  # a real multi-backend network; sqlite only makes sense if Velocity and
+  # your single backend run on the same machine and share the exact same
+  # file. If the connection fails at startup, rLogin logs a warning and
+  # simply falls back to the old behavior (no auto-login is affected).
+  enabled: false
+  type: mysql
+  sqlite:
+    file: rlogin.db
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    database: rlogin
+    username: root
+    password: ""
+    use-ssl: false
+    pool-size: 5
+
+session:
+  # Must mirror the Paper/Folia backends' session.remember-me-minutes —
+  # only read when database.enabled: true above.
+  remember-me: true
+  remember-me-minutes: 30
 
 update-checker:
   enabled: true

@@ -152,6 +152,51 @@ public final class AccountService {
         return storage.delete(uuid);
     }
 
+    public enum ChangeIdentityResult {
+        SUCCESS, SOURCE_NOT_FOUND, TARGET_ALREADY_EXISTS, SAME_IDENTITY
+    }
+
+    /**
+     * Moves an account's credentials — password, 2FA, registration date — to
+     * a different UUID/name, deleting the old row.
+     *
+     * <p>This is the answer to a name changing hands: a cracked player
+     * registered a name, its real premium owner later claimed it, and the
+     * two are now separate accounts (different UUIDs) by design. The cracked
+     * player doesn't lose what they had, they carry it to whatever identity
+     * they play as now.</p>
+     *
+     * <p><b>Scope, deliberately:</b> only what rLogin itself owns. Inventory,
+     * position and experience live in the world's {@code playerdata}, and
+     * permissions/economy live in other plugins' storage — all keyed by UUID
+     * and none of it reachable from here. Anything beyond credentials has to
+     * be moved with the tools that own it.</p>
+     */
+    public CompletableFuture<ChangeIdentityResult> changeIdentity(UUID from, UUID to, String newUsername) {
+        if (from.equals(to)) {
+            return CompletableFuture.completedFuture(ChangeIdentityResult.SAME_IDENTITY);
+        }
+        return storage.findByUuid(from).thenCompose(sourceOpt -> {
+            if (sourceOpt.isEmpty()) {
+                return CompletableFuture.completedFuture(ChangeIdentityResult.SOURCE_NOT_FOUND);
+            }
+            return storage.findByUuid(to).thenCompose(targetOpt -> {
+                if (targetOpt.isPresent()) {
+                    // Never silently merge two real accounts into one.
+                    return CompletableFuture.completedFuture(ChangeIdentityResult.TARGET_ALREADY_EXISTS);
+                }
+                RLoginAccount source = sourceOpt.get();
+                String username = newUsername != null ? newUsername : source.username();
+                // Written before deleted: a failure here leaves the original untouched
+                // rather than losing the account between the two calls.
+                return storage.save(source.withIdentity(to, username))
+                        .thenCompose(saved -> storage.clearSession(from))
+                        .thenCompose(ignored -> storage.delete(from))
+                        .thenApply(ignored -> ChangeIdentityResult.SUCCESS);
+            });
+        });
+    }
+
     public CompletableFuture<Boolean> changePassword(UUID uuid, String oldPassword, String newPassword) {
         if (newPassword.length() < config.passwordMinLength() || newPassword.length() > config.passwordMaxLength()) {
             return CompletableFuture.completedFuture(false);

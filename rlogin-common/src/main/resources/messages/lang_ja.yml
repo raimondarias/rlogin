@@ -1,0 +1,68 @@
+# rLogin メッセージ — 日本語
+# メッセージごとに利用できるプレースホルダー: {player} {seconds} {attempts} {min}
+#
+# カラーフォーマット — 自由に組み合わせ可能:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. クラシックコード: &a / §a（スタイル用の &l, &n... リセット用の &r）
+#   3. 16進数（BungeeCord/Spigot形式、このファイルの既定値）:
+#      &#RRGGBB, §x§R§R§G§G§B§B, または単独の #RRGGBB
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5e使い方: &#e39fff/login <パスワード>"
+  wrong-password: "{prefix}&#fd5e5eパスワードが間違っています。残り試行回数: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eすでにログインしています。"
+  success: "{prefix}&#91f251ログインに成功しました。ようこそ &#fd8ddb{player}&#91f251！"
+  need-totp: "{prefix}&#fdba5e2FAコードも入力してください: &#e39fff/login <パスワード> <コード>"
+  wrong-totp: "{prefix}&#fd5e5e2FAコードが間違っています。"
+  not-registered: "{prefix}&#fd5e5eアカウントがありません。&#e39fff/register <パスワード> <パスワード> &#fd5e5eで登録してください"
+
+register:
+  usage: "{prefix}&#fd5e5e使い方: &#e39fff/register <パスワード> <パスワード（確認）>"
+  already-registered: "{prefix}&#fd5e5eこのアカウントはすでに登録されています。"
+  passwords-dont-match: "{prefix}&#fd5e5eパスワードが一致しません。"
+  password-too-short: "{prefix}&#fd5e5eパスワードは&#fd8ddb{min}&#fd5e5e文字以上である必要があります。"
+  premium-name-protected: "{prefix}&#fd5e5eその名前はプレミアムアカウントに属しています。あなたのものであれば、正規のMinecraftクライアントで接続してください。"
+  success: "{prefix}&#91f251登録が完了しました。ようこそ &#fd8ddb{player}&#91f251！"
+
+logout:
+  success: "{prefix}&#91f251ログアウトしました。"
+  not-logged-in: "{prefix}&#fd5e5eログインしていません。"
+
+changepassword:
+  usage: "{prefix}&#fd5e5e使い方: &#e39fff/changepassword <現在のパスワード> <新しいパスワード>"
+  success: "{prefix}&#91f251パスワードを更新しました。"
+  wrong-password: "{prefix}&#fd5e5e現在のパスワードが間違っています。"
+
+premium:
+  auto-login-message: "{prefix}&#91f251プレミアムアカウントを検出しました。セッションが自動的に開始されました。"
+  info-premium: "{prefix}&#91f251あなたのアカウントはMojangによってプレミアムとして認証されています。"
+  info-cracked: "{prefix}&#fdba5eあなたのアカウントはプレミアムではありません。独自のパスワードが必要です。"
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5e移動するにはログインが必要です。&#e39fff/login&#fdba5e または &#e39fff/register&#fdba5e を使用してください。"
+  action-blocked: "{prefix}&#fd5e5eログインするまでその操作はできません。"
+
+security:
+  locked-out: "{prefix}&#fd5e5e失敗した試行回数が多すぎます。&#5e9dfd{seconds}秒&#fd5e5e待ってください。"
+  captcha-required: "{prefix}&#fdba5e続行するにはキャプチャを解いてください: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251二要素認証が有効になりました。"
+  disabled: "{prefix}&#91f251二要素認証が無効になりました。"
+  setup-secret: "{prefix}&#fdba5eあなたの2FAキー: &#fd8ddb{secret} &#fdba5e（認証アプリに追加し、&#e39fff/2fa confirm <コード>&#fdba5e で確認してください）"
+  confirm-usage: "{prefix}&#fd5e5e使い方: &#e39fff/2fa confirm <コード>"
+  already-enabled: "{prefix}&#fd5e5eすでに二要素認証が有効になっています。"
+  not-enabled: "{prefix}&#fd5e5e二要素認証が有効になっていません。"
+
+admin:
+  no-permission: "{prefix}&#fd5e5eこの操作を行う権限がありません。"
+  reloaded: "{prefix}&#91f251設定を再読み込みしました。"
+  unregistered: "{prefix}&#91f251&#fd8ddb{player} &#91f251のアカウントが削除されました。"
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251を強制的にログインさせました。"
+  player-not-found: "{prefix}&#fd5e5eプレイヤーが見つかりません。"
+  migration-started: "{prefix}&#fdba5e&#fd8ddb{plugin} &#fdba5eからアカウントをインポート中..."
+  migration-done: "{prefix}&#91f251インポートが完了しました: &#fd8ddb{count} &#91f251件のアカウントをインポートしました。"
+  migration-failed: "{prefix}&#fd5e5eインポートエラー: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> プレミアム: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, 最終ログイン: &#5e9dfd{last-login}"

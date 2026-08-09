@@ -1,5 +1,6 @@
 package com.raimondarias.rlogin.paper.listener;
 
+import com.raimondarias.rlogin.api.AuthReason;
 import com.raimondarias.rlogin.common.sync.SyncMessage;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
 import org.bukkit.entity.Player;
@@ -23,7 +24,10 @@ public final class SyncMessageListener implements PluginMessageListener {
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         SyncMessage decoded = SyncMessage.decode(message);
         if (decoded.type() == SyncMessage.Type.TRUSTED) {
-            plugin.authSessions().markAuthenticated(decoded.uuid());
+            // The proxy doesn't say which of the two it was (premium, or a password typed on
+            // another backend), and by the time this arrives the player is already in — so no
+            // join message either way; reported as forwarded, which is how it reached us.
+            plugin.authSessions().markAuthenticated(decoded.uuid(), AuthReason.PREMIUM_FORWARDED);
         }
     }
 }

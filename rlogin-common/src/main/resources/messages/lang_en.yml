@@ -1,0 +1,73 @@
+# rLogin messages — English
+# Placeholders available depending on the message: {player} {seconds} {attempts} {min}
+#
+# Color formats — mix freely, all three are supported in every string:
+#   1. MiniMessage (Kyori): <red>, <#e39fff>, <bold>...
+#   2. Legacy codes: &a / §a (and &l, &n... for styles, &r to reset)
+#   3. Hex (BungeeCord/Spigot style, the default used below): &#RRGGBB,
+#      §x§R§R§G§G§B§B, or a bare #RRGGBB
+#
+# Palette this file follows:
+#   commands   #e39fff   values/placeholders #fd8ddb   errors  #fd5e5e
+#   success    #91f251   warnings             #fdba5e   time    #5e9dfd
+#   neutral    #d4d9d8
+
+prefix: "&#d4d9d8[&#e39fffrLogin&#d4d9d8] &r"
+
+login:
+  usage: "{prefix}&#fd5e5eUsage: &#e39fff/login <password>"
+  wrong-password: "{prefix}&#fd5e5eWrong password. Attempts left: &#fd8ddb{attempts}"
+  already-logged-in: "{prefix}&#fd5e5eYou are already logged in."
+  success: "{prefix}&#91f251Logged in successfully. Welcome &#fd8ddb{player}&#91f251!"
+  need-totp: "{prefix}&#fdba5eAlso enter your 2FA code: &#e39fff/login <password> <code>"
+  wrong-totp: "{prefix}&#fd5e5eWrong 2FA code."
+  not-registered: "{prefix}&#fd5e5eYou don't have an account. Register with &#e39fff/register <password> <password>"
+
+register:
+  usage: "{prefix}&#fd5e5eUsage: &#e39fff/register <password> <repeat password>"
+  already-registered: "{prefix}&#fd5e5eThis account is already registered."
+  passwords-dont-match: "{prefix}&#fd5e5ePasswords don't match."
+  password-too-short: "{prefix}&#fd5e5ePassword must be at least &#fd8ddb{min}&#fd5e5e characters long."
+  premium-name-protected: "{prefix}&#fd5e5eThat name belongs to a premium account. If it's yours, connect with the original Minecraft client."
+  success: "{prefix}&#91f251Registration complete. Welcome &#fd8ddb{player}&#91f251!"
+
+logout:
+  success: "{prefix}&#91f251Logged out."
+  not-logged-in: "{prefix}&#fd5e5eYou are not logged in."
+
+changepassword:
+  usage: "{prefix}&#fd5e5eUsage: &#e39fff/changepassword <current password> <new password>"
+  success: "{prefix}&#91f251Password updated successfully."
+  wrong-password: "{prefix}&#fd5e5eCurrent password is incorrect."
+
+premium:
+  auto-login-message: "{prefix}&#91f251Premium account detected, session started automatically."
+  info-premium: "{prefix}&#91f251Your account is verified as premium by Mojang."
+  info-cracked: "{prefix}&#fdba5eYour account is non-premium, you need your own password."
+
+limbo:
+  freeze-reminder: "{prefix}&#fdba5eYou must log in to be able to move. Use &#e39fff/login&#fdba5e or &#e39fff/register&#fdba5e."
+  action-blocked: "{prefix}&#fd5e5eYou can't do that until you log in."
+
+security:
+  locked-out: "{prefix}&#fd5e5eToo many failed attempts. Wait &#5e9dfd{seconds} seconds&#fd5e5e."
+  captcha-required: "{prefix}&#fdba5eSolve the captcha to continue: &#fd8ddb{captcha}"
+
+totp:
+  enabled: "{prefix}&#91f251Two-factor authentication enabled."
+  disabled: "{prefix}&#91f251Two-factor authentication disabled."
+  setup-secret: "{prefix}&#fdba5eYour 2FA key: &#fd8ddb{secret} &#fdba5e(add it to your authenticator app and confirm with &#e39fff/2fa confirm <code>&#fdba5e)"
+  confirm-usage: "{prefix}&#fd5e5eUsage: &#e39fff/2fa confirm <code>"
+  already-enabled: "{prefix}&#fd5e5eYou already have two-factor authentication enabled."
+  not-enabled: "{prefix}&#fd5e5eYou don't have two-factor authentication enabled."
+
+admin:
+  no-permission: "{prefix}&#fd5e5eYou don't have permission to do that."
+  reloaded: "{prefix}&#91f251Configuration reloaded."
+  unregistered: "{prefix}&#fd8ddb{player}&#91f251's account has been deleted."
+  force-logged-in: "{prefix}&#fd8ddb{player} &#91f251has been force logged in."
+  player-not-found: "{prefix}&#fd5e5ePlayer not found."
+  migration-started: "{prefix}&#fdba5eImporting accounts from &#fd8ddb{plugin}&#fdba5e..."
+  migration-done: "{prefix}&#91f251Import complete: &#fd8ddb{count} &#91f251accounts imported."
+  migration-failed: "{prefix}&#fd5e5eImport error: &#fd8ddb{error}"
+  info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, last login: &#5e9dfd{last-login}"
