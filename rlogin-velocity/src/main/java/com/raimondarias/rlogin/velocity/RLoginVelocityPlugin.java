@@ -117,9 +117,16 @@ public final class RLoginVelocityPlugin {
         if (!config.updateCheckerEnabled()) {
             return;
         }
-        new UpdateChecker(PLUGIN_VERSION).check().thenAccept(update -> update.ifPresent(found ->
-                logger.info("rLogin {} is available (you're on {}): {}",
-                        found.latestVersion(), found.currentVersion(), found.url())));
+        new UpdateChecker(PLUGIN_VERSION).check().thenAccept(result -> {
+            switch (result.status()) {
+                case OUTDATED -> logger.warn("rLogin {} is available (you're on {}): {}",
+                        result.latestVersion(), result.currentVersion(), result.url());
+                case UP_TO_DATE -> logger.info("You are running the latest release: {}", result.currentVersion());
+                case AHEAD -> logger.info("You are running {}, newer than the latest release ({}).",
+                        result.currentVersion(), result.latestVersion());
+                case UNKNOWN -> logger.info("Could not check for updates. Nothing is wrong with your proxy.");
+            }
+        });
     }
 
     @Subscribe

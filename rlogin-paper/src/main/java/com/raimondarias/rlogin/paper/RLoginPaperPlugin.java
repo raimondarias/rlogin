@@ -113,7 +113,6 @@ public final class RLoginPaperPlugin extends JavaPlugin {
 
         registerCommands();
 
-        checkForUpdates();
         MetricsService.startIfEnabled(this);
 
         // Periodic cleanup of expired "remember me" sessions: every 30 minutes, on an async thread.
@@ -127,6 +126,10 @@ public final class RLoginPaperPlugin extends JavaPlugin {
                 + " | Premium auto-login: " + premiumAutoLoginStatus()
                 + " | Floodgate: " + (floodgate.isAvailable() ? "detected" : "not installed")
                 + (onlineModeConflict ? " | REFUSING CONNECTIONS: online-mode conflicts with auth-mode" : ""));
+
+        // Last, so its answer reads as a footnote to the line above rather than
+        // arriving before anyone knows what version is even starting.
+        checkForUpdates();
     }
 
     @Override
@@ -243,9 +246,19 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         if (!config.updateCheckerEnabled()) {
             return;
         }
-        new UpdateChecker(getPluginMeta().getVersion()).check().thenAccept(update -> update.ifPresent(found ->
-                getLogger().info("rLogin " + found.latestVersion() + " is available (you're on "
-                        + found.currentVersion() + "): " + found.url())));
+        new UpdateChecker(getPluginMeta().getVersion()).check().thenAccept(result -> {
+            switch (result.status()) {
+                case OUTDATED -> getLogger().warning("rLogin " + result.latestVersion()
+                        + " is available (you're on " + result.currentVersion() + "): " + result.url());
+                // Said out loud on purpose: silence reads as "up to date" to anyone who
+                // doesn't know the check is quiet when it succeeds, which is everyone.
+                case UP_TO_DATE -> getLogger().info("You are running the latest release: "
+                        + result.currentVersion());
+                case AHEAD -> getLogger().info("You are running " + result.currentVersion()
+                        + ", newer than the latest release (" + result.latestVersion() + ").");
+                case UNKNOWN -> getLogger().info("Could not check for updates. Nothing is wrong with your server.");
+            }
+        });
     }
 
     /**

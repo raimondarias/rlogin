@@ -2,6 +2,7 @@ package com.raimondarias.rlogin.paper.command;
 
 import com.raimondarias.rlogin.api.AuthReason;
 import com.raimondarias.rlogin.api.RLoginAccount;
+import com.raimondarias.rlogin.common.update.UpdateChecker;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
 import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.Bukkit;
@@ -31,7 +32,7 @@ import java.util.stream.Stream;
 public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> PLAYER_SUBCOMMANDS =
-            List.of("login", "register", "changepassword", "logout", "2fa", "premium");
+            List.of("login", "register", "changepassword", "logout", "2fa", "premium", "version");
     private static final List<String> ADMIN_SUBCOMMANDS =
             List.of("reload", "unregister", "forcelogin", "migrate", "changeuuid", "info", "lang", "spawn");
     private static final List<String> SPAWN_ACTIONS = List.of("set", "remove", "teleport", "list");
@@ -83,6 +84,10 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
             case "forcelogin" -> adminOnly(sender, () -> forceLogin(sender, rest));
             case "migrate" -> adminOnly(sender, () -> migrate(sender, rest));
             case "changeuuid" -> adminOnly(sender, () -> changeUuid(sender, rest));
+            case "version" -> {
+                version(sender);
+                yield true;
+            }
             case "info" -> adminOnly(sender, () -> info(sender, rest));
             case "spawn" -> adminOnly(sender, () -> spawn(sender, rest));
             case "lang" -> adminOnly(sender, () -> sender.sendMessage(
@@ -92,6 +97,38 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
                 yield true;
             }
         };
+    }
+
+    /**
+     * What is running, and whether it is the current release.
+     *
+     * <p>Deliberately open to every player, not just staff: "which version are
+     * you on?" is the first question in every bug report, and needing an
+     * operator to answer it is why so many reports guess.</p>
+     *
+     * <p>The update check runs fresh rather than reporting what startup found.
+     * A server that has been up for weeks was told about the releases that
+     * existed the day it started.</p>
+     */
+    private void version(CommandSender sender) {
+        String current = plugin.getPluginMeta().getVersion();
+        sender.sendMessage(plugin.messages().get("admin.version",
+                Map.of("version", current, "platform", plugin.topology().name()
+                        .toLowerCase(java.util.Locale.ROOT).replace('_', '-'))));
+
+        if (!plugin.config().updateCheckerEnabled()) {
+            return;
+        }
+        new UpdateChecker(current).check().thenAccept(result -> plugin.scheduler().runAsync(() -> {
+            switch (result.status()) {
+                case OUTDATED -> sender.sendMessage(plugin.messages().get("admin.version-outdated",
+                        Map.of("latest", result.latestVersion(), "url", result.url())));
+                case UP_TO_DATE -> sender.sendMessage(plugin.messages().get("admin.version-latest"));
+                case AHEAD -> sender.sendMessage(plugin.messages().get("admin.version-ahead",
+                        Map.of("latest", result.latestVersion())));
+                case UNKNOWN -> sender.sendMessage(plugin.messages().get("admin.version-unknown"));
+            }
+        }));
     }
 
     private boolean adminOnly(CommandSender sender, Runnable action) {
