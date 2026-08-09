@@ -14,6 +14,19 @@
 #  not needed — the proxy or the server already did the verifying.
 # ============================================================
 
+# Who is allowed on this server. The one decision worth making consciously;
+# everything below has a sensible default.
+#
+#   auto     Both kinds of player. Premium accounts are verified and join
+#            without typing anything; everyone else registers and logs in
+#            with a password. What most servers want.
+#   online   Premium accounts only. Anyone Mojang doesn't vouch for is
+#            refused, and /register serves no purpose.
+#   offline  Passwords only. Nothing is checked against Mojang, so a premium
+#            player registers like everybody else. This is the only mode
+#            that does NOT need PacketEvents on a standalone server.
+auth-mode: auto
+
 general:
   # Any of the 17 languages in the messages/ folder next to this file:
   # en, es, pt_BR, de, fr, ru, zh_CN, pl, it, nl, tr, uk, ja, ko, ar, vi, id
@@ -129,6 +142,10 @@ limbo:
     - /2fa
   # How often to remind them to log in, in seconds.
   reminder-interval-seconds: 5
+  # Kick a player who never logs in, after this many seconds. A connection
+  # parked forever at the login prompt still holds a player slot, which is all
+  # it takes to fill a server without owning a single account. 0 disables it.
+  login-timeout-seconds: 60
 
 bedrock:
   # Bedrock players arriving through Geyser/Floodgate are already verified

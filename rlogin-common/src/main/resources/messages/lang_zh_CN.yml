@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5e2FA验证码错误。"
   not-registered: "{prefix}&#fd5e5e你还没有账号。请使用 &#e39fff/register <密码> <密码> &#fd5e5e注册"
   session-restored: "{prefix}&#91f251欢迎回来，{player}。你的会话仍然有效。"
+  premium-only: "&#fd5e5e&l本服务器只接受正版账户。\n\n&#d4d9d8请在 minecraft.net 购买 Minecraft，或请服主允许非正版账户。"
 
 register:
   usage: "{prefix}&#fd5e5e用法: &#e39fff/register <密码> <重复密码>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5e你需要登录才能移动。请使用 &#e39fff/login&#fdba5e 或 &#e39fff/register&#fdba5e。"
   action-blocked: "{prefix}&#fd5e5e在登录之前你不能这样做。"
+  login-timeout: "&#fd5e5e&l你登录用时过长。"
 
 security:
   locked-out: "{prefix}&#fd5e5e失败尝试次数过多。请等待 &#5e9dfd{seconds} 秒&#fd5e5e。"

@@ -19,6 +19,7 @@ public final class LimboService {
 
     public void freeze(Player player) {
         plugin.authSessions().cancelReminder(player.getUniqueId());
+        startLoginTimeout(player);
         if (!plugin.config().limboFreeze()) {
             return;
         }
@@ -30,5 +31,28 @@ public final class LimboService {
             }
         });
         plugin.authSessions().trackReminder(player.getUniqueId(), task);
+    }
+
+    /**
+     * Kicks a player who never logs in, after {@code limbo.login-timeout-seconds}.
+     *
+     * <p>Someone sitting frozen at the login prompt forever still occupies a
+     * player slot and still costs the server a connection, which is all an
+     * attacker needs to fill a server without ever owning an account. The
+     * timer is a no-op for anyone who authenticates in time: it re-checks the
+     * session before kicking rather than being cancelled, so a player who logs
+     * in and stays online is never touched by the task that outlives them.</p>
+     */
+    private void startLoginTimeout(Player player) {
+        int seconds = plugin.config().limboLoginTimeoutSeconds();
+        if (seconds <= 0) {
+            return;
+        }
+        plugin.scheduler().runForPlayerLater(player, seconds * 20L, () -> {
+            if (!player.isOnline() || plugin.authSessions().isAuthenticated(player.getUniqueId())) {
+                return;
+            }
+            player.kick(plugin.messages().get("limbo.login-timeout"));
+        });
     }
 }

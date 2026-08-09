@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5eYanlış 2FA kodu."
   not-registered: "{prefix}&#fd5e5eBir hesabın yok. &#e39fff/register <şifre> <şifre> &#fd5e5eile kayıt ol"
   session-restored: "{prefix}&#91f251Tekrar hoş geldin, {player}. Oturumun hâlâ açıktı."
+  premium-only: "&#fd5e5e&lBu sunucu yalnızca premium hesapları kabul eder.\n\n&#d4d9d8minecraft.net üzerinden Minecraft satın al veya sunucu sahibinden premium olmayan hesaplara izin vermesini iste."
 
 register:
   usage: "{prefix}&#fd5e5eKullanım: &#e39fff/register <şifre> <şifreyi tekrarla>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5eHareket edebilmek için giriş yapmalısın. &#e39fff/login&#fdba5e veya &#e39fff/register&#fdba5e kullan."
   action-blocked: "{prefix}&#fd5e5eGiriş yapana kadar bunu yapamazsın."
+  login-timeout: "&#fd5e5e&lGiriş yapman çok uzun sürdü."
 
 security:
   locked-out: "{prefix}&#fd5e5eÇok fazla başarısız deneme. &#5e9dfd{seconds} saniye&#fd5e5e bekle."

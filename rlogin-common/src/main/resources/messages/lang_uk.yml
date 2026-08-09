@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5eНевірний код 2FA."
   not-registered: "{prefix}&#fd5e5eУ вас немає акаунта. Зареєструйтесь через &#e39fff/register <пароль> <пароль>"
   session-restored: "{prefix}&#91f251З поверненням, {player}. Ваша сесія ще активна."
+  premium-only: "&#fd5e5e&lЦей сервер приймає лише ліцензійні акаунти.\n\n&#d4d9d8Придбайте Minecraft на minecraft.net або попросіть власника дозволити неліцензійні акаунти."
 
 register:
   usage: "{prefix}&#fd5e5eВикористання: &#e39fff/register <пароль> <повторіть пароль>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5eВам потрібно увійти, щоб рухатися. Використовуйте &#e39fff/login&#fdba5e або &#e39fff/register&#fdba5e."
   action-blocked: "{prefix}&#fd5e5eВи не можете зробити це, поки не увійдете."
+  login-timeout: "&#fd5e5e&lВи занадто довго входили в гру."
 
 security:
   locked-out: "{prefix}&#fd5e5eЗабагато невдалих спроб. Зачекайте &#5e9dfd{seconds} секунд&#fd5e5e."

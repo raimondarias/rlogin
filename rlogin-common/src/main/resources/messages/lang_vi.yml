@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5eSai mã 2FA."
   not-registered: "{prefix}&#fd5e5eBạn chưa có tài khoản. Đăng ký bằng &#e39fff/register <mật khẩu> <mật khẩu>"
   session-restored: "{prefix}&#91f251Chào mừng trở lại, {player}. Phiên của bạn vẫn còn hiệu lực."
+  premium-only: "&#fd5e5e&lMáy chủ này chỉ chấp nhận tài khoản premium.\n\n&#d4d9d8Hãy mua Minecraft tại minecraft.net, hoặc nhờ chủ máy chủ cho phép tài khoản không premium."
 
 register:
   usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/register <mật khẩu> <nhập lại mật khẩu>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5eBạn cần đăng nhập để có thể di chuyển. Dùng &#e39fff/login&#fdba5e hoặc &#e39fff/register&#fdba5e."
   action-blocked: "{prefix}&#fd5e5eBạn không thể làm điều đó cho đến khi đăng nhập."
+  login-timeout: "&#fd5e5e&lBạn đã mất quá nhiều thời gian để đăng nhập."
 
 security:
   locked-out: "{prefix}&#fd5e5eQuá nhiều lần thử thất bại. Đợi &#5e9dfd{seconds} giây&#fd5e5e."

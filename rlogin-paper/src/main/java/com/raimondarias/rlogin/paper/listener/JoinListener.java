@@ -1,6 +1,7 @@
 package com.raimondarias.rlogin.paper.listener;
 
 import com.raimondarias.rlogin.api.AuthReason;
+import com.raimondarias.rlogin.common.auth.AuthMode;
 import com.raimondarias.rlogin.common.auth.UuidType;
 import com.raimondarias.rlogin.common.util.OfflineUuid;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
@@ -55,8 +56,21 @@ public final class JoinListener implements Listener {
         // feature is off or PacketEvents isn't installed.
         boolean hybridVerified = plugin.hybridVerificationTracker().consumeIfVerified(username);
 
-        boolean premium = floodgatePremium || hybridVerified
-                || (uuidCanProvePremium() && !OfflineUuid.isOffline(uuid, username));
+        AuthMode mode = plugin.config().authMode();
+        // In offline mode nothing is checked against Mojang, so even a forwarded premium
+        // identity is treated as an ordinary account with a password.
+        boolean premium = mode.verifiesWithMojang()
+                && (floodgatePremium || hybridVerified
+                        || (uuidCanProvePremium() && !OfflineUuid.isOffline(uuid, username)));
+
+        if (!premium && !mode.allowsPasswords()) {
+            // auth-mode: online. There is no password path to fall back to, so saying
+            // "log in" would be asking for something that cannot work.
+            debug(username + " refused: auth-mode is online and this account isn't premium");
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
+                    plugin.messages().get("login.premium-only"));
+            return;
+        }
 
         if (premium) {
             AuthReason reason = premiumReason(floodgatePremium, hybridVerified);

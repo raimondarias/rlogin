@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5eKode 2FA salah."
   not-registered: "{prefix}&#fd5e5eKamu belum punya akun. Daftar dengan &#e39fff/register <kata sandi> <kata sandi>"
   session-restored: "{prefix}&#91f251Selamat datang kembali, {player}. Sesimu masih aktif."
+  premium-only: "&#fd5e5e&lServer ini hanya menerima akun premium.\n\n&#d4d9d8Beli Minecraft di minecraft.net, atau minta pemilik server mengizinkan akun non-premium."
 
 register:
   usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/register <kata sandi> <ulangi kata sandi>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5eKamu harus login untuk bisa bergerak. Gunakan &#e39fff/login&#fdba5e atau &#e39fff/register&#fdba5e."
   action-blocked: "{prefix}&#fd5e5eKamu tidak bisa melakukan itu sampai kamu login."
+  login-timeout: "&#fd5e5e&lKamu terlalu lama untuk masuk."
 
 security:
   locked-out: "{prefix}&#fd5e5eTerlalu banyak percobaan gagal. Tunggu &#5e9dfd{seconds} detik&#fd5e5e."

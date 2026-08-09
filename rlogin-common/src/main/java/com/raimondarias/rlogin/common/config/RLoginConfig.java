@@ -1,5 +1,6 @@
 package com.raimondarias.rlogin.common.config;
 
+import com.raimondarias.rlogin.common.auth.AuthMode;
 import com.raimondarias.rlogin.common.auth.UuidType;
 
 import java.io.IOException;
@@ -53,6 +54,15 @@ public final class RLoginConfig {
     /** Loads (creating if missing) {@code <dataFolder>/config.yml} from the given bundled resource. */
     public static RLoginConfig load(Path dataFolder, String bundledResource) throws IOException {
         return load(dataFolder, bundledResource, new ArrayList<>());
+    }
+
+    /**
+     * Who is allowed on this server; see {@link AuthMode}. Top-level and
+     * first in the file on purpose: it is the one decision an admin has to
+     * make consciously, and everything else has a sensible default.
+     */
+    public AuthMode authMode() {
+        return AuthMode.parse(doc.getString("auth-mode", "auto"));
     }
 
     // --- general ---
@@ -185,6 +195,10 @@ public final class RLoginConfig {
 
     public List<String> limboAllowedCommands() {
         return doc.getStringList("limbo.allowed-commands", List.of("/login", "/register"));
+    }
+
+    public int limboLoginTimeoutSeconds() {
+        return doc.getInt("limbo.login-timeout-seconds", 60);
     }
 
     public int limboReminderIntervalSeconds() {

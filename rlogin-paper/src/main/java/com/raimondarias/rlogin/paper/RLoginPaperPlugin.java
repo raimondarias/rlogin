@@ -91,7 +91,8 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         // Premium verification turns itself on exactly where it is needed: a standalone
         // online-mode:false server. There it is not optional, and neither is PacketEvents —
         // see MissingPacketEventsListener for why the alternative is worse than refusing.
-        if (topology.needsOwnVerification() && !PacketEventsSupport.isAvailable()) {
+        if (topology.needsOwnVerification() && config.authMode().verifiesWithMojang()
+                && !PacketEventsSupport.isAvailable()) {
             MissingPacketEventsListener.install(this);
         } else {
             this.hybridAuthListener = HybridAuthListener.setUpIfNeeded(this, premiumChecker, hybridVerificationTracker);
@@ -109,6 +110,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         getLogger().info("rLogin ready. Folia: " + SchedulerAdapter.isFolia()
                 + " | Database: " + config.databaseType()
                 + " | Setup: " + topology.name().toLowerCase(java.util.Locale.ROOT).replace('_', '-')
+                + " | Auth mode: " + config.authMode().name().toLowerCase(java.util.Locale.ROOT)
                 + " | Premium auto-login: " + premiumAutoLoginStatus()
                 + " | Floodgate: " + (floodgate.isAvailable() ? "detected" : "not installed"));
     }
@@ -197,10 +199,14 @@ public final class RLoginPaperPlugin extends JavaPlugin {
      * connection for a missing dependency must not print "enabled".
      */
     private String premiumAutoLoginStatus() {
+        if (!config.authMode().verifiesWithMojang()) {
+            return "off (auth-mode: offline)";
+        }
         if (!config.premiumAutoLogin()) {
             return "disabled in config";
         }
-        if (topology.needsOwnVerification() && !PacketEventsSupport.isAvailable()) {
+        if (topology.needsOwnVerification() && config.authMode().verifiesWithMojang()
+                && !PacketEventsSupport.isAvailable()) {
             return "BLOCKED - PacketEvents missing";
         }
         return switch (topology) {

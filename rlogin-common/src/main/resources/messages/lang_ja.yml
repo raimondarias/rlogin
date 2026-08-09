@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5e2FAコードが間違っています。"
   not-registered: "{prefix}&#fd5e5eアカウントがありません。&#e39fff/register <パスワード> <パスワード> &#fd5e5eで登録してください"
   session-restored: "{prefix}&#91f251おかえりなさい、{player}。セッションはまだ有効でした。"
+  premium-only: "&#fd5e5e&lこのサーバーは正規アカウントのみ受け付けています。\n\n&#d4d9d8minecraft.net で Minecraft を購入するか、サーバー管理者に非正規アカウントの許可を依頼してください。"
 
 register:
   usage: "{prefix}&#fd5e5e使い方: &#e39fff/register <パスワード> <パスワード（確認）>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5e移動するにはログインが必要です。&#e39fff/login&#fdba5e または &#e39fff/register&#fdba5e を使用してください。"
   action-blocked: "{prefix}&#fd5e5eログインするまでその操作はできません。"
+  login-timeout: "&#fd5e5e&lログインに時間がかかりすぎました。"
 
 security:
   locked-out: "{prefix}&#fd5e5e失敗した試行回数が多すぎます。&#5e9dfd{seconds}秒&#fd5e5e待ってください。"

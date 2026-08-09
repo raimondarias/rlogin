@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5eCódigo 2FA incorreto."
   not-registered: "{prefix}&#fd5e5eVocê não tem uma conta. Registre-se com &#e39fff/register <senha> <senha>"
   session-restored: "{prefix}&#91f251Bem-vindo de volta, {player}. Sua sessão ainda estava ativa."
+  premium-only: "&#fd5e5e&lEste servidor só aceita contas premium.\n\n&#d4d9d8Compre Minecraft em minecraft.net, ou peça ao dono para permitir contas não premium."
 
 register:
   usage: "{prefix}&#fd5e5eUso: &#e39fff/register <senha> <repita a senha>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5eVocê precisa fazer login para poder se mover. Use &#e39fff/login&#fdba5e ou &#e39fff/register&#fdba5e."
   action-blocked: "{prefix}&#fd5e5eVocê não pode fazer isso até fazer login."
+  login-timeout: "&#fd5e5e&lVocê demorou demais para entrar."
 
 security:
   locked-out: "{prefix}&#fd5e5eMuitas tentativas falharam. Espere &#5e9dfd{seconds} segundos&#fd5e5e."

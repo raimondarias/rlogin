@@ -47,6 +47,15 @@ public final class SchedulerAdapter {
         Bukkit.getAsyncScheduler().runNow(plugin, scheduledTask -> task.run());
     }
 
+    /**
+     * Runs once on this player's thread after a delay, and silently does
+     * nothing if they already left — Folia's player scheduler drops the task
+     * on disconnect, and the retired-callback is where Paper reports the same.
+     */
+    public void runForPlayerLater(Player player, long delayTicks, Runnable task) {
+        player.getScheduler().runDelayed(plugin, scheduledTask -> task.run(), null, Math.max(1, delayTicks));
+    }
+
     /** Repeats on this player's thread at a fixed interval; auto-cancels when they disconnect. */
     public CancellableTask runForPlayerTimer(Player player, long delayTicks, long periodTicks, Runnable task) {
         ScheduledTask scheduled = player.getScheduler().runAtFixedRate(plugin, st -> {

@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5e2FA 코드가 틀렸습니다."
   not-registered: "{prefix}&#fd5e5e계정이 없습니다. &#e39fff/register <비밀번호> <비밀번호> &#fd5e5e로 가입하세요"
   session-restored: "{prefix}&#91f251다시 오신 것을 환영합니다, {player}. 세션이 아직 유효했습니다."
+  premium-only: "&#fd5e5e&l이 서버는 정품 계정만 허용합니다.\n\n&#d4d9d8minecraft.net에서 Minecraft를 구매하거나, 서버 운영자에게 비정품 계정 허용을 요청하세요."
 
 register:
   usage: "{prefix}&#fd5e5e사용법: &#e39fff/register <비밀번호> <비밀번호 확인>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5e움직이려면 로그인해야 합니다. &#e39fff/login&#fdba5e 또는 &#e39fff/register&#fdba5e 를 사용하세요."
   action-blocked: "{prefix}&#fd5e5e로그인하기 전까지는 그 작업을 할 수 없습니다."
+  login-timeout: "&#fd5e5e&l로그인하는 데 너무 오래 걸렸습니다."
 
 security:
   locked-out: "{prefix}&#fd5e5e실패한 시도가 너무 많습니다. &#5e9dfd{seconds}초&#fd5e5e 기다려주세요."

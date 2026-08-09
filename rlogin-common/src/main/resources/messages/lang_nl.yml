@@ -21,6 +21,7 @@ login:
   wrong-totp: "{prefix}&#fd5e5eVerkeerde 2FA-code."
   not-registered: "{prefix}&#fd5e5eJe hebt geen account. Registreer met &#e39fff/register <wachtwoord> <wachtwoord>"
   session-restored: "{prefix}&#91f251Welkom terug, {player}. Je sessie was nog actief."
+  premium-only: "&#fd5e5e&lDeze server accepteert alleen premium-accounts.\n\n&#d4d9d8Koop Minecraft op minecraft.net, of vraag de eigenaar om niet-premium accounts toe te staan."
 
 register:
   usage: "{prefix}&#fd5e5eGebruik: &#e39fff/register <wachtwoord> <herhaal wachtwoord>"
@@ -47,6 +48,7 @@ premium:
 limbo:
   freeze-reminder: "{prefix}&#fdba5eJe moet inloggen om te kunnen bewegen. Gebruik &#e39fff/login&#fdba5e of &#e39fff/register&#fdba5e."
   action-blocked: "{prefix}&#fd5e5eDat kun je niet doen totdat je bent ingelogd."
+  login-timeout: "&#fd5e5e&lJe deed er te lang over om in te loggen."
 
 security:
   locked-out: "{prefix}&#fd5e5eTe veel mislukte pogingen. Wacht &#5e9dfd{seconds} seconden&#fd5e5e."

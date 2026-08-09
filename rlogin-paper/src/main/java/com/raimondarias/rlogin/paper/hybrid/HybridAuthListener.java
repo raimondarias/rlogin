@@ -125,6 +125,11 @@ public final class HybridAuthListener extends PacketListenerAbstract {
      */
     public static HybridAuthListener setUpIfNeeded(RLoginPaperPlugin plugin, PremiumChecker premiumChecker,
                                                      HybridVerificationTracker tracker) {
+        if (!plugin.config().authMode().verifiesWithMojang()) {
+            // auth-mode: offline. Nothing is checked against Mojang anywhere, so there is
+            // no handshake to run and PacketEvents is not needed on this server.
+            return null;
+        }
         if (!plugin.topology().needsOwnVerification()) {
             // Someone already verified this connection (online-mode, or a proxy in front).
             // Doing it again from here would mean verifying twice, so there is nothing to set up
