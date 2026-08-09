@@ -122,7 +122,8 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         this.sessionCleanupTask = scheduler.runAsyncTimer(20L * 60, 20L * 60 * 30,
                 () -> storage.purgeExpiredSessions(Instant.now()));
 
-        getLogger().info("rLogin ready. Folia: " + SchedulerAdapter.isFolia()
+        getLogger().info("rLogin ready. Server: " + serverBrand()
+                + " | Folia: " + SchedulerAdapter.isFolia()
                 + " | Database: " + config.databaseType()
                 + " | Setup: " + topology.name().toLowerCase(java.util.Locale.ROOT).replace('_', '-')
                 + " | Auth mode: " + config.authMode().name().toLowerCase(java.util.Locale.ROOT)
@@ -225,6 +226,19 @@ public final class RLoginPaperPlugin extends JavaPlugin {
      * truth rather than the config value: a server that is blocking every
      * connection for a missing dependency must not print "enabled".
      */
+    /**
+     * The fork actually running, not just "Paper or not".
+     *
+     * <p>rLogin needs no code for Purpur, Pufferfish or any other Paper fork —
+     * they inherit the whole API it uses, and none of them add anything about
+     * logins or identities. What they do change is which build a bug report
+     * came from, and "Folia: false" does not say that. A line that names the
+     * fork turns a support thread into one question instead of three.</p>
+     */
+    private String serverBrand() {
+        return getServer().getName() + " " + getServer().getMinecraftVersion();
+    }
+
     private String premiumAutoLoginStatus() {
         if (!config.authMode().verifiesWithMojang()) {
             return "off (auth-mode: offline)";

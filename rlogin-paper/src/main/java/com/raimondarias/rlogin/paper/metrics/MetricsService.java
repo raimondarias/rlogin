@@ -32,6 +32,10 @@ public final class MetricsService {
         try {
             Metrics metrics = new Metrics(plugin, BSTATS_PLUGIN_ID);
             metrics.addCustomChart(new SimplePie("database_type", () -> plugin.config().databaseType()));
+            // Which fork people actually run. bStats already reports "Paper" for every
+            // Paper-based server, which hides Purpur and Pufferfish entirely -- and
+            // whether a fork-specific report is worth chasing depends on knowing that.
+            metrics.addCustomChart(new SimplePie("server_software", () -> plugin.getServer().getName()));
             // Which of the three setups servers actually run, which is the single most
             // useful thing to know when deciding what to support.
             metrics.addCustomChart(new SimplePie("server_topology",
