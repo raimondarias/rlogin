@@ -94,6 +94,7 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&lMáy chủ cấu hình sai\n\n&#d4d9d8Máy chủ này thiếu một plugin bắt buộc nên không ai vào được.\n&#fdba5eHãy báo quản trị viên cài đặt PacketEvents:\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&lMáy chủ bị cấu hình sai\n\n&#d4d9d8Máy chủ này đang bật online-mode, nên người chơi không có tài khoản Minecraft hoàn toàn không thể vào.\n&#fdba5eHãy báo quản trị viên đặt online-mode thành false."
 
 
 spawn:

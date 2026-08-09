@@ -94,6 +94,7 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&lالخادم غير مُعد بشكل صحيح\n\n&#d4d9d8ينقص هذا الخادم إضافة مطلوبة، لذلك لا يستطيع أحد الدخول.\n&#fdba5eأبلغ المسؤول بتثبيت PacketEvents:\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&lإعدادات الخادم غير صحيحة\n\n&#d4d9d8هذا الخادم يفعّل online-mode، لذا لا يمكن للاعبين بدون حساب Minecraft الدخول إطلاقاً.\n&#fdba5eأخبر المسؤول بضبط online-mode على false."
 
 
 spawn:

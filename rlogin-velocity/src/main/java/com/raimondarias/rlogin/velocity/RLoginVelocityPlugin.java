@@ -7,6 +7,7 @@ import com.raimondarias.rlogin.common.update.UpdateChecker;
 import com.raimondarias.rlogin.velocity.command.RLoginVelocityCommand;
 import com.raimondarias.rlogin.velocity.listener.BackendCheck;
 import com.raimondarias.rlogin.velocity.listener.LobbyListener;
+import com.raimondarias.rlogin.velocity.listener.OnlineModeConflictListener;
 import com.raimondarias.rlogin.velocity.listener.PreLoginListener;
 import com.raimondarias.rlogin.velocity.listener.SyncListener;
 import com.velocitypowered.api.command.CommandManager;
@@ -70,6 +71,14 @@ public final class RLoginVelocityPlugin {
         }
 
         server.getChannelRegistrar().register(SYNC_CHANNEL);
+
+        // Velocity turns away every non-premium connection itself when online-mode is on,
+        // so on a network that promised to accept them there is nothing left for rLogin to
+        // do. Refuse loudly rather than let the misconfiguration look healthy.
+        if (server.getConfiguration().isOnlineMode() && config.authMode().allowsPasswords()) {
+            server.getEventManager().register(this, new OnlineModeConflictListener(logger));
+            return;
+        }
 
         PreLoginListener preLoginListener = new PreLoginListener(config, premiumChecker, logger);
         BackendCheck backendCheck = new BackendCheck(server, config, logger);

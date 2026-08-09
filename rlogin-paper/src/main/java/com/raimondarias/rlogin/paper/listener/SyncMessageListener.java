@@ -28,6 +28,11 @@ public final class SyncMessageListener implements PluginMessageListener {
             // another backend), and by the time this arrives the player is already in — so no
             // join message either way; reported as forwarded, which is how it reached us.
             plugin.authSessions().markAuthenticated(decoded.uuid(), AuthReason.PREMIUM_FORWARDED);
+            if (!decoded.firstServer()) {
+                // A switch, not a new connection: an earlier backend already said hello, and
+                // JoinListener is holding its greeting for exactly this answer.
+                plugin.authSessions().markAlreadyGreeted(decoded.uuid());
+            }
         }
     }
 }

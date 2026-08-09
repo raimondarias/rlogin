@@ -4,6 +4,7 @@ import com.raimondarias.rlogin.api.AuthReason;
 import com.raimondarias.rlogin.paper.scheduler.SchedulerAdapter;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +23,11 @@ public final class AuthSessionManager {
 
     private final Map<UUID, AuthReason> authenticated = new ConcurrentHashMap<>();
     private final Map<UUID, SchedulerAdapter.CancellableTask> reminderTasks = new ConcurrentHashMap<>();
+    /**
+     * Players the proxy has told us it already greeted, on an earlier backend
+     * of the same connection. Only ever populated behind a proxy.
+     */
+    private final Set<UUID> alreadyGreeted = ConcurrentHashMap.newKeySet();
 
     /**
      * The reason is required rather than optional so every caller has to say
@@ -42,6 +48,15 @@ public final class AuthSessionManager {
         return authenticated.get(uuid);
     }
 
+    /** Called when the proxy reports this arrival is a server switch, not a fresh connection. */
+    public void markAlreadyGreeted(UUID uuid) {
+        alreadyGreeted.add(uuid);
+    }
+
+    public boolean wasAlreadyGreeted(UUID uuid) {
+        return alreadyGreeted.contains(uuid);
+    }
+
     public void trackReminder(UUID uuid, SchedulerAdapter.CancellableTask task) {
         SchedulerAdapter.CancellableTask previous = reminderTasks.put(uuid, task);
         if (previous != null) {
@@ -59,5 +74,6 @@ public final class AuthSessionManager {
     public void forget(UUID uuid) {
         authenticated.remove(uuid);
         cancelReminder(uuid);
+        alreadyGreeted.remove(uuid);
     }
 }

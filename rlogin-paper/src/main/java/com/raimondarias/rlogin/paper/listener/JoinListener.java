@@ -5,6 +5,7 @@ import com.raimondarias.rlogin.common.auth.AuthMode;
 import com.raimondarias.rlogin.common.auth.UuidType;
 import com.raimondarias.rlogin.common.util.OfflineUuid;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
+import com.raimondarias.rlogin.paper.ServerTopology;
 import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -153,7 +154,7 @@ public final class JoinListener implements Listener {
         // last disconnected, which is Bukkit's own default behavior anyway.
 
         if (plugin.authSessions().isAuthenticated(uuid)) {
-            announceAutoLogin(player, plugin.authSessions().reasonFor(uuid));
+            greetWhenItIsTheirFirstServer(player);
             return;
         }
         if (player.hasPermission("rlogin.bypass")) {
@@ -161,6 +162,34 @@ public final class JoinListener implements Listener {
             return;
         }
         plugin.limboService().freeze(player);
+    }
+
+    /**
+     * Greets the player, unless this is a server switch on a proxy network.
+     *
+     * <p>Every backend sees an ordinary join, so on its own each one would
+     * announce the auto-login again — a player hopping between four servers
+     * got told four times that their premium account was detected. Only the
+     * proxy can tell a fresh connection from a hop, and it says so in the
+     * {@code TRUSTED} message it sends on arrival.</p>
+     *
+     * <p>That message races with this join, so behind a proxy the greeting
+     * waits a second for the verdict rather than assuming one. The wait is
+     * skipped entirely on a standalone server, where there is no proxy to
+     * hear from and the answer is always "greet".</p>
+     */
+    private void greetWhenItIsTheirFirstServer(Player player) {
+        UUID uuid = player.getUniqueId();
+        AuthReason reason = plugin.authSessions().reasonFor(uuid);
+        if (plugin.topology() != ServerTopology.BEHIND_PROXY) {
+            announceAutoLogin(player, reason);
+            return;
+        }
+        plugin.scheduler().runForPlayerLater(player, 20L, () -> {
+            if (player.isOnline() && !plugin.authSessions().wasAlreadyGreeted(uuid)) {
+                announceAutoLogin(player, reason);
+            }
+        });
     }
 
     /**

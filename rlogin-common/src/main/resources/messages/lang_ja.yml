@@ -94,6 +94,7 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&lサーバー設定エラー\n\n&#d4d9d8このサーバーには必要なプラグインが不足しているため、誰も参加できません。\n&#fdba5e管理者に PacketEvents のインストールを伝えてください:\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&lサーバーの設定に誤りがあります\n\n&#d4d9d8このサーバーは online-mode が有効なため、Minecraft アカウントを持たないプレイヤーは接続できません。\n&#fdba5e管理者に online-mode を false にするよう伝えてください。"
 
 
 spawn:

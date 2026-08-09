@@ -31,10 +31,16 @@ public final class SyncMessage {
 
     private final Type type;
     private final UUID uuid;
+    private final boolean firstServer;
 
     public SyncMessage(Type type, UUID uuid) {
+        this(type, uuid, true);
+    }
+
+    public SyncMessage(Type type, UUID uuid, boolean firstServer) {
         this.type = type;
         this.uuid = uuid;
+        this.firstServer = firstServer;
     }
 
     public Type type() {
@@ -45,11 +51,26 @@ public final class SyncMessage {
         return uuid;
     }
 
+    /**
+     * Whether this is the player's first backend since they connected to the
+     * proxy, as opposed to a server switch.
+     *
+     * <p>Only the proxy can tell the difference: every backend sees an
+     * ordinary join and would greet an already-greeted player all over again.
+     * Defaults to {@code true} when the sender didn't say, so an older proxy
+     * paired with a newer backend behaves exactly as it did before rather
+     * than falling silent.</p>
+     */
+    public boolean firstServer() {
+        return firstServer;
+    }
+
     public byte[] encode() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (DataOutputStream out = new DataOutputStream(bos)) {
             out.writeUTF(type.name());
             out.writeUTF(uuid.toString());
+            out.writeBoolean(firstServer);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -60,7 +81,9 @@ public final class SyncMessage {
         try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(data))) {
             Type type = Type.valueOf(in.readUTF());
             UUID uuid = UUID.fromString(in.readUTF());
-            return new SyncMessage(type, uuid);
+            // Absent from messages written before this field existed.
+            boolean firstServer = in.available() <= 0 || in.readBoolean();
+            return new SyncMessage(type, uuid, firstServer);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

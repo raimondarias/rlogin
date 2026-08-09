@@ -32,6 +32,7 @@ import com.raimondarias.rlogin.paper.metrics.MetricsService;
 import com.raimondarias.rlogin.paper.scheduler.SchedulerAdapter;
 import com.raimondarias.rlogin.paper.security.CommandAuditListener;
 import com.raimondarias.rlogin.paper.security.CommandLogFilter;
+import com.raimondarias.rlogin.paper.setup.OnlineModeConflictListener;
 import com.raimondarias.rlogin.paper.spawn.SpawnManager;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
@@ -88,10 +89,17 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new JoinListener(this), this);
         getServer().getPluginManager().registerEvents(new FreezeListener(this), this);
 
+        // online-mode:true on a server that promised to accept players without an account
+        // is a contradiction the server wins, silently. Checked before anything else,
+        // because nothing below it can matter while every connection is being refused.
+        boolean onlineModeConflict = OnlineModeConflictListener.installIfConflicting(this);
+
         // Premium verification turns itself on exactly where it is needed: a standalone
         // online-mode:false server. There it is not optional, and neither is PacketEvents —
         // see MissingPacketEventsListener for why the alternative is worse than refusing.
-        if (topology.needsOwnVerification() && config.authMode().verifiesWithMojang()
+        if (onlineModeConflict) {
+            // Already refusing every connection; a second banner would only add noise.
+        } else if (topology.needsOwnVerification() && config.authMode().verifiesWithMojang()
                 && !PacketEventsSupport.isAvailable()) {
             MissingPacketEventsListener.install(this);
         } else {
@@ -112,7 +120,8 @@ public final class RLoginPaperPlugin extends JavaPlugin {
                 + " | Setup: " + topology.name().toLowerCase(java.util.Locale.ROOT).replace('_', '-')
                 + " | Auth mode: " + config.authMode().name().toLowerCase(java.util.Locale.ROOT)
                 + " | Premium auto-login: " + premiumAutoLoginStatus()
-                + " | Floodgate: " + (floodgate.isAvailable() ? "detected" : "not installed"));
+                + " | Floodgate: " + (floodgate.isAvailable() ? "detected" : "not installed")
+                + (onlineModeConflict ? " | REFUSING CONNECTIONS: online-mode conflicts with auth-mode" : ""));
     }
 
     @Override

@@ -65,9 +65,13 @@ public final class SyncListener {
         if (!preLoginListener.trustedThisSession().contains(player.getUniqueId())) {
             return;
         }
+        // No previous server means they just arrived on the network; anything else is a
+        // switch. The backends can't tell those apart — each one only ever sees a join —
+        // so without this every hop would greet the player again.
+        boolean firstServer = event.getPreviousServer() == null;
         player.getCurrentServer().ifPresent(connection ->
                 connection.sendPluginMessage(RLoginVelocityPlugin.SYNC_CHANNEL,
-                        new SyncMessage(SyncMessage.Type.TRUSTED, player.getUniqueId()).encode()));
+                        new SyncMessage(SyncMessage.Type.TRUSTED, player.getUniqueId(), firstServer).encode()));
     }
 
     @Subscribe

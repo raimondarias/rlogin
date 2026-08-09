@@ -94,6 +94,7 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&lSunucu yanlış yapılandırılmış\n\n&#d4d9d8Bu sunucuda gerekli bir eklenti eksik, bu yüzden kimse giremiyor.\n&#fdba5eBir yöneticiye PacketEvents kurmasını söyle:\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&lSunucu yanlış yapılandırılmış\n\n&#d4d9d8Bu sunucuda online-mode açık, bu yüzden Minecraft hesabı olmayan oyuncular hiç bağlanamaz.\n&#fdba5eBir yöneticiye online-mode ayarını false yapmasını söyle."
 
 
 spawn:

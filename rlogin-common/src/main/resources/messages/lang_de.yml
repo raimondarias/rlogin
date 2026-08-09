@@ -94,6 +94,7 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&lServer falsch konfiguriert\n\n&#d4d9d8Diesem Server fehlt ein benötigtes Plugin, deshalb kann niemand beitreten.\n&#fdba5eSag einem Administrator, er soll PacketEvents installieren:\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&lServer falsch konfiguriert\n\n&#d4d9d8Auf diesem Server ist online-mode aktiviert, daher können Spieler ohne Minecraft-Konto gar nicht beitreten.\n&#fdba5eBitte einen Administrator, online-mode auf false zu setzen."
 
 
 spawn:

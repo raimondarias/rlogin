@@ -94,6 +94,7 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&l서버 설정 오류\n\n&#d4d9d8이 서버에는 필요한 플러그인이 없어 아무도 접속할 수 없습니다.\n&#fdba5e관리자에게 PacketEvents 설치를 알려주세요:\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&l서버 설정이 잘못되었습니다\n\n&#d4d9d8이 서버는 online-mode가 켜져 있어 Minecraft 계정이 없는 플레이어는 접속할 수 없습니다.\n&#fdba5e관리자에게 online-mode를 false로 설정하도록 알려주세요."
 
 
 spawn:

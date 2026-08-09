@@ -6,12 +6,19 @@
 #  recommended setup, and premium auto-login turns itself on when your
 #  server needs it — there is no switch to find and forget.
 #
+#  ONE THING TO GET RIGHT: online-mode in server.properties must be
+#  FALSE, unless you set auth-mode: online below. With it on, this
+#  server turns away every player without a Minecraft account before
+#  rLogin is even consulted — so the players auth-mode: auto exists for
+#  can never arrive. rLogin refuses every connection when the two
+#  disagree, rather than look healthy while serving nobody.
+#
 #  On a single server with online-mode: false and no proxy, rLogin
 #  verifies premium accounts against Mojang itself, and that REQUIRES
 #  the free PacketEvents plugin:
 #      https://modrinth.com/plugin/packetevents
-#  Behind a Velocity/BungeeCord proxy, or with online-mode: true, it is
-#  not needed — the proxy or the server already did the verifying.
+#  Behind a proxy, or with auth-mode: online, it is not needed — the
+#  proxy or the server already did the verifying.
 # ============================================================
 
 # Who is allowed on this server. The one decision worth making consciously;
@@ -21,7 +28,9 @@
 #            without typing anything; everyone else registers and logs in
 #            with a password. What most servers want.
 #   online   Premium accounts only. Anyone Mojang doesn't vouch for is
-#            refused, and /register serves no purpose.
+#            refused, and /register serves no purpose. The one mode where
+#            online-mode: true is the right setting: let the server do the
+#            verifying instead of rLogin.
 #   offline  Passwords only. Nothing is checked against Mojang, so a premium
 #            player registers like everybody else. This is the only mode
 #            that does NOT need PacketEvents on a standalone server.

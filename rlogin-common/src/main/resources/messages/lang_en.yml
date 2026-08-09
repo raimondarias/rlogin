@@ -115,3 +115,4 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&lServer misconfigured\n\n&#d4d9d8This server is missing a required plugin, so nobody can connect.\n&#fdba5eTell an administrator to install PacketEvents:\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&lServer misconfigured\n\n&#d4d9d8This server has online-mode enabled, so players without a Minecraft account cannot connect at all.\n&#fdba5eTell an administrator to set online-mode to false."

@@ -94,6 +94,7 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&l服务器配置错误\n\n&#d4d9d8本服务器缺少必需的插件，因此没有人能够进入。\n&#fdba5e请让管理员安装 PacketEvents：\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&l服务器配置有误\n\n&#d4d9d8本服务器启用了 online-mode，因此没有 Minecraft 账户的玩家完全无法进入。\n&#fdba5e请让管理员将 online-mode 设置为 false。"
 
 
 spawn:

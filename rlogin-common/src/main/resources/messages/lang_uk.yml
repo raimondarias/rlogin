@@ -94,6 +94,7 @@ setup:
   # Shown on the connection screen when the server is missing PacketEvents.
   # {link} is replaced with a clickable download link.
   packetevents-missing: "&#fd5e5e&lСервер налаштовано неправильно\n\n&#d4d9d8На цьому сервері бракує потрібного плагіна, тому ніхто не може зайти.\n&#fdba5eСкажіть адміністратору встановити PacketEvents:\n&#e39fff{link}"
+  online-mode-conflict: "&#fd5e5e&lСервер налаштовано неправильно\n\n&#d4d9d8На цьому сервері увімкнено online-mode, тому гравці без акаунта Minecraft не можуть зайти.\n&#fdba5eСкажіть адміністратору встановити online-mode у false."
 
 
 spawn:
