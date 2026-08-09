@@ -6,7 +6,7 @@ author: raimondarias
 description: Automatic premium auto-login + password login for cracked accounts (Paper, Velocity, Folia)
 website: https://github.com/pyrelightmc/rlogin
 folia-supported: true
-softdepend: [packetevents]
+softdepend: [packetevents, LuckPerms]
 
 commands:
   login:

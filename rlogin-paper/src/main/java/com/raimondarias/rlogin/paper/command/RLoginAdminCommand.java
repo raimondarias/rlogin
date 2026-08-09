@@ -2,6 +2,7 @@ package com.raimondarias.rlogin.paper.command;
 
 import com.raimondarias.rlogin.api.AuthReason;
 import com.raimondarias.rlogin.api.RLoginAccount;
+import com.raimondarias.rlogin.common.auth.AccountService;
 import com.raimondarias.rlogin.common.update.UpdateChecker;
 import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
 import com.raimondarias.rlogin.paper.spawn.SpawnManager;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -206,6 +208,9 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
      * silently would be much worse than an extra line of output.</p>
      */
     private void changeUuid(CommandSender sender, String[] args) {
+        // Held so the completion stage below knows which UUIDs were involved; it is
+        // handed the result, not the pair that produced it.
+        AtomicReference<IdentityPair> moved = new AtomicReference<>();
         if (args.length < 2) {
             sender.sendMessage(plugin.messages().get("admin.changeuuid-usage"));
             sender.sendMessage(plugin.messages().get("admin.changeuuid-scope"));
@@ -223,6 +228,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
                             Map.of("input", args[0], "uuid", pair.from().toString())));
                     sender.sendMessage(plugin.messages().get("admin.changeuuid-resolved",
                             Map.of("input", args[1], "uuid", pair.to().toString())));
+                    moved.set(pair);
                     return plugin.accountService().changeIdentity(pair.from(), pair.to(), newUsername);
                 })
                 .whenComplete((result, error) -> {
@@ -238,7 +244,35 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
                         case TARGET_ALREADY_EXISTS -> plugin.messages().get("admin.changeuuid-target-exists");
                         case SAME_IDENTITY -> plugin.messages().get("admin.changeuuid-same");
                     });
+                    // Only once the account itself moved: carrying a rank onto a UUID
+                    // whose account was refused would leave permissions somewhere no
+                    // account lives.
+                    if (result == AccountService.ChangeIdentityResult.SUCCESS) {
+                        carryPermissions(sender, moved.get());
+                    }
                 });
+    }
+
+    /**
+     * Asks LuckPerms to carry the rank across too, and says what happened.
+     *
+     * <p>Silent when LuckPerms isn't installed: an owner who doesn't use it
+     * has nothing to be told about it.</p>
+     */
+    private void carryPermissions(CommandSender sender, IdentityPair pair) {
+        if (pair == null || !plugin.luckPerms().isAvailable()) {
+            return;
+        }
+        plugin.luckPerms().transferPermissions(pair.from(), pair.to()).thenAccept(outcome -> {
+            switch (outcome) {
+                case MOVED -> sender.sendMessage(plugin.messages().get("admin.changeuuid-perms-moved"));
+                case TARGET_NOT_EMPTY ->
+                        sender.sendMessage(plugin.messages().get("admin.changeuuid-perms-target-not-empty"));
+                case FAILED -> sender.sendMessage(plugin.messages().get("admin.changeuuid-perms-failed"));
+                // Nothing to move, or LuckPerms absent: neither is worth a line.
+                case NOTHING_TO_MOVE, UNAVAILABLE -> { }
+            }
+        });
     }
 
     private record IdentityPair(UUID from, UUID to) {

@@ -15,6 +15,7 @@ import com.raimondarias.rlogin.common.security.SensitiveCommands;
 import com.raimondarias.rlogin.common.sync.SyncMessage;
 import com.raimondarias.rlogin.common.update.UpdateChecker;
 import com.raimondarias.rlogin.paper.bedrock.FloodgateSupport;
+import com.raimondarias.rlogin.paper.integration.LuckPermsSupport;
 import com.raimondarias.rlogin.paper.command.ChangePasswordCommand;
 import com.raimondarias.rlogin.paper.command.LoginCommand;
 import com.raimondarias.rlogin.paper.command.LogoutCommand;
@@ -72,6 +73,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
     private final HybridVerificationTracker hybridVerificationTracker = new HybridVerificationTracker();
     private HybridAuthListener hybridAuthListener;
     private ServerTopology topology;
+    private LuckPermsSupport luckPerms;
 
     private SchedulerAdapter.CancellableTask sessionCleanupTask;
 
@@ -83,6 +85,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         }
 
         this.topology = ServerTopology.detect(this);
+        this.luckPerms = new LuckPermsSupport(this);
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, SYNC_CHANNEL);
         getServer().getMessenger().registerIncomingPluginChannel(this, SYNC_CHANNEL, new SyncMessageListener(this));
@@ -134,6 +137,9 @@ public final class RLoginPaperPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (luckPerms != null) {
+            luckPerms.shutdown();
+        }
         if (sessionCleanupTask != null) {
             sessionCleanupTask.cancel();
         }
@@ -362,8 +368,15 @@ public final class RLoginPaperPlugin extends JavaPlugin {
      */
     public void fireAuthenticated(Player player, com.raimondarias.rlogin.api.AuthReason reason,
                                   boolean firstServerOfSession) {
+        // Before the event: a listener that asks LuckPerms about this player should
+        // get the answer that is true now, not the one from a second ago.
+        luckPerms.refreshContext(player);
         getServer().getPluginManager().callEvent(
                 new RLoginAuthenticateEvent(player, reason, firstServerOfSession));
+    }
+
+    public LuckPermsSupport luckPerms() {
+        return luckPerms;
     }
 
     public RecoveryService recoveryService() {

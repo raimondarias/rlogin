@@ -11,6 +11,7 @@ adventure = "4.17.0"
 # (premium.standalone-hybrid-mode in config.yml); needs the separate PacketEvents
 # plugin actually installed on the server to do anything. See PacketEventsSupport.
 packetevents = "2.13.0"
+luckperms-api = "5.5"
 # Log4j2: compileOnly as well — every Paper server already runs on it (it's what
 # backs the SLF4J logger the server writes commands through). Only used to filter
 # players' passwords out of the console, see CommandLogFilter.
@@ -41,6 +42,7 @@ adventure-minimessage = { module = "net.kyori:adventure-text-minimessage", versi
 adventure-legacy = { module = "net.kyori:adventure-text-serializer-legacy", version.ref = "adventure" }
 
 packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
+luckperms-api = { module = "net.luckperms:api", version.ref = "luckperms-api" }
 
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 
