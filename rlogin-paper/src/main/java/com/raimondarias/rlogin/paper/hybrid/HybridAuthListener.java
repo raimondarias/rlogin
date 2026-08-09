@@ -41,9 +41,10 @@ import java.util.logging.Logger;
 
 /**
  * Lets premium accounts auto-login on a single standalone backend
- * (online-mode: false, no Velocity in front) — the
- * {@code premium.standalone-hybrid-mode} opt-in feature. Cracked accounts
- * are completely unaffected by this class either way.
+ * (online-mode: false, no proxy in front). Turned on automatically
+ * wherever nothing else verifies the connection — see {@link
+ * com.raimondarias.rlogin.paper.ServerTopology}. Cracked accounts are
+ * completely unaffected by this class either way.
  *
  * <p>Technique (the same one AuthMeReloaded's PacketEvents-based "direct
  * offline-mode premium bypass" uses): intercept {@code LOGIN_START}, hold
@@ -87,9 +88,12 @@ public final class HybridAuthListener extends PacketListenerAbstract {
     }
 
     private final Logger logger;
-    private final RLoginConfig config;
-    private final AccountService accountService;
-    private final PremiumChecker premiumChecker;
+    /**
+     * Held instead of the services themselves: {@code /rlogin reload}
+     * replaces them, and a listener that cached the old ones would go on
+     * querying a database that has already been closed.
+     */
+    private final RLoginPaperPlugin plugin;
     private final MojangSessionVerifier sessionVerifier;
     private final HybridVerificationTracker tracker;
     private final NmsConnectionAccess connectionAccess;
@@ -97,13 +101,10 @@ public final class HybridAuthListener extends PacketListenerAbstract {
     private final KeyPair serverKeyPair;
     private final Map<String, Pending> pending = new ConcurrentHashMap<>();
 
-    private HybridAuthListener(Logger logger, RLoginConfig config, AccountService accountService,
-                                PremiumChecker premiumChecker, MojangSessionVerifier sessionVerifier,
+    private HybridAuthListener(RLoginPaperPlugin plugin, MojangSessionVerifier sessionVerifier,
                                 HybridVerificationTracker tracker) throws Exception {
-        this.logger = logger;
-        this.config = config;
-        this.accountService = accountService;
-        this.premiumChecker = premiumChecker;
+        this.logger = plugin.getLogger();
+        this.plugin = plugin;
         this.sessionVerifier = sessionVerifier;
         this.tracker = tracker;
         this.connectionAccess = new NmsConnectionAccess(logger);
@@ -113,35 +114,33 @@ public final class HybridAuthListener extends PacketListenerAbstract {
     }
 
     /**
-     * Builds and registers the listener with PacketEvents if {@code
-     * premium.standalone-hybrid-mode} is enabled and PacketEvents is
-     * actually available; returns {@code null} (does nothing else)
-     * otherwise. Deliberately the only place in this codebase that touches
-     * {@link PacketEvents#getAPI()} directly outside this already-guarded
-     * class — {@code RLoginPaperPlugin} never references PacketEvents
-     * types itself, it only calls this.
+     * Builds and registers the listener with PacketEvents when this server
+     * is the one that has to verify premium accounts; returns {@code null}
+     * (does nothing else) when something else already did.
+     *
+     * <p>Deliberately the only place in this codebase that touches {@link
+     * PacketEvents#getAPI()} directly outside this already-guarded class —
+     * {@code RLoginPaperPlugin} never references PacketEvents types itself,
+     * it only calls this.</p>
      */
-    public static HybridAuthListener setUpIfEnabled(RLoginPaperPlugin plugin, PremiumChecker premiumChecker,
-                                                      HybridVerificationTracker tracker) {
-        if (!plugin.config().standaloneHybridModeEnabled()) {
-            return null;
-        }
-        if (!PacketEventsSupport.isAvailable()) {
-            plugin.getLogger().warning("premium.standalone-hybrid-mode is enabled but the PacketEvents "
-                    + "plugin isn't installed/enabled (see the README) - standalone hybrid-auth stays off.");
+    public static HybridAuthListener setUpIfNeeded(RLoginPaperPlugin plugin, PremiumChecker premiumChecker,
+                                                     HybridVerificationTracker tracker) {
+        if (!plugin.topology().needsOwnVerification()) {
+            // Someone already verified this connection (online-mode, or a proxy in front).
+            // Doing it again from here would mean verifying twice, so there is nothing to set up
+            // and PacketEvents is not needed on this server at all.
             return null;
         }
         try {
             MojangSessionVerifier sessionVerifier = new MojangSessionVerifier(plugin.config());
-            HybridAuthListener listener = new HybridAuthListener(plugin.getLogger(), plugin.config(),
-                    plugin.accountService(), premiumChecker, sessionVerifier, tracker);
+            HybridAuthListener listener = new HybridAuthListener(plugin, sessionVerifier, tracker);
             PacketEvents.getAPI().getEventManager().registerListener(listener);
-            plugin.getLogger().info("Standalone hybrid-auth enabled: premium accounts auto-login on this "
-                    + "backend without needing Velocity. UUID type: "
-                    + plugin.config().uuidType().name().toLowerCase(java.util.Locale.ROOT) + ".");
+            plugin.getLogger().info("Premium auto-login is active: premium accounts join without a password, "
+                    + "cracked accounts use /login. UUID type: "
+                    + plugin.config().uuidType().name().toLowerCase(Locale.ROOT) + ".");
             return listener;
         } catch (Exception e) {
-            plugin.getLogger().warning("Could not enable standalone hybrid-auth: " + e);
+            plugin.getLogger().warning("Could not start premium verification: " + e);
             return null;
         }
     }
@@ -219,7 +218,7 @@ public final class HybridAuthListener extends PacketListenerAbstract {
      * </ol>
      */
     private CompletableFuture<Boolean> shouldAskForPremiumProof(String username, String ip) {
-        return accountService.findByUsername(username).thenCompose(existing -> {
+        return plugin.accountService().findByUsername(username).thenCompose(existing -> {
             if (existing.isPresent() && existing.get().premium()) {
                 return decided(username, true, "a premium account already exists for this name");
             }
@@ -229,7 +228,7 @@ public final class HybridAuthListener extends PacketListenerAbstract {
             if (existing.isPresent() && ip.equals(existing.get().lastIp())) {
                 return decided(username, false, "a cracked account for this name last logged in from " + ip);
             }
-            return premiumChecker.lookup(username).thenCompose(lookup ->
+            return plugin.premiumChecker().lookup(username).thenCompose(lookup ->
                     decided(username, lookup.isPremium(), "Mojang says this name is "
                             + (lookup.isPremium() ? "premium" : lookup.status().name().toLowerCase(Locale.ROOT))));
         });
@@ -242,7 +241,7 @@ public final class HybridAuthListener extends PacketListenerAbstract {
     }
 
     private void debug(String message) {
-        if (config.debug()) {
+        if (plugin.config().debug()) {
             logger.info("[hybrid-auth][debug] " + message);
         }
     }
@@ -337,7 +336,7 @@ public final class HybridAuthListener extends PacketListenerAbstract {
      */
     private CompletableFuture<Void> applyVerifiedIdentity(User user, String username,
                                                            MojangSessionVerifier.VerifiedProfile profile) {
-        premiumChecker.rememberPremium(username, profile.uuid());
+        plugin.premiumChecker().rememberPremium(username, profile.uuid());
         // Set unconditionally: this is what JoinListener falls back to on any server build
         // where the UUID below can't be applied (there, the player still auto-logins).
         tracker.markVerified(username);
@@ -367,12 +366,12 @@ public final class HybridAuthListener extends PacketListenerAbstract {
      *                 applies to both, {@link UuidType#REAL} only to the former.
      */
     private CompletableFuture<UUID> identityFor(String username, MojangSessionVerifier.VerifiedProfile verified) {
-        return switch (config.uuidType()) {
+        return switch (plugin.config().uuidType()) {
             case REAL -> CompletableFuture.completedFuture(verified == null ? null : verified.uuid());
             case CRACKED -> CompletableFuture.completedFuture(null);
             // Generated once per name and then read back off the account, so it survives
             // restarts without needing anywhere else to store it.
-            case RANDOM -> accountService.findByUsername(username).thenApply(existing -> {
+            case RANDOM -> plugin.accountService().findByUsername(username).thenApply(existing -> {
                 UUID identity = existing.map(RLoginAccount::uuid).orElseGet(UUID::randomUUID);
                 debug(username + ": uuid-type random -> " + identity
                         + (existing.isPresent() ? " (reused from their account)" : " (new, first time this name connects)"));
@@ -422,7 +421,7 @@ public final class HybridAuthListener extends PacketListenerAbstract {
      * too; every other mode leaves them on the server's own offline UUID.
      */
     private void resumeLogin(User user, String username, ClientVersion clientVersion, UUID loginUuid) {
-        if (config.uuidType() != UuidType.RANDOM) {
+        if (plugin.config().uuidType() != UuidType.RANDOM) {
             reinjectLoginStart(user, username, clientVersion, loginUuid);
             return;
         }

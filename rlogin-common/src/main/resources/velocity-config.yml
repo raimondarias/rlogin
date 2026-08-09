@@ -2,82 +2,58 @@
 #  rLogin (Velocity) — proxy configuration
 #  https://github.com/raimondarias/rlogin
 #
-#  This file is intentionally smaller than the one on Paper/Folia: the
-#  proxy never touches account records (passwords, 2FA, etc.) — that's
-#  entirely owned by the Paper/Folia backends. It only decides
-#  online/offline-mode per connection and (optionally) routes players
-#  through an authentication lobby. The optional `database` section below
-#  is a read-only convenience for that lobby routing, see its comment.
+#  This file is short on purpose. rLogin is configured on the BACKEND, in
+#  plugins/rLogin/config.yml there: passwords, 2FA, sessions, spawns,
+#  languages, UUID handling, messages. None of it belongs on a proxy.
+#
+#  The proxy is a connector. It does two things:
+#    - Verifies premium accounts with Mojang, because behind a proxy it is
+#      the only place that can. Always on; there is nothing to configure.
+#    - Makes sure a player logs in once, on a server that can ask, and is
+#      never asked again while switching servers.
+#
+#  DATABASE: not here. Accounts live on the backends. If you run more than
+#  one backend, point them all at the same MySQL/MariaDB so an account made
+#  on one is known on the others. The proxy never reads or writes it.
 # ============================================================
 
-general:
-  # Any of the 17 languages in the messages/ folder next to this file:
-  # en, es, pt_BR, de, fr, ru, zh_CN, pl, it, nl, tr, uk, ja, ko, ar, vi, id
-  language: en
-  # Explains in the console why each connection was forced online or offline.
-  debug: false
+login-servers:
+  # Servers running rLogin, i.e. the ones that can ask a player to log in.
+  # Players who haven't logged in yet are sent to one of these, picked at
+  # random when there is more than one.
+  servers:
+    - 'auth'
 
-premium:
-  # Auto-login for premium (Java-original) accounts, decided here via
-  # Modern Forwarding (forceOnlineMode/forceOfflineMode per connection).
-  auto-login: true
-  api-timeout-ms: 3000
-  # What to do if the Mojang API doesn't respond in time or is down:
-  #   fail-open   -> treat as cracked, let them through offline (recommended)
-  #   fail-closed -> reject the connection until the API is back
-  api-failure-policy: fail-open
-  cache-ttl-minutes: 60
+  # Send them there even if Velocity's own "try" order chose somewhere else.
+  # Turning this off means a player can reach a server before logging in, so
+  # only do it if you route the first server yourself.
+  enforce: true
 
-lobby:
-  # Backend name (as defined in velocity.toml's [servers] table) that every
-  # NOT-YET-authenticated player is sent to first, overriding velocity.toml's
-  # normal "try" order. Leave empty to disable — players then follow the
-  # normal try order and authenticate wherever they land (each backend
-  # freezes them until they /login or /register, same as always).
-  auth-server: ""
-  # Backend name authenticated players get sent to: premium accounts go
-  # here directly (skipping auth-server entirely), and non-premium accounts
-  # get auto-transferred here right after a successful /login or /register
-  # on auth-server. Leave empty to disable automatic transfers.
-  default-server: ""
-
-database:
-  # Optional and OFF by default. Only useful if you set lobby.auth-server
-  # below: without it, a non-premium player with a still-valid "remember
-  # me" session briefly lands on auth-server before being transferred to
-  # lobby.default-server (the backend confirms the session over the
-  # rlogin:sync channel and Velocity transfers them right after). With it,
-  # Velocity checks the session itself BEFORE picking the initial server
-  # and sends them straight to default-server, skipping that hop.
+after-login:
+  # What happens once a backend reports the player has logged in:
   #
-  # MUST point to the exact SAME database your Paper/Folia backends use
-  # (type/host/database/credentials all matching config.yml's `database`
-  # section there) — this is read-only from here, rLogin never writes
-  # accounts or sessions from the proxy. mysql is the only sane choice for
-  # a real multi-backend network; sqlite only makes sense if Velocity and
-  # your single backend run on the same machine and share the exact same
-  # file. If the connection fails at startup, rLogin logs a warning and
-  # simply falls back to the old behavior (no auto-login is affected).
-  enabled: false
-  type: mysql
-  sqlite:
-    file: rlogin.db
-  mysql:
-    host: 127.0.0.1
-    port: 3306
-    database: rlogin
-    username: root
-    password: ""
-    use-ssl: false
-    pool-size: 5
+  #   stay      Leave them where they are. Right for networks that log
+  #             players in on the lobby they were going to anyway.
+  #   send      Move them to one of the servers listed below, at random.
+  #             Right for a dedicated auth server they should not linger on.
+  #   previous  Back to the server they were on last time. Falls back to
+  #             "send" if that server is gone or they have no history yet.
+  action: stay
 
-session:
-  # Must mirror the Paper/Folia backends' session.remember-me-minutes —
-  # only read when database.enabled: true above.
-  remember-me: true
-  remember-me-minutes: 30
+  # Used by "send", and as the fallback for "previous".
+  servers:
+    - 'lobby'
 
-update-checker:
-  # Checks GitHub once at startup and prints a line if a newer release
-  # exists. Nothing is sent about your network, and nothing is downloaded.
-  enabled: true
+  # Servers "previous" should never send anyone back to. Your login servers
+  # are already excluded; list anything else that makes no sense to return
+  # to, like a queue or a limbo server.
+  never-return-to: []
+
+timing:
+  # Wait this long (milliseconds) before moving a player between servers.
+  # A short pause avoids switching mid-handshake, which drops the player.
+  switch-delay: 500
+
+  # If a switch fails, wait this long (milliseconds) and try once more.
+  # Covers a backend that was briefly starting up or full.
+  retry-delay: 5000

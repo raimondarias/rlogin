@@ -46,7 +46,7 @@ public final class JoinListener implements Listener {
                 && username.startsWith(plugin.config().floodgatePrefix())
                 && plugin.floodgate().isFloodgatePlayer(uuid);
 
-        // Standalone hybrid-auth (premium.standalone-hybrid-mode): HybridAuthListener already
+        // Standalone premium verification: HybridAuthListener already
         // cryptographically verified this connection against Mojang at the packet level, before
         // Bukkit ever fired this event, and normally also gave it the real Mojang UUID — in
         // which case the offline-UUID check below already says "premium" on its own. This flag
@@ -66,7 +66,8 @@ public final class JoinListener implements Listener {
             return;
         }
 
-        boolean remembered = plugin.sessionService().isRemembered(uuid, ip).join();
+        boolean remembered = plugin.sessionService().isRemembered(uuid, ip).join()
+                && !usesTwoFactor(uuid);
         debug(username + " (" + uuid + ") needs a password; remembered session from " + ip + ": " + remembered);
         if (remembered) {
             plugin.authSessions().markAuthenticated(uuid, AuthReason.REMEMBERED_SESSION);
@@ -74,6 +75,22 @@ public final class JoinListener implements Listener {
         }
         // If neither premium nor remembered, the player stays pending: FreezeListener and
         // the /login, /register commands take it from here once they enter the world.
+    }
+
+    /**
+     * Whether this account opted into a second factor.
+     *
+     * <p>"Remember me" trusts an address, and an address is shared: everyone
+     * behind the same NAT looks identical, and on a cracked server the UUID
+     * comes from the name, so a neighbour typing your name would inherit
+     * your session. Somebody who went to the trouble of setting up 2FA has
+     * said plainly that an address is not good enough for them, so the
+     * shortcut is never applied to their account.</p>
+     */
+    private boolean usesTwoFactor(UUID uuid) {
+        return plugin.accountService().find(uuid).join()
+                .map(account -> account.totpEnabled())
+                .orElse(false);
     }
 
     private void debug(String message) {
@@ -93,7 +110,7 @@ public final class JoinListener implements Listener {
      * recorded by {@code HybridVerificationTracker} counts.</p>
      */
     private boolean uuidCanProvePremium() {
-        return !plugin.config().standaloneHybridModeEnabled()
+        return !plugin.topology().needsOwnVerification()
                 || plugin.config().uuidType() != UuidType.RANDOM;
     }
 

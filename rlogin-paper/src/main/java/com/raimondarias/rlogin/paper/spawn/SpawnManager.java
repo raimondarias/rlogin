@@ -3,34 +3,35 @@ package com.raimondarias.rlogin.paper.spawn;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
- * Named spawn points plus per-purpose role assignments
- * ({@code join}/{@code firstjoin}/{@code login}/{@code register}), backed by
- * a simple {@code spawns.yml} in the plugin's data folder.
+ * Where players are put at each of the four moments rLogin knows about,
+ * backed by a plain {@code spawns.yml} in the plugin's data folder.
  *
- * <p>This is Paper-only, per-backend state — each server has its own
- * worlds — so unlike accounts it does not go through the shared
- * {@code Storage}/database layer. If a role has no spawn assigned (or the
- * assigned spawn no longer exists), nothing happens: the player is simply
- * left wherever Bukkit would put them by default, i.e. where they last
- * disconnected.</p>
+ * <p>One spawn per moment, and nothing else. An earlier version had two
+ * layers — named points, then a separate step assigning a name to each
+ * moment — which meant three commands and two concepts to get one player to
+ * one place. The name never carried information the role didn't already
+ * have, so it's gone: {@code /rlogin spawn set join} is the whole thing.</p>
+ *
+ * <p>Paper-only, per-backend state (each server has its own worlds), so
+ * unlike accounts this never goes near the shared database. A moment with
+ * no spawn set means "don't move them", which is Bukkit's own default: the
+ * player appears wherever they last logged out.</p>
  */
 public final class SpawnManager {
 
     public enum Role {
-        /** Already-authenticated join (premium auto-login, remembered session, bypass permission). */
+        /** Already-authenticated join: premium auto-login, remembered session, or bypass permission. */
         JOIN,
         /** The player's very first join ever ({@code Player#hasPlayedBefore()} was false). */
         FIRSTJOIN,
@@ -42,12 +43,46 @@ public final class SpawnManager {
         public String key() {
             return name().toLowerCase(Locale.ROOT);
         }
+
+        /** Empty if {@code raw} isn't one of the four; used to reject typos with a helpful message. */
+        public static Optional<Role> parse(String raw) {
+            for (Role role : values()) {
+                if (role.key().equalsIgnoreCase(raw)) {
+                    return Optional.of(role);
+                }
+            }
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * A spawn as it sits on disk. The world is kept by name and resolved
+     * only when someone is actually sent there — resolving at load time
+     * would silently drop spawns in worlds that a world-management plugin
+     * loads after rLogin starts.
+     */
+    public record SpawnPoint(String world, double x, double y, double z, float yaw, float pitch) {
+
+        public Optional<Location> toLocation() {
+            World loaded = Bukkit.getWorld(world);
+            return loaded == null ? Optional.empty()
+                    : Optional.of(new Location(loaded, x, y, z, yaw, pitch));
+        }
+
+        public static SpawnPoint of(Location location) {
+            return new SpawnPoint(location.getWorld().getName(), location.getX(), location.getY(),
+                    location.getZ(), location.getYaw(), location.getPitch());
+        }
+
+        /** {@code world 123.5, 64.0, -87.2} — what an admin needs to recognise the place. */
+        public String describe() {
+            return String.format(Locale.ROOT, "%s  %.1f, %.1f, %.1f", world, x, y, z);
+        }
     }
 
     private final File file;
     private final YamlConfiguration yaml;
-    private final Map<String, Location> points = new LinkedHashMap<>();
-    private final Map<Role, String> roles = new LinkedHashMap<>();
+    private final Map<Role, SpawnPoint> spawns = new EnumMap<>(Role.class);
 
     public SpawnManager(File dataFolder) {
         this.file = new File(dataFolder, "spawns.yml");
@@ -56,105 +91,54 @@ public final class SpawnManager {
     }
 
     private void load() {
-        points.clear();
-        roles.clear();
-
-        ConfigurationSection pointsSection = yaml.getConfigurationSection("points");
-        if (pointsSection != null) {
-            for (String name : pointsSection.getKeys(false)) {
-                String path = "points." + name + ".";
-                String worldName = yaml.getString(path + "world");
-                World world = worldName != null ? Bukkit.getWorld(worldName) : null;
-                if (world == null) {
-                    continue; // World not loaded (yet) — it'll just be unavailable until it is.
-                }
-                Location location = new Location(world,
-                        yaml.getDouble(path + "x"), yaml.getDouble(path + "y"), yaml.getDouble(path + "z"),
-                        (float) yaml.getDouble(path + "yaw"), (float) yaml.getDouble(path + "pitch"));
-                points.put(name.toLowerCase(Locale.ROOT), location);
-            }
-        }
-
+        spawns.clear();
         for (Role role : Role.values()) {
-            String assigned = yaml.getString("roles." + role.key());
-            if (assigned != null) {
-                roles.put(role, assigned.toLowerCase(Locale.ROOT));
+            String path = role.key() + ".";
+            String world = yaml.getString(path + "world");
+            if (world == null) {
+                continue;
             }
+            spawns.put(role, new SpawnPoint(world,
+                    yaml.getDouble(path + "x"), yaml.getDouble(path + "y"), yaml.getDouble(path + "z"),
+                    (float) yaml.getDouble(path + "yaw"), (float) yaml.getDouble(path + "pitch")));
         }
     }
 
-    public void set(String name, Location location) {
-        String key = name.toLowerCase(Locale.ROOT);
-        points.put(key, location.clone());
+    public void set(Role role, Location location) {
+        SpawnPoint point = SpawnPoint.of(location);
+        spawns.put(role, point);
 
-        String path = "points." + key + ".";
-        yaml.set(path + "world", location.getWorld().getName());
-        yaml.set(path + "x", location.getX());
-        yaml.set(path + "y", location.getY());
-        yaml.set(path + "z", location.getZ());
-        yaml.set(path + "yaw", (double) location.getYaw());
-        yaml.set(path + "pitch", (double) location.getPitch());
+        String path = role.key() + ".";
+        yaml.set(path + "world", point.world());
+        yaml.set(path + "x", point.x());
+        yaml.set(path + "y", point.y());
+        yaml.set(path + "z", point.z());
+        yaml.set(path + "yaw", (double) point.yaw());
+        yaml.set(path + "pitch", (double) point.pitch());
         save();
     }
 
-    public boolean remove(String name) {
-        String key = name.toLowerCase(Locale.ROOT);
-        if (!points.containsKey(key)) {
+    /** {@code false} if that moment had no spawn to begin with. */
+    public boolean remove(Role role) {
+        if (spawns.remove(role) == null) {
             return false;
         }
-        points.remove(key);
-        yaml.set("points." + key, null);
-
-        for (Role role : Role.values()) {
-            if (key.equals(roles.get(role))) {
-                roles.remove(role);
-                yaml.set("roles." + role.key(), null);
-            }
-        }
+        yaml.set(role.key(), null);
         save();
         return true;
     }
 
-    public Set<String> names() {
-        return points.keySet();
+    public Optional<SpawnPoint> get(Role role) {
+        return Optional.ofNullable(spawns.get(role));
     }
 
-    public Optional<Location> get(String name) {
-        return Optional.ofNullable(points.get(name.toLowerCase(Locale.ROOT)));
-    }
-
-    /** {@code false} if no spawn with that name exists. */
-    public boolean assignRole(Role role, String name) {
-        String key = name.toLowerCase(Locale.ROOT);
-        if (!points.containsKey(key)) {
-            return false;
-        }
-        roles.put(role, key);
-        yaml.set("roles." + role.key(), key);
-        save();
-        return true;
-    }
-
-    public void clearRole(Role role) {
-        roles.remove(role);
-        yaml.set("roles." + role.key(), null);
-        save();
-    }
-
-    public Optional<String> roleAssignment(Role role) {
-        return Optional.ofNullable(roles.get(role));
-    }
-
-    /** Teleports the player to this role's assigned spawn, if any and if it still exists. Folia-safe. */
+    /** Sends the player to this moment's spawn, if one is set and its world is loaded. Folia-safe. */
     public void teleportForRole(Player player, Role role) {
-        String name = roles.get(role);
-        if (name == null) {
+        SpawnPoint point = spawns.get(role);
+        if (point == null) {
             return;
         }
-        Location location = points.get(name);
-        if (location != null) {
-            player.teleportAsync(location);
-        }
+        point.toLocation().ifPresent(player::teleportAsync);
     }
 
     private void save() {

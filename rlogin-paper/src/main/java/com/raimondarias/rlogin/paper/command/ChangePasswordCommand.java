@@ -28,9 +28,16 @@ public final class ChangePasswordCommand implements CommandExecutor {
             player.sendMessage(plugin.messages().get("changepassword.usage"));
             return true;
         }
-        plugin.accountService().changePassword(player.getUniqueId(), args[0], args[1])
-                .thenAccept(ok -> plugin.scheduler().runForPlayer(player, () -> player.sendMessage(
-                        plugin.messages().get(ok ? "changepassword.success" : "changepassword.wrong-password"))));
+        plugin.accountService().changePassword(player.getUniqueId(), args[0], args[1]).thenAccept(ok -> {
+            if (ok) {
+                // Anyone riding an old "remember me" session has to prove themselves again.
+                // Changing a password is exactly what you do when you suspect someone else
+                // got in, so leaving their shortcut alive would defeat the point.
+                plugin.sessionService().forget(player.getUniqueId());
+            }
+            plugin.scheduler().runForPlayer(player, () -> player.sendMessage(
+                    plugin.messages().get(ok ? "changepassword.success" : "changepassword.wrong-password")));
+        });
         return true;
     }
 }

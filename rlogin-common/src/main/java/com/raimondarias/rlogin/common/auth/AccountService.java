@@ -5,6 +5,7 @@ import com.raimondarias.rlogin.api.db.Storage;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.raimondarias.rlogin.common.security.AuthMeLegacyHash;
 import com.raimondarias.rlogin.common.security.BruteforceGuard;
+import com.raimondarias.rlogin.common.security.IpThrottle;
 import com.raimondarias.rlogin.common.security.PasswordHasher;
 import com.raimondarias.rlogin.common.security.PremiumNameGuard;
 import com.raimondarias.rlogin.common.security.Totp;
@@ -39,6 +40,7 @@ public final class AccountService {
     private final RLoginConfig config;
     private final PasswordHasher hasher;
     private final BruteforceGuard bruteforceGuard;
+    private final IpThrottle ipThrottle;
     private final PremiumNameGuard premiumNameGuard;
 
     public AccountService(Storage storage, RLoginConfig config, PremiumNameGuard premiumNameGuard) {
@@ -46,6 +48,7 @@ public final class AccountService {
         this.config = config;
         this.hasher = new PasswordHasher(config.bcryptCost());
         this.bruteforceGuard = new BruteforceGuard(config);
+        this.ipThrottle = new IpThrottle(config, bruteforceGuard);
         this.premiumNameGuard = premiumNameGuard;
     }
 
@@ -115,22 +118,25 @@ public final class AccountService {
                 return CompletableFuture.completedFuture(LoginOutcome.of(LoginResult.PREMIUM_NO_PASSWORD));
             }
             Instant now = Instant.now();
-            if (bruteforceGuard.isEnabled() && account.isLocked(now)) {
-                long remaining = account.lockedUntil().getEpochSecond() - now.getEpochSecond();
+            // Locked by ADDRESS, never by account: locking the account would let anyone who
+            // knows a name keep its owner out by failing logins on purpose. See IpThrottle.
+            long lockedFor = ipThrottle.lockedSecondsRemaining(ip, now);
+            if (lockedFor > 0) {
                 return CompletableFuture.completedFuture(
-                        new LoginOutcome(LoginResult.LOCKED, account, Math.max(remaining, 0), 0));
+                        new LoginOutcome(LoginResult.LOCKED, account, lockedFor, 0));
             }
             if (!verifyPassword(password, account)) {
-                return registerFailedAttempt(account, now, LoginResult.WRONG_PASSWORD);
+                return registerFailedAttempt(account, ip, now, LoginResult.WRONG_PASSWORD);
             }
             if (account.totpEnabled()) {
                 if (totpCode == null || totpCode.isBlank()) {
                     return CompletableFuture.completedFuture(new LoginOutcome(LoginResult.NEEDS_TOTP, account, 0, 0));
                 }
                 if (!Totp.verify(account.totpSecret(), totpCode)) {
-                    return registerFailedAttempt(account, now, LoginResult.WRONG_TOTP);
+                    return registerFailedAttempt(account, ip, now, LoginResult.WRONG_TOTP);
                 }
             }
+            ipThrottle.recordSuccess(ip);
             RLoginAccount authenticated = account.withLogin(ip, now);
             // Account migrated from another plugin (e.g. AuthMe SHA256): on a successful
             // login, it gets re-hashed to bcrypt, retiring the legacy algorithm for good.
@@ -150,11 +156,16 @@ public final class AccountService {
         return hasher.verify(plain, stored);
     }
 
-    private CompletableFuture<LoginOutcome> registerFailedAttempt(RLoginAccount account, Instant now, LoginResult reason) {
-        int attempts = account.failedAttempts() + 1;
-        Instant lockUntil = bruteforceGuard.isEnabled() ? bruteforceGuard.nextLockUntil(attempts, now) : null;
-        RLoginAccount updated = account.withFailedAttempt(attempts, lockUntil);
-        int attemptsLeft = Math.max(0, config.bruteforceMaxAttempts() - attempts);
+    /**
+     * The address is what gets throttled; the account only keeps a running
+     * count so {@code /rlogin info} can show that someone has been trying.
+     * {@code lockedUntil} is deliberately left null — locking the account is
+     * what made this a way to keep its owner out.
+     */
+    private CompletableFuture<LoginOutcome> registerFailedAttempt(RLoginAccount account, String ip,
+                                                                    Instant now, LoginResult reason) {
+        int attemptsLeft = ipThrottle.recordFailure(ip, now);
+        RLoginAccount updated = account.withFailedAttempt(account.failedAttempts() + 1, null);
         return storage.save(updated).thenApply(saved -> new LoginOutcome(reason, saved, 0, attemptsLeft));
     }
 

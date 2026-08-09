@@ -56,60 +56,72 @@ one global toggle, vanilla has no concept of deciding it per-connection.
 path** for that combination — see above, it's what most of this README
 assumes. For a genuinely proxy-less setup, there's also:
 
-### Standalone hybrid mode (`premium.standalone-hybrid-mode`, experimental)
+### Premium auto-login without a proxy
 
-Off by default. Requires installing the separate
-[PacketEvents](https://modrinth.com/plugin/packetevents) plugin (not
-bundled) alongside rLogin, then setting `premium.standalone-hybrid-mode: true`
-in `config.yml`. With it, a single `online-mode: false` backend does this
-for every connecting premium account, no Velocity involved:
+Combining "automatic premium" and "cracked with a password" on a single
+backend is not something vanilla can express: `online-mode` is one global
+toggle, and there is no per-connection version of it. rLogin does the
+verification itself instead, so both work on one `online-mode: false` server
+with nothing in front of it.
 
-1. Intercepts the login handshake and asks Mojang whether the connecting
-   name is real premium (same lookup as the Velocity path, cached).
-2. If it is, sends a real encryption request — the client shows its own
-   "Encrypting..." screen and calls Mojang's session server on its own,
-   exactly like it would against an `online-mode: true` server.
-3. Decrypts the response, turns on encryption on that one connection, and
-   double-checks with Mojang's `hasJoined` endpoint that the client
-   genuinely holds that account's session (not just that the username
-   exists) — an attacker who only knows the username cannot fake this.
-4. Takes the real UUID and the signed skin out of that same `hasJoined`
-   response and hands them to the connection, so the player joins as their
-   genuine Mojang account rather than as an offline stand-in
-   (`premium.standalone-premium-uuid` / `premium.standalone-forward-skin`,
-   both on by default).
-5. The account auto-logs in with zero typing, same as the Velocity path.
-   Cracked connections are entirely unaffected either way.
+**There is nothing to enable.** rLogin reads how your server is set up and
+decides: `online-mode: true` or a proxy in front means somebody else already
+verified the connection and it stays out of the way; a standalone
+`online-mode: false` server means it has to do the verifying, and it does.
 
-**How step 4 gets the real UUID without version-specific internals:** it
-doesn't reach into Mojang's own (obfuscated, per-version) classes at all.
-Spigot — and so Paper and every fork of it — adds two fields to the
-server's connection class purely so a front proxy can forward an
-already-authenticated identity:
+That last case **requires the free
+[PacketEvents](https://modrinth.com/plugin/packetevents) plugin**, which is
+not bundled — PacketEvents is GPL-3.0 and rLogin is MIT. Without it rLogin
+refuses every connection and says why, in the console and on the player's
+disconnect screen. That is deliberate: switching itself off instead would
+leave an offline-mode server with *no* authentication, where anyone could
+join under any name, including yours.
+
+What happens on a premium connection:
+
+1. rLogin holds the login and asks Mojang whether the name is really premium.
+2. If it is, it sends a real encryption request — the client shows its own
+   "Encrypting…" screen and authenticates against Mojang on its own, exactly
+   as it would against an `online-mode: true` server.
+3. It confirms with Mojang's `hasJoined` that this client genuinely **owns**
+   the account, not merely that the username exists. Someone who only knows
+   your name cannot fake this.
+4. The real UUID and signed skin from that same response are handed to the
+   connection, so the player joins as their genuine Mojang account.
+
+**How step 4 works without version-specific internals:** it never touches
+Mojang's own (obfuscated, per-version) classes. Spigot — and so Paper and
+every fork of it — adds two fields to the server's connection class purely
+so a front proxy can forward an already-authenticated identity:
 
 ```java
 public UUID spoofedUUID;
 public com.mojang.authlib.properties.Property[] spoofedProfile;
 ```
 
-The login handler reads them at exactly the point it would otherwise fall
-back to an offline profile. Because these are *Spigot's* members and not
-Mojang's, they're never obfuscated and their names have been stable for as
-long as proxy forwarding has existed — so filling them in produces
-byte-for-byte the same result as a Velocity-forwarded login, on the same
-mechanism, with none of the version fragility. Lookup is still backed by a
-by-type fallback, and if anything can't be resolved the player simply keeps
-the offline UUID and still auto-logins (logged once, at startup).
+The login handler reads them at exactly the point it would otherwise build an
+offline profile. Because these are *Spigot's* members and not Mojang's, they
+are never obfuscated and their names have been stable for as long as proxy
+forwarding has existed — so filling them in produces byte-for-byte the same
+result as a Velocity-forwarded login, on the same mechanism, with none of the
+version fragility. Lookup falls back to a search by type, and if anything
+cannot be resolved the player simply keeps the offline UUID and still logs in.
 
-**One consequence worth knowing:** with real UUIDs on, premium *Steve* and
-cracked *Steve* are two separate accounts, exactly as they'd be on any
-online-mode server — which is the point, but it does mean an existing
-offline-mode database keeps its rows under the old UUIDs. Set
-`premium.standalone-premium-uuid: false` if you need them to stay identical.
+### `premium.uuid-type`
 
-Falls back to normal cracked login automatically, with a log warning, if
-PacketEvents isn't installed, Mojang is unreachable, or anything about the
-handshake looks wrong — this never blocks a connection.
+| | Premium player | Cracked player |
+|---|---|---|
+| `real` *(default)* | real Mojang UUID | offline UUID |
+| `cracked` | offline UUID | offline UUID |
+| `random` | random, kept per name | random, kept per name |
+
+`real` is the only mode where "premium Steve" and "cracked Steve" are two
+separate accounts. `cracked` (also accepted as `offline`) keeps an existing
+offline-mode world and database working untouched. `random` lets a player
+move between premium and cracked without losing their data.
+
+Changing this on a server that already has players changes who they are to
+every other plugin. `/rlogin changeuuid` carries an account across if needed.
 
 ## Requirements
 
@@ -120,12 +132,12 @@ handshake looks wrong — this never blocks a connection.
 
 ## Installation
 
-rLogin ships as a **single universal jar**, `rLogin-1.0.0.jar` — it
+rLogin ships as a **single universal jar**, `rLogin-1.1.0.jar` — it
 self-detects whether it's running on Paper/Folia or on Velocity and only
 enables the relevant half of itself. There's nothing to pick at download
 time.
 
-1. Download `rLogin-1.0.0.jar`.
+1. Download `rLogin-1.1.0.jar`.
 2. Drop the *same* jar file into `plugins/` on each Paper/Folia server, and
    into Velocity's `plugins/` too if you run a proxy. Start each once to
    generate `config.yml`.
@@ -138,57 +150,73 @@ time.
 4. Tune `plugins/rLogin/config.yml` (Paper/Folia) and/or
    `plugins/rlogin/config.yml` (Velocity) to your liking, then `/rlogin reload`.
 
-## Authentication lobby (Velocity, optional)
+## Proxy setup (Velocity)
 
-If your network wants every unauthenticated player centralized on one
-server before they reach the real hub, set these in Velocity's
-`config.yml`:
+rLogin is configured on the **backends**. The proxy's own config is short on
+purpose, because the proxy only does two things: verify premium accounts
+(always, with nothing to configure — behind a proxy it is the only place that
+can), and make sure a player logs in once, on a server that can ask, and is
+never asked again while switching servers.
 
 ```yaml
-lobby:
-  auth-server: "auth"      # backend from velocity.toml players land on first if not yet authenticated
-  default-server: "hub"    # backend they're sent to once authenticated
+login-servers:
+  # Servers running rLogin, i.e. the ones that can ask for a password.
+  servers:
+    - 'auth'
+  # Send players there even if Velocity's own "try" order chose elsewhere.
+  enforce: true
+
+after-login:
+  # stay | send | previous
+  action: stay
+  servers:
+    - 'lobby'
+  never-return-to: []
+
+timing:
+  switch-delay: 500
+  retry-delay: 5000
 ```
 
-Premium players skip `auth-server` entirely and go straight to
-`default-server`. Non-premium players land on `auth-server`, and get
-automatically transferred to `default-server` the instant they finish
-`/login` or `/register` there. Leave both blank to disable this and keep
-velocity.toml's normal `try` order — nothing changes for networks that
-don't want a dedicated auth lobby.
+`after-login.action` is a single choice rather than a set of switches:
 
-By default, a returning non-premium player with a still-valid "remember me"
-session (see [Database](#database) below) still touches `auth-server`
-briefly before being transferred to `default-server`, since Velocity only
-learns the session is valid once the backend confirms it. To skip that hop
-entirely and send them straight to `default-server`, give Velocity **read-only**
-access to the same database your backends use — set `database.enabled: true`
-under `database:` in Velocity's `config.yml`, pointing at the exact same
-database (host/credentials matching your Paper/Folia backends'
-`config.yml`). This is entirely optional: leave `database.enabled: false`
-(the default) and everything above still works, just with that one extra
-hop for remembered sessions.
+- **`stay`** — leave them where they are. Right when players log in on the
+  lobby they were headed to anyway.
+- **`send`** — move them to one of `servers`, picked at random. Right for a
+  dedicated auth server they should not linger on.
+- **`previous`** — back to the server they were on last time, falling back to
+  `send`. Login servers are excluded automatically.
+
+**The database does not go on the proxy.** Accounts live on the backends. If
+you run more than one backend, point them all at the same MySQL/MariaDB so an
+account made on one is known on the others. The proxy never reads or writes it.
+
+If a server listed under `login-servers` never reports a login, rLogin says so
+in the console — that is what a missing plugin or a typo'd name looks like,
+and it otherwise shows up as players walking in unauthenticated.
 
 ## Spawn points (Paper/Folia)
 
-`/rlogin spawn` manages named spawn points and assigns one to each of four
-situations. If a situation has no spawn assigned, the player simply stays
-wherever they last disconnected — Bukkit's own default behavior.
+Four moments, one spawn each. There are no spawn names to invent or keep in
+sync: the moment *is* the spawn, and `set` always uses where you are standing.
+A moment with no spawn set leaves the player wherever they last disconnected,
+which is Bukkit's own default.
 
 ```
-/rlogin spawn set <name>           save your current location as a named spawn
-/rlogin spawn list                 list all named spawns
-/rlogin spawn remove <name>        delete a named spawn
-
-/rlogin spawn join <name|none>     spawn used for an already-authenticated join
-                                    (premium auto-login, remembered session, bypass)
-/rlogin spawn firstjoin <name|none> spawn used the very first time a player ever joins
-/rlogin spawn login <name|none>    spawn used right after a successful /login
-/rlogin spawn register <name|none> spawn used right after a successful /register
+/rlogin spawn set <moment>        save your current location for that moment
+/rlogin spawn remove <moment>     delete it
+/rlogin spawn teleport <moment>   go there, to check it is where you meant
+/rlogin spawn list                all four, with world and coordinates
 ```
 
-Running any of `join`/`firstjoin`/`login`/`register` with no name shows the
-current assignment; passing `none` clears it.
+The moments:
+
+| Moment | When it applies |
+|---|---|
+| `join` | An already-authenticated join: premium auto-login, remembered session, or `rlogin.bypass` |
+| `firstjoin` | The player's very first join ever |
+| `login` | Right after a successful `/login` |
+| `register` | Right after a successful `/register` |
 
 ## Commands
 
@@ -210,6 +238,7 @@ Administration (`rlogin.admin`):
 | `/rlogin forcelogin <player>` | Force-authenticate a player |
 | `/rlogin migrate <authme\|nlogin\|jpremium> <path-or-jdbc>` | Import accounts |
 | `/rlogin info <player>` | Show account info |
+| `/rlogin changeuuid <from> <to>` | Move an account's credentials to another UUID |
 | `/rlogin spawn ...` | Manage spawn points (see above) |
 
 ## Permissions
@@ -309,7 +338,7 @@ This is a living project. Planned for future versions:
 ./gradlew build
 ```
 
-Produces `rlogin-plugin/build/libs/rLogin-1.0.0.jar` — the single universal
+Produces `rlogin-plugin/build/libs/rLogin-1.1.0.jar` — the single universal
 jar for both Paper/Folia and Velocity. Needs network access to PaperMC's
 repository (`repo.papermc.io`), where the Paper API and Velocity API
 artifacts live. Requires JDK 21 (set `JAVA_HOME` to a JDK 21 install if your
@@ -323,7 +352,7 @@ rlogin-api/       Public interfaces (Storage, Importer) — SPI for third-party 
 rlogin-common/    Pure Java logic: config, i18n, database, security, auth, migration
 rlogin-velocity/  Proxy code: decides online/offline-mode per connection, auth-lobby routing
 rlogin-paper/     Backend code: accounts, commands, freezing unauthenticated players, spawn points, Folia
-rlogin-plugin/    Packages rlogin-paper + rlogin-velocity into the one rLogin-1.0.0.jar that ships
+rlogin-plugin/    Packages rlogin-paper + rlogin-velocity into the one rLogin-1.1.0.jar that ships
 ```
 
 `rlogin-plugin` has no code of its own: Paper and Velocity discover their

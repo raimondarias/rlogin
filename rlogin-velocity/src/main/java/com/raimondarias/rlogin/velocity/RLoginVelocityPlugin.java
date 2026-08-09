@@ -1,14 +1,11 @@
 package com.raimondarias.rlogin.velocity;
 
 import com.google.inject.Inject;
-import com.raimondarias.rlogin.api.db.Storage;
 import com.raimondarias.rlogin.common.auth.PremiumChecker;
-import com.raimondarias.rlogin.common.auth.SessionService;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
-import com.raimondarias.rlogin.common.db.StorageFactory;
-import com.raimondarias.rlogin.common.i18n.Messages;
 import com.raimondarias.rlogin.common.update.UpdateChecker;
 import com.raimondarias.rlogin.velocity.command.RLoginVelocityCommand;
+import com.raimondarias.rlogin.velocity.listener.BackendCheck;
 import com.raimondarias.rlogin.velocity.listener.LobbyListener;
 import com.raimondarias.rlogin.velocity.listener.PreLoginListener;
 import com.raimondarias.rlogin.velocity.listener.SyncListener;
@@ -47,7 +44,7 @@ public final class RLoginVelocityPlugin {
      * checker needs the same value at runtime — declaring it once is what
      * stops the two from drifting apart.
      */
-    public static final String PLUGIN_VERSION = "1.0.0";
+    public static final String PLUGIN_VERSION = "1.1.0";
 
     public static final MinecraftChannelIdentifier SYNC_CHANNEL = MinecraftChannelIdentifier.create("rlogin", "sync");
 
@@ -56,13 +53,8 @@ public final class RLoginVelocityPlugin {
     private final Path dataDirectory;
 
     private RLoginConfig config;
-    private Messages messages;
     private PremiumChecker premiumChecker;
     private SyncListener syncListener;
-
-    /** Only non-null when {@code database.enabled: true} in velocity-config.yml AND the connection succeeded. */
-    private Storage storage;
-    private SessionService sessionService;
 
     @Inject
     public RLoginVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
@@ -80,8 +72,10 @@ public final class RLoginVelocityPlugin {
         server.getChannelRegistrar().register(SYNC_CHANNEL);
 
         PreLoginListener preLoginListener = new PreLoginListener(config, premiumChecker, logger);
-        this.syncListener = new SyncListener(server, config, preLoginListener);
-        LobbyListener lobbyListener = new LobbyListener(server, config, preLoginListener, sessionService, logger);
+        BackendCheck backendCheck = new BackendCheck(server, config, logger);
+        LobbyListener lobbyListener = new LobbyListener(this, server, config, preLoginListener, backendCheck, logger);
+        this.syncListener = new SyncListener(server, config, preLoginListener, lobbyListener, backendCheck);
+        backendCheck.checkNamesResolve();
 
         server.getEventManager().register(this, preLoginListener);
         server.getEventManager().register(this, syncListener);
@@ -90,9 +84,10 @@ public final class RLoginVelocityPlugin {
         CommandManager commands = server.getCommandManager();
         commands.register(commands.metaBuilder("rlogin").plugin(this).build(), new RLoginVelocityCommand(this));
 
-        logger.info("rLogin (Velocity) ready. Premium auto-login: {} | Remembered-session lobby bypass: {}",
-                config.premiumAutoLogin() ? "enabled" : "disabled",
-                sessionService != null ? "enabled" : "disabled");
+        logger.info("rLogin (Velocity) ready. Premium accounts are verified here; everything else is up to the "
+                        + "backends. Login servers: {} | After login: {}",
+                config.loginServers().isEmpty() ? "(none configured!)" : String.join(", ", config.loginServers()),
+                config.afterLoginAction().name().toLowerCase(java.util.Locale.ROOT));
 
         checkForUpdates();
     }
@@ -117,56 +112,22 @@ public final class RLoginVelocityPlugin {
         if (premiumChecker != null) {
             premiumChecker.shutdown();
         }
-        closeStorage();
     }
 
     private boolean loadConfig() {
+        java.util.List<String> addedSettings = new java.util.ArrayList<>();
         try {
-            this.config = RLoginConfig.load(dataDirectory, "velocity-config.yml");
+            this.config = RLoginConfig.load(dataDirectory, "velocity-config.yml", addedSettings);
         } catch (IOException e) {
             logger.error("Could not load rLogin's configuration", e);
             return false;
         }
-        this.messages = Messages.load(dataDirectory, config.language());
+        if (!addedSettings.isEmpty()) {
+            logger.info("Added {} new setting(s) to your config.yml: {} - your existing values were kept.",
+                    addedSettings.size(), String.join(", ", addedSettings));
+        }
         this.premiumChecker = new PremiumChecker(config);
-        setUpOptionalDatabase();
         return true;
-    }
-
-    /**
-     * The proxy never needs the database for its core job (premium
-     * detection is per-connection, cross-backend trust travels over the
-     * rlogin:sync channel). This only wires a read-only session lookup so
-     * {@link LobbyListener} can skip the auth-lobby hop for players with a
-     * still-valid "remember me" session — see velocity-config.yml's
-     * {@code database} section. Any failure here is logged and swallowed:
-     * it must never prevent the proxy (or auto-login) from working.
-     */
-    private void setUpOptionalDatabase() {
-        closeStorage();
-        if (!config.databaseEnabled()) {
-            return;
-        }
-        try {
-            Storage newStorage = StorageFactory.create(config, dataDirectory);
-            newStorage.init().join();
-            this.storage = newStorage;
-            this.sessionService = new SessionService(storage, config);
-        } catch (Exception e) {
-            logger.warn("Could not connect to the database configured under 'database:' in velocity-config.yml "
-                    + "— the auth-lobby will keep routing remembered sessions through auth-server as before. Cause: {}",
-                    e.getMessage());
-            this.storage = null;
-            this.sessionService = null;
-        }
-    }
-
-    private void closeStorage() {
-        if (storage != null) {
-            storage.close();
-            storage = null;
-        }
-        sessionService = null;
     }
 
     public void reload() {
@@ -185,7 +146,4 @@ public final class RLoginVelocityPlugin {
         return config;
     }
 
-    public Messages messages() {
-        return messages;
-    }
 }

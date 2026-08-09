@@ -45,8 +45,10 @@ public final class MetricsService {
         try {
             Metrics metrics = new Metrics(plugin, BSTATS_PLUGIN_ID);
             metrics.addCustomChart(new SimplePie("database_type", () -> plugin.config().databaseType()));
-            metrics.addCustomChart(new SimplePie("standalone_hybrid_mode",
-                    () -> String.valueOf(plugin.config().standaloneHybridModeEnabled())));
+            // Which of the three setups servers actually run, which is the single most
+            // useful thing to know when deciding what to support.
+            metrics.addCustomChart(new SimplePie("server_topology",
+                    () -> plugin.topology().name().toLowerCase(Locale.ROOT)));
             metrics.addCustomChart(new SimplePie("uuid_type",
                     () -> plugin.config().uuidType().name().toLowerCase(Locale.ROOT)));
             metrics.addCustomChart(new SimplePie("language", () -> plugin.config().language()));

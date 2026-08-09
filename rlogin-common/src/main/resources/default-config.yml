@@ -2,10 +2,16 @@
 #  rLogin (Paper/Folia) — configuration
 #  https://github.com/raimondarias/rlogin
 #
-#  You do not need to change anything here to get started: the
-#  defaults are the recommended setup for a single server. The one
-#  thing worth reading is premium.standalone-hybrid-mode below, which
-#  is what lets premium players join without typing a password.
+#  You do not need to change anything here. The defaults are the
+#  recommended setup, and premium auto-login turns itself on when your
+#  server needs it — there is no switch to find and forget.
+#
+#  On a single server with online-mode: false and no proxy, rLogin
+#  verifies premium accounts against Mojang itself, and that REQUIRES
+#  the free PacketEvents plugin:
+#      https://modrinth.com/plugin/packetevents
+#  Behind a Velocity/BungeeCord proxy, or with online-mode: true, it is
+#  not needed — the proxy or the server already did the verifying.
 # ============================================================
 
 general:
@@ -50,22 +56,6 @@ premium:
   # only if you deliberately want cracked players to claim premium names.
   protect-premium-names: true
 
-  # ---- Premium auto-login WITHOUT a proxy -------------------------------
-  # Normally, combining "premium joins with no password" and "cracked joins
-  # with one" needs a Velocity proxy in front, because online-mode is a
-  # single server-wide switch. Turn this on and rLogin performs Mojang's
-  # verification itself, so both work on ONE server with online-mode: false
-  # and nothing in front of it.
-  #
-  # Requires the free PacketEvents plugin, which is NOT bundled:
-  #   https://modrinth.com/plugin/packetevents
-  # Without it this does nothing at all — no error, no crash, just a line in
-  # the console telling you it stayed off.
-  #
-  # Leave it false if you run Velocity: there the proxy already does this,
-  # and having both do it would mean verifying twice.
-  standalone-hybrid-mode: false
-
   # Which UUID a player ends up with. Only applies to a standalone server
   # (online-mode: false, no proxy) — behind Velocity the identity is already
   # decided before rLogin ever sees the connection.
@@ -91,12 +81,21 @@ premium:
 session:
   # "Remember me": a player who already logged in and reconnects from the
   # same IP within this window isn't asked for their password again.
+  #
+  # Worth knowing before you raise the window: this trusts an ADDRESS, and
+  # addresses are shared. Everyone behind the same router or mobile carrier
+  # looks identical, and on a cracked server the UUID comes from the name,
+  # so a neighbour typing your name inherits your session until it expires.
+  # Accounts with 2FA are never given this shortcut, and changing a password
+  # cancels it immediately. Set remember-me: false to switch it off entirely.
   remember-me: true
   remember-me-minutes: 30
 
 security:
-  # Slows down password guessing: after too many wrong attempts the account
-  # is locked for a while, and each further failure locks it for longer.
+  # Slows down password guessing. After too many wrong passwords the
+  # ADDRESS is locked out for a while, and each further failure locks it for
+  # longer. The account itself is never locked: that would let anyone who
+  # knows a name keep its owner out just by failing logins on purpose.
   bruteforce:
     enabled: true
     max-attempts: 5

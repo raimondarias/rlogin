@@ -4,6 +4,7 @@ import com.raimondarias.rlogin.common.auth.UuidType;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,10 +32,27 @@ public final class RLoginConfig {
         return load(dataFolder, "default-config.yml");
     }
 
+    /**
+     * Loads {@code <dataFolder>/config.yml}, creating it the first time and
+     * bringing it up to date on every later run.
+     *
+     * @param addedSettings collects the settings this version introduced that
+     *                      the file didn't have yet, so the caller can say so
+     *                      in the console. An upgrade that silently changes
+     *                      what a server does is worse than one that mentions it.
+     */
+    public static RLoginConfig load(Path dataFolder, String bundledResource, List<String> addedSettings)
+            throws IOException {
+        Path file = dataFolder.resolve("config.yml");
+        YamlDocument doc = YamlDocument.loadOrCreate(file, bundledResource);
+        addedSettings.addAll(ConfigMigrator.migrate(file, bundledResource));
+        return addedSettings.isEmpty() ? new RLoginConfig(doc)
+                : new RLoginConfig(YamlDocument.read(file)); // Re-read so the new keys are live now.
+    }
+
     /** Loads (creating if missing) {@code <dataFolder>/config.yml} from the given bundled resource. */
     public static RLoginConfig load(Path dataFolder, String bundledResource) throws IOException {
-        Path file = dataFolder.resolve("config.yml");
-        return new RLoginConfig(YamlDocument.loadOrCreate(file, bundledResource));
+        return load(dataFolder, bundledResource, new ArrayList<>());
     }
 
     // --- general ---
@@ -47,10 +65,6 @@ public final class RLoginConfig {
     }
 
     // --- database (always on for Paper/Folia; optional opt-in for Velocity, see velocity-config.yml) ---
-    public boolean databaseEnabled() {
-        return doc.getBoolean("database.enabled", true);
-    }
-
     public String databaseType() {
         return doc.getString("database.type", "sqlite");
     }
@@ -107,20 +121,6 @@ public final class RLoginConfig {
 
     public boolean protectPremiumNames() {
         return doc.getBoolean("premium.protect-premium-names", true);
-    }
-
-    /**
-     * Standalone hybrid mode (Paper/Folia only, no Velocity needed): premium
-     * accounts still auto-login and cracked accounts still get
-     * /login-/register even on a single online-mode:false backend with no
-     * proxy in front. Requires the separate PacketEvents plugin to be
-     * installed — silently does nothing without it (fail-closed), see
-     * PacketEventsSupport. Off by default: it's newer and more advanced than
-     * the Velocity-based path, which remains the recommended default for
-     * production networks.
-     */
-    public boolean standaloneHybridModeEnabled() {
-        return doc.getBoolean("premium.standalone-hybrid-mode", false);
     }
 
     /** Which UUID connecting players end up with; see {@link UuidType}. Defaults to {@code real}. */
@@ -200,16 +200,45 @@ public final class RLoginConfig {
         return doc.getString("bedrock.prefix", ".");
     }
 
-    // --- lobby (Velocity only) ---
+    // --- backend + redirect (Velocity only) ---
+    //
+    // The proxy's whole configuration. Everything else about rLogin — passwords,
+    // 2FA, sessions, spawns, languages, UUIDs — belongs to the backends, and the
+    // proxy deliberately knows nothing about any of it.
 
-    /** Backend name (from velocity.toml) every not-yet-authenticated player is routed to first. Empty = disabled. */
-    public String authLobbyServer() {
-        return doc.getString("lobby.auth-server", "");
+    /** Servers running rLogin, i.e. the ones that can ask a player to log in. */
+    public List<String> loginServers() {
+        return doc.getStringList("login-servers.servers", List.of());
     }
 
-    /** Backend name authenticated players get sent/transferred to. Empty = disabled (respect velocity.toml's try order). */
-    public String defaultLobbyServer() {
-        return doc.getString("lobby.default-server", "");
+    /** Whether to overrule Velocity's own first-server choice so nobody reaches a server before logging in. */
+    public boolean enforceLoginServers() {
+        return doc.getBoolean("login-servers.enforce", true);
+    }
+
+    /** What to do with a player once a backend reports them logged in. */
+    public AfterLogin afterLoginAction() {
+        return AfterLogin.parse(doc.getString("after-login.action", "stay"));
+    }
+
+    /** Where {@link AfterLogin#SEND} sends them; one is picked at random. */
+    public List<String> afterLoginServers() {
+        return doc.getStringList("after-login.servers", List.of());
+    }
+
+    /** Servers {@link AfterLogin#PREVIOUS} should never return anyone to. */
+    public List<String> neverReturnTo() {
+        return doc.getStringList("after-login.never-return-to", List.of());
+    }
+
+    /** Pause before moving a player between servers, so the switch never lands mid-handshake. */
+    public int switchDelayMs() {
+        return doc.getInt("timing.switch-delay", 500);
+    }
+
+    /** Pause before retrying a server switch that failed. */
+    public int retryDelayMs() {
+        return doc.getInt("timing.retry-delay", 5000);
     }
 
     // --- misc ---

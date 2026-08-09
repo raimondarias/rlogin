@@ -33,6 +33,19 @@ public final class HybridVerificationTracker {
 
     public void markVerified(String username) {
         verified.put(username.toLowerCase(Locale.ROOT), Instant.now().plusSeconds(TTL_SECONDS));
+        purgeExpired();
+    }
+
+    /**
+     * Drops flags nobody came back to claim. Without this the map only ever
+     * shrinks when a flag is consumed, so a player who is verified and then
+     * drops before the Bukkit login events fire leaves an entry behind for
+     * as long as the server runs. Swept here because this is the only place
+     * that adds anything, and it happens once per premium login.
+     */
+    private void purgeExpired() {
+        Instant now = Instant.now();
+        verified.values().removeIf(expiresAt -> !expiresAt.isAfter(now));
     }
 
     /** Single-use: true (and consumed) only once per successful handshake. */

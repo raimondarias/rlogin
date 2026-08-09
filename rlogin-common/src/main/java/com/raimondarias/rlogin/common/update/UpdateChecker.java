@@ -51,10 +51,13 @@ public final class UpdateChecker {
                 .GET()
                 .build();
 
-        return HttpClient.newBuilder().connectTimeout(TIMEOUT).build()
-                .sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
+        // Closed once the answer is in: an HttpClient owns a selector thread and a
+        // connection pool, and this one is used for exactly one request at startup.
+        HttpClient http = HttpClient.newBuilder().connectTimeout(TIMEOUT).build();
+        return http.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
                 .thenApply(this::parse)
-                .exceptionally(e -> Optional.empty());
+                .exceptionally(e -> Optional.<Update>empty())
+                .whenComplete((result, error) -> http.close());
     }
 
     private Optional<Update> parse(HttpResponse<String> response) {

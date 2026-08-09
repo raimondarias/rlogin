@@ -71,3 +71,39 @@ admin:
   migration-done: "{prefix}&#91f251اكتمل الاستيراد: تم استيراد &#fd8ddb{count} &#91f251حساب."
   migration-failed: "{prefix}&#fd5e5eخطأ في الاستيراد: &#fd8ddb{error}"
   info: "{prefix}&#d4d9d8{player} -> مميز: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, آخر تسجيل دخول: &#5e9dfd{last-login}"
+  help: "{prefix}&#d4d9d8الأوامر: &#e39fff{commands}"
+  unknown-subcommand: "{prefix}&#fd5e5eأمر فرعي غير معروف: &#fd8ddb{sub}"
+  usage-unregister: "{prefix}&#fd5e5eالاستخدام: &#e39fff/rlogin unregister <player>"
+  usage-info: "{prefix}&#fd5e5eالاستخدام: &#e39fff/rlogin info <player>"
+  usage-forcelogin: "{prefix}&#fd5e5eالاستخدام: &#e39fff/rlogin forcelogin <player>"
+  usage-migrate: "{prefix}&#fd5e5eالاستخدام: &#e39fff/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>"
+  unknown-importer: "{prefix}&#fd5e5eأداة استيراد غير معروفة: &#fd8ddb{importer}"
+  lang-hint: "{prefix}&#fdba5eغيّر &#fd8ddbgeneral.language&#fdba5e في config.yml ثم نفّذ &#e39fff/rlogin reload&#fdba5e."
+  changeuuid-usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>"
+  changeuuid-scope: "{prefix}&#fdba5eينقل كلمة المرور والمصادقة الثنائية وتاريخ التسجيل فقط. الحقيبة والصلاحيات والاقتصاد تبقى: فهي تخص العالم والإضافات الأخرى."
+  changeuuid-resolved: "{prefix}&#d4d9d8{input} -> &#fd8ddb{uuid}"
+  changeuuid-success: "{prefix}&#91f251تم نقل الحساب. إذا كان اللاعب متصلاً فعليه الدخول من جديد."
+  changeuuid-not-found: "{prefix}&#fd5e5eلم يُعثر على حساب rLogin لـ &#fd8ddb{input}&#fd5e5e."
+  changeuuid-target-exists: "{prefix}&#fd5e5eالوجهة لديها حساب rLogin بالفعل. احذفه أولاً بـ &#e39fff/rlogin unregister&#fd5e5e."
+  changeuuid-same: "{prefix}&#fdba5eالمصدر والوجهة نفس المعرّف؛ لا شيء لفعله."
+  changeuuid-failed: "{prefix}&#fd5e5eفشل changeuuid: &#fd8ddb{error}"
+
+setup:
+  # Shown on the connection screen when the server is missing PacketEvents.
+  # {link} is replaced with a clickable download link.
+  packetevents-missing: "&#fd5e5e&lالخادم غير مُعد بشكل صحيح\n\n&#d4d9d8ينقص هذا الخادم إضافة مطلوبة، لذلك لا يستطيع أحد الدخول.\n&#fdba5eأبلغ المسؤول بتثبيت PacketEvents:\n&#e39fff{link}"
+
+
+spawn:
+  header: "{prefix}&#d4d9d8نقاط ظهور rLogin:"
+  entry: "&#d4d9d8  {role} - &#fd8ddb{location}"
+  not-set: "غير محددة (يبقى اللاعبون حيث خرجوا)"
+  roles-help: "&#fdba5ejoin&#d4d9d8 = دخول موثّق مسبقاً  &#fdba5efirstjoin&#d4d9d8 = أول دخول على الإطلاق  &#fdba5elogin&#d4d9d8 = بعد /login  &#fdba5eregister&#d4d9d8 = بعد /register"
+  usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/rlogin spawn <set|remove|teleport> <{roles}>&#fd5e5e / &#e39fff/rlogin spawn list"
+  unknown-role: "{prefix}&#fd5e5eلحظة غير معروفة: &#fd8ddb{role}&#fd5e5e. استخدم إحدى: &#fd8ddb{roles}"
+  set: "{prefix}&#91f251تم حفظ نقطة ظهور &#fd8ddb{role}&#91f251 حيث تقف: &#fd8ddb{location}"
+  removed: "{prefix}&#91f251تم حذف نقطة ظهور &#fd8ddb{role}&#91f251. يبقى اللاعبون الآن حيث خرجوا."
+  not-removed: "{prefix}&#fdba5e{role}&#fdba5e لم تكن لها نقطة ظهور."
+  teleported: "{prefix}&#91f251تم النقل إلى نقطة ظهور &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
+  teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e ليس لها نقطة ظهور."
+  teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e تشير إلى العالم &#fd8ddb{world}&#fd5e5e غير المحمّل. سيبقى اللاعبون مكانهم."

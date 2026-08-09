@@ -71,3 +71,39 @@ admin:
   migration-done: "{prefix}&#91f251Impor selesai: &#fd8ddb{count} &#91f251akun berhasil diimpor."
   migration-failed: "{prefix}&#fd5e5eKesalahan impor: &#fd8ddb{error}"
   info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, login terakhir: &#5e9dfd{last-login}"
+  help: "{prefix}&#d4d9d8Perintah: &#e39fff{commands}"
+  unknown-subcommand: "{prefix}&#fd5e5eSubperintah tidak dikenal: &#fd8ddb{sub}"
+  usage-unregister: "{prefix}&#fd5e5ePenggunaan: &#e39fff/rlogin unregister <player>"
+  usage-info: "{prefix}&#fd5e5ePenggunaan: &#e39fff/rlogin info <player>"
+  usage-forcelogin: "{prefix}&#fd5e5ePenggunaan: &#e39fff/rlogin forcelogin <player>"
+  usage-migrate: "{prefix}&#fd5e5ePenggunaan: &#e39fff/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>"
+  unknown-importer: "{prefix}&#fd5e5eImporter tidak dikenal: &#fd8ddb{importer}"
+  lang-hint: "{prefix}&#fdba5eUbah &#fd8ddbgeneral.language&#fdba5e di config.yml lalu jalankan &#e39fff/rlogin reload&#fdba5e."
+  changeuuid-usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>"
+  changeuuid-scope: "{prefix}&#fdba5eHanya memindahkan kata sandi, 2FA, dan tanggal pendaftaran. Inventaris, izin, dan ekonomi tetap tinggal: itu milik dunia dan plugin lain."
+  changeuuid-resolved: "{prefix}&#d4d9d8{input} -> &#fd8ddb{uuid}"
+  changeuuid-success: "{prefix}&#91f251Akun dipindahkan. Jika pemain itu sedang terhubung, ia harus masuk lagi."
+  changeuuid-not-found: "{prefix}&#fd5e5eTidak ada akun rLogin untuk &#fd8ddb{input}&#fd5e5e."
+  changeuuid-target-exists: "{prefix}&#fd5e5eTujuan sudah punya akun rLogin. Hapus dulu dengan &#e39fff/rlogin unregister&#fd5e5e."
+  changeuuid-same: "{prefix}&#fdba5eSumber dan tujuan adalah UUID yang sama; tidak ada yang perlu dilakukan."
+  changeuuid-failed: "{prefix}&#fd5e5echangeuuid gagal: &#fd8ddb{error}"
+
+setup:
+  # Shown on the connection screen when the server is missing PacketEvents.
+  # {link} is replaced with a clickable download link.
+  packetevents-missing: "&#fd5e5e&lServer salah konfigurasi\n\n&#d4d9d8Server ini kekurangan plugin yang diperlukan, jadi tidak ada yang bisa masuk.\n&#fdba5eBeri tahu administrator untuk memasang PacketEvents:\n&#e39fff{link}"
+
+
+spawn:
+  header: "{prefix}&#d4d9d8Titik spawn rLogin:"
+  entry: "&#d4d9d8  {role} - &#fd8ddb{location}"
+  not-set: "belum diatur (pemain tetap di tempat mereka keluar)"
+  roles-help: "&#fdba5ejoin&#d4d9d8 = masuk yang sudah terverifikasi  &#fdba5efirstjoin&#d4d9d8 = masuk pertama kali  &#fdba5elogin&#d4d9d8 = setelah /login  &#fdba5eregister&#d4d9d8 = setelah /register"
+  usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/rlogin spawn <set|remove|teleport> <{roles}>&#fd5e5e / &#e39fff/rlogin spawn list"
+  unknown-role: "{prefix}&#fd5e5eMomen tidak dikenal: &#fd8ddb{role}&#fd5e5e. Gunakan salah satu: &#fd8ddb{roles}"
+  set: "{prefix}&#91f251Spawn untuk &#fd8ddb{role}&#91f251 disimpan di tempat kamu berdiri: &#fd8ddb{location}"
+  removed: "{prefix}&#91f251Spawn untuk &#fd8ddb{role}&#91f251 dihapus. Pemain kini tetap di tempat mereka keluar."
+  not-removed: "{prefix}&#fdba5e{role}&#fdba5e belum punya spawn."
+  teleported: "{prefix}&#91f251Diteleportasi ke spawn &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
+  teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e belum punya spawn."
+  teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e menunjuk ke dunia &#fd8ddb{world}&#fd5e5e yang belum dimuat. Pemain akan tetap di tempatnya."

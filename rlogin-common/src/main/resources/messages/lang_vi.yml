@@ -71,3 +71,39 @@ admin:
   migration-done: "{prefix}&#91f251Nhập hoàn tất: đã nhập &#fd8ddb{count} &#91f251tài khoản."
   migration-failed: "{prefix}&#fd5e5eLỗi nhập: &#fd8ddb{error}"
   info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, đăng nhập gần nhất: &#5e9dfd{last-login}"
+  help: "{prefix}&#d4d9d8Lệnh: &#e39fff{commands}"
+  unknown-subcommand: "{prefix}&#fd5e5eLệnh phụ không xác định: &#fd8ddb{sub}"
+  usage-unregister: "{prefix}&#fd5e5eCách dùng: &#e39fff/rlogin unregister <player>"
+  usage-info: "{prefix}&#fd5e5eCách dùng: &#e39fff/rlogin info <player>"
+  usage-forcelogin: "{prefix}&#fd5e5eCách dùng: &#e39fff/rlogin forcelogin <player>"
+  usage-migrate: "{prefix}&#fd5e5eCách dùng: &#e39fff/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>"
+  unknown-importer: "{prefix}&#fd5e5eTrình nhập không xác định: &#fd8ddb{importer}"
+  lang-hint: "{prefix}&#fdba5eĐổi &#fd8ddbgeneral.language&#fdba5e trong config.yml rồi chạy &#e39fff/rlogin reload&#fdba5e."
+  changeuuid-usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>"
+  changeuuid-scope: "{prefix}&#fdba5eChỉ chuyển mật khẩu, 2FA và ngày đăng ký. Hành trang, quyền hạn và kinh tế vẫn ở lại: chúng thuộc về thế giới và các plugin khác."
+  changeuuid-resolved: "{prefix}&#d4d9d8{input} -> &#fd8ddb{uuid}"
+  changeuuid-success: "{prefix}&#91f251Đã chuyển tài khoản. Nếu người chơi đang online, họ cần vào lại."
+  changeuuid-not-found: "{prefix}&#fd5e5eKhông tìm thấy tài khoản rLogin cho &#fd8ddb{input}&#fd5e5e."
+  changeuuid-target-exists: "{prefix}&#fd5e5eĐích đã có tài khoản rLogin. Hãy xoá nó trước bằng &#e39fff/rlogin unregister&#fd5e5e."
+  changeuuid-same: "{prefix}&#fdba5eNguồn và đích là cùng một UUID; không có gì để làm."
+  changeuuid-failed: "{prefix}&#fd5e5echangeuuid thất bại: &#fd8ddb{error}"
+
+setup:
+  # Shown on the connection screen when the server is missing PacketEvents.
+  # {link} is replaced with a clickable download link.
+  packetevents-missing: "&#fd5e5e&lMáy chủ cấu hình sai\n\n&#d4d9d8Máy chủ này thiếu một plugin bắt buộc nên không ai vào được.\n&#fdba5eHãy báo quản trị viên cài đặt PacketEvents:\n&#e39fff{link}"
+
+
+spawn:
+  header: "{prefix}&#d4d9d8Điểm hồi sinh rLogin:"
+  entry: "&#d4d9d8  {role} - &#fd8ddb{location}"
+  not-set: "chưa đặt (người chơi ở lại nơi họ thoát)"
+  roles-help: "&#fdba5ejoin&#d4d9d8 = vào khi đã xác thực  &#fdba5efirstjoin&#d4d9d8 = lần vào đầu tiên  &#fdba5elogin&#d4d9d8 = sau /login  &#fdba5eregister&#d4d9d8 = sau /register"
+  usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/rlogin spawn <set|remove|teleport> <{roles}>&#fd5e5e / &#e39fff/rlogin spawn list"
+  unknown-role: "{prefix}&#fd5e5eThời điểm không xác định: &#fd8ddb{role}&#fd5e5e. Dùng một trong: &#fd8ddb{roles}"
+  set: "{prefix}&#91f251Đã đặt điểm hồi sinh &#fd8ddb{role}&#91f251 tại chỗ bạn đứng: &#fd8ddb{location}"
+  removed: "{prefix}&#91f251Đã xoá điểm hồi sinh &#fd8ddb{role}&#91f251. Người chơi giờ ở lại nơi họ thoát."
+  not-removed: "{prefix}&#fdba5e{role}&#fdba5e chưa có điểm hồi sinh."
+  teleported: "{prefix}&#91f251Đã dịch chuyển tới điểm hồi sinh &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
+  teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e chưa có điểm hồi sinh."
+  teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e trỏ tới thế giới &#fd8ddb{world}&#fd5e5e chưa được tải. Người chơi sẽ ở nguyên chỗ cũ."

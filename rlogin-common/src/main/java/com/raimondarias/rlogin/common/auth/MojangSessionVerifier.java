@@ -31,9 +31,9 @@ import java.util.regex.Pattern;
  * username to a UUID; nothing stops anyone from typing that same name on a
  * cracked connection, so it alone is never proof of ownership).
  *
- * <p>Used exclusively by {@code rlogin-paper}'s optional standalone
- * hybrid-auth mode ({@code premium.standalone-hybrid-mode} in
- * config.yml): after a plugin-driven encryption handshake, the resulting
+ * <p>Used exclusively when {@code rlogin-paper} has to verify premium
+ * accounts itself, on a standalone server with nothing in front of it:
+ * after a plugin-driven encryption handshake, the resulting
  * shared secret + server public key + a freshly generated server ID are
  * hashed exactly the way the vanilla client hashes them ({@link
  * #serverIdHash}), and handed to Mojang's {@code hasJoined} endpoint. A 200

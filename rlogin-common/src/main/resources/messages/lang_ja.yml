@@ -71,3 +71,39 @@ admin:
   migration-done: "{prefix}&#91f251インポートが完了しました: &#fd8ddb{count} &#91f251件のアカウントをインポートしました。"
   migration-failed: "{prefix}&#fd5e5eインポートエラー: &#fd8ddb{error}"
   info: "{prefix}&#d4d9d8{player} -> プレミアム: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, 最終ログイン: &#5e9dfd{last-login}"
+  help: "{prefix}&#d4d9d8コマンド: &#e39fff{commands}"
+  unknown-subcommand: "{prefix}&#fd5e5e不明なサブコマンド: &#fd8ddb{sub}"
+  usage-unregister: "{prefix}&#fd5e5e使い方: &#e39fff/rlogin unregister <player>"
+  usage-info: "{prefix}&#fd5e5e使い方: &#e39fff/rlogin info <player>"
+  usage-forcelogin: "{prefix}&#fd5e5e使い方: &#e39fff/rlogin forcelogin <player>"
+  usage-migrate: "{prefix}&#fd5e5e使い方: &#e39fff/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>"
+  unknown-importer: "{prefix}&#fd5e5e不明なインポーター: &#fd8ddb{importer}"
+  lang-hint: "{prefix}&#fdba5econfig.yml の &#fd8ddbgeneral.language&#fdba5e を変更してから &#e39fff/rlogin reload&#fdba5e を実行してください。"
+  changeuuid-usage: "{prefix}&#fd5e5e使い方: &#e39fff/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>"
+  changeuuid-scope: "{prefix}&#fdba5e移動するのはパスワード、2FA、登録日だけです。インベントリ、権限、経済は移動しません（ワールドや他のプラグインのものです）。"
+  changeuuid-resolved: "{prefix}&#d4d9d8{input} -> &#fd8ddb{uuid}"
+  changeuuid-success: "{prefix}&#91f251アカウントを移動しました。そのプレイヤーが接続中なら入り直す必要があります。"
+  changeuuid-not-found: "{prefix}&#fd5e5eこの名前の rLogin アカウントが見つかりません: &#fd8ddb{input}&#fd5e5e"
+  changeuuid-target-exists: "{prefix}&#fd5e5e移動先にはすでに rLogin アカウントがあります。先に次で削除してください: &#e39fff/rlogin unregister&#fd5e5e."
+  changeuuid-same: "{prefix}&#fdba5e移動元と移動先が同じ UUID です。何もすることはありません。"
+  changeuuid-failed: "{prefix}&#fd5e5echangeuuid に失敗しました: &#fd8ddb{error}"
+
+setup:
+  # Shown on the connection screen when the server is missing PacketEvents.
+  # {link} is replaced with a clickable download link.
+  packetevents-missing: "&#fd5e5e&lサーバー設定エラー\n\n&#d4d9d8このサーバーには必要なプラグインが不足しているため、誰も参加できません。\n&#fdba5e管理者に PacketEvents のインストールを伝えてください:\n&#e39fff{link}"
+
+
+spawn:
+  header: "{prefix}&#d4d9d8rLogin のスポーン地点:"
+  entry: "&#d4d9d8  {role} - &#fd8ddb{location}"
+  not-set: "未設定（プレイヤーはログアウトした場所に出ます）"
+  roles-help: "&#fdba5ejoin&#d4d9d8 = 認証済みの参加  &#fdba5efirstjoin&#d4d9d8 = 初回の参加  &#fdba5elogin&#d4d9d8 = /login の直後  &#fdba5eregister&#d4d9d8 = /register の直後"
+  usage: "{prefix}&#fd5e5e使い方: &#e39fff/rlogin spawn <set|remove|teleport> <{roles}>&#fd5e5e / &#e39fff/rlogin spawn list"
+  unknown-role: "{prefix}&#fd5e5e不明なタイミング: &#fd8ddb{role}&#fd5e5e. 次のいずれかを使ってください: &#fd8ddb{roles}"
+  set: "{prefix}&#91f251&#fd8ddb{role}&#91f251 のスポーンを現在地に設定しました: &#fd8ddb{location}"
+  removed: "{prefix}&#91f251&#fd8ddb{role}&#91f251 のスポーンを削除しました。プレイヤーはログアウトした場所に出ます。"
+  not-removed: "{prefix}&#fdba5e{role}&#fdba5e にスポーンは設定されていませんでした。"
+  teleported: "{prefix}&#91f251&#fd8ddb{role}&#91f251 のスポーンにテレポートしました: &#fd8ddb{location}"
+  teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e にスポーンが設定されていません。"
+  teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e はワールド &#fd8ddb{world}&#fd5e5e を指していますが、読み込まれていません。プレイヤーはその場に留まります。"

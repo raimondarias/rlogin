@@ -4,10 +4,10 @@ import org.bukkit.Bukkit;
 
 /**
  * Soft integration (no hard dependency) with PacketEvents: only used by the
- * optional standalone hybrid-auth mode ({@code premium.standalone-hybrid-mode}
- * in config.yml). If PacketEvents isn't installed (or failed to enable),
- * this reports unavailable and nothing else in this package is ever
- * touched — same pattern as {@code FloodgateSupport}.
+ * premium verification, which only a standalone online-mode:false server
+ * has to do. If PacketEvents isn't installed there, this reports
+ * unavailable and {@code MissingPacketEventsListener} takes over; behind a
+ * proxy the answer is never even asked for.
  */
 public final class PacketEventsSupport {
 

@@ -71,3 +71,39 @@ admin:
   migration-done: "{prefix}&#91f251Імпорт завершено: &#fd8ddb{count} &#91f251акаунтів імпортовано."
   migration-failed: "{prefix}&#fd5e5eПомилка імпорту: &#fd8ddb{error}"
   info: "{prefix}&#d4d9d8{player} -> преміум: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, останній вхід: &#5e9dfd{last-login}"
+  help: "{prefix}&#d4d9d8Команди: &#e39fff{commands}"
+  unknown-subcommand: "{prefix}&#fd5e5eНевідома підкоманда: &#fd8ddb{sub}"
+  usage-unregister: "{prefix}&#fd5e5eВикористання: &#e39fff/rlogin unregister <player>"
+  usage-info: "{prefix}&#fd5e5eВикористання: &#e39fff/rlogin info <player>"
+  usage-forcelogin: "{prefix}&#fd5e5eВикористання: &#e39fff/rlogin forcelogin <player>"
+  usage-migrate: "{prefix}&#fd5e5eВикористання: &#e39fff/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>"
+  unknown-importer: "{prefix}&#fd5e5eНевідомий імпортер: &#fd8ddb{importer}"
+  lang-hint: "{prefix}&#fdba5eЗмініть &#fd8ddbgeneral.language&#fdba5e у config.yml і виконайте &#e39fff/rlogin reload&#fdba5e."
+  changeuuid-usage: "{prefix}&#fd5e5eВикористання: &#e39fff/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>"
+  changeuuid-scope: "{prefix}&#fdba5eПереносить лише пароль, 2FA і дату реєстрації. Інвентар, права та економіка залишаються: вони належать світу та іншим плагінам."
+  changeuuid-resolved: "{prefix}&#d4d9d8{input} -> &#fd8ddb{uuid}"
+  changeuuid-success: "{prefix}&#91f251Акаунт перенесено. Якщо гравець у мережі, йому треба перезайти."
+  changeuuid-not-found: "{prefix}&#fd5e5eАкаунт rLogin не знайдено для &#fd8ddb{input}&#fd5e5e."
+  changeuuid-target-exists: "{prefix}&#fd5e5eУ цілі вже є акаунт rLogin. Спершу видаліть його командою &#e39fff/rlogin unregister&#fd5e5e."
+  changeuuid-same: "{prefix}&#fdba5eДжерело і ціль — той самий UUID; нічого робити."
+  changeuuid-failed: "{prefix}&#fd5e5echangeuuid не вдався: &#fd8ddb{error}"
+
+setup:
+  # Shown on the connection screen when the server is missing PacketEvents.
+  # {link} is replaced with a clickable download link.
+  packetevents-missing: "&#fd5e5e&lСервер налаштовано неправильно\n\n&#d4d9d8На цьому сервері бракує потрібного плагіна, тому ніхто не може зайти.\n&#fdba5eСкажіть адміністратору встановити PacketEvents:\n&#e39fff{link}"
+
+
+spawn:
+  header: "{prefix}&#d4d9d8Спавни rLogin:"
+  entry: "&#d4d9d8  {role} - &#fd8ddb{location}"
+  not-set: "не задано (гравці лишаються там, де вийшли)"
+  roles-help: "&#fdba5ejoin&#d4d9d8 = вхід уже підтверджено  &#fdba5efirstjoin&#d4d9d8 = найперший вхід  &#fdba5elogin&#d4d9d8 = після /login  &#fdba5eregister&#d4d9d8 = після /register"
+  usage: "{prefix}&#fd5e5eВикористання: &#e39fff/rlogin spawn <set|remove|teleport> <{roles}>&#fd5e5e / &#e39fff/rlogin spawn list"
+  unknown-role: "{prefix}&#fd5e5eНевідомий момент: &#fd8ddb{role}&#fd5e5e. Використайте один із: &#fd8ddb{roles}"
+  set: "{prefix}&#91f251Спавн для &#fd8ddb{role}&#91f251 збережено там, де ви стоїте: &#fd8ddb{location}"
+  removed: "{prefix}&#91f251Спавн для &#fd8ddb{role}&#91f251 видалено. Тепер гравці лишаються там, де вийшли."
+  not-removed: "{prefix}&#fdba5e{role}&#fdba5e: спавн не було задано."
+  teleported: "{prefix}&#91f251Телепортовано на спавн &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
+  teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e: спавн не задано."
+  teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e вказує на світ &#fd8ddb{world}&#fd5e5e, який не завантажено. Гравці лишилися б на місці."

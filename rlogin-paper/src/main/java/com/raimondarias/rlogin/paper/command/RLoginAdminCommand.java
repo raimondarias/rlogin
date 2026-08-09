@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * {@code /rlogin ...} — router to the same commands as their short aliases
@@ -33,8 +34,9 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
             List.of("login", "register", "changepassword", "logout", "2fa", "premium");
     private static final List<String> ADMIN_SUBCOMMANDS =
             List.of("reload", "unregister", "forcelogin", "migrate", "changeuuid", "info", "lang", "spawn");
-    private static final List<String> SPAWN_ACTIONS =
-            List.of("set", "list", "remove", "join", "firstjoin", "login", "register");
+    private static final List<String> SPAWN_ACTIONS = List.of("set", "remove", "teleport", "list");
+    /** The four moments rLogin can move a player at; each one is its own spawn. */
+    private static final List<String> SPAWN_ROLES = List.of("join", "firstjoin", "login", "register");
 
     private final RLoginPaperPlugin plugin;
     private final LoginCommand loginCommand;
@@ -57,8 +59,10 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("rLogin - /rlogin <" + String.join("|", PLAYER_SUBCOMMANDS)
-                    + (sender.hasPermission("rlogin.admin") ? "|" + String.join("|", ADMIN_SUBCOMMANDS) : "") + ">");
+            sender.sendMessage(plugin.messages().get("admin.help", Map.of("commands",
+                    String.join(", ", sender.hasPermission("rlogin.admin")
+                            ? Stream.concat(PLAYER_SUBCOMMANDS.stream(), ADMIN_SUBCOMMANDS.stream()).toList()
+                            : PLAYER_SUBCOMMANDS))));
             return true;
         }
         String sub = args[0].toLowerCase(Locale.ROOT);
@@ -82,9 +86,9 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
             case "info" -> adminOnly(sender, () -> info(sender, rest));
             case "spawn" -> adminOnly(sender, () -> spawn(sender, rest));
             case "lang" -> adminOnly(sender, () -> sender.sendMessage(
-                    "Change general.language in config.yml and run /rlogin reload."));
+                    plugin.messages().get("admin.lang-hint")));
             default -> {
-                sender.sendMessage("Unknown subcommand: " + sub);
+                sender.sendMessage(plugin.messages().get("admin.unknown-subcommand", Map.of("sub", sub)));
                 yield true;
             }
         };
@@ -101,7 +105,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private void unregister(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("/rlogin unregister <player>");
+            sender.sendMessage(plugin.messages().get("admin.usage-unregister"));
             return;
         }
         UUID uuid = resolveUuid(args[0]);
@@ -111,7 +115,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private void forceLogin(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("/rlogin forcelogin <player>");
+            sender.sendMessage(plugin.messages().get("admin.usage-forcelogin"));
             return;
         }
         Player target = Bukkit.getPlayerExact(args[0]);
@@ -130,12 +134,12 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private void migrate(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage("/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>");
+            sender.sendMessage(plugin.messages().get("admin.usage-migrate"));
             return;
         }
         var importer = plugin.importerRegistry().get(args[0]);
         if (importer.isEmpty()) {
-            sender.sendMessage("Unknown importer: " + args[0]);
+            sender.sendMessage(plugin.messages().get("admin.unknown-importer", Map.of("importer", args[0])));
             return;
         }
         sender.sendMessage(plugin.messages().get("admin.migration-started", Map.of("plugin", importer.get().displayName())));
@@ -165,10 +169,8 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
      */
     private void changeUuid(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage("/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>");
-            sender.sendMessage("Moves the rLogin account (password, 2FA, registration date) to another UUID.");
-            sender.sendMessage("It does NOT move inventory, permissions or economy: those live in the world's");
-            sender.sendMessage("playerdata and in other plugins' storage, both keyed by UUID.");
+            sender.sendMessage(plugin.messages().get("admin.changeuuid-usage"));
+            sender.sendMessage(plugin.messages().get("admin.changeuuid-scope"));
             return;
         }
         // Bukkit's own name->UUID lookup has to happen here, on the command thread,
@@ -179,21 +181,24 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
         resolveIdentity(args[0], fromFallback).thenCombine(resolveIdentity(args[1], toFallback), IdentityPair::new)
                 .thenCompose(pair -> {
-                    sender.sendMessage("changeuuid: " + args[0] + " -> " + pair.from());
-                    sender.sendMessage("            " + args[1] + " -> " + pair.to());
+                    sender.sendMessage(plugin.messages().get("admin.changeuuid-resolved",
+                            Map.of("input", args[0], "uuid", pair.from().toString())));
+                    sender.sendMessage(plugin.messages().get("admin.changeuuid-resolved",
+                            Map.of("input", args[1], "uuid", pair.to().toString())));
                     return plugin.accountService().changeIdentity(pair.from(), pair.to(), newUsername);
                 })
                 .whenComplete((result, error) -> {
                     if (error != null) {
-                        sender.sendMessage("changeuuid failed: " + error.getMessage());
+                        sender.sendMessage(plugin.messages().get("admin.changeuuid-failed",
+                                Map.of("error", String.valueOf(error.getMessage()))));
                         return;
                     }
                     sender.sendMessage(switch (result) {
-                        case SUCCESS -> "Account moved. If that player is connected, they need to rejoin.";
-                        case SOURCE_NOT_FOUND -> "No rLogin account found for " + args[0] + ".";
-                        case TARGET_ALREADY_EXISTS -> "The target already has an rLogin account. Refusing to merge "
-                                + "two accounts into one - delete it first with /rlogin unregister.";
-                        case SAME_IDENTITY -> "Source and target are the same UUID; nothing to do.";
+                        case SUCCESS -> plugin.messages().get("admin.changeuuid-success");
+                        case SOURCE_NOT_FOUND -> plugin.messages().get("admin.changeuuid-not-found",
+                                Map.of("input", args[0]));
+                        case TARGET_ALREADY_EXISTS -> plugin.messages().get("admin.changeuuid-target-exists");
+                        case SAME_IDENTITY -> plugin.messages().get("admin.changeuuid-same");
                     });
                 });
     }
@@ -216,7 +221,7 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
 
     private void info(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage("/rlogin info <player>");
+            sender.sendMessage(plugin.messages().get("admin.usage-info"));
             return;
         }
         UUID uuid = resolveUuid(args[0]);
@@ -241,58 +246,110 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
      * or shows the current assignment when no name is given). When a role has
      * no spawn assigned, players simply stay wherever they last disconnected.
      */
+    /**
+     * {@code /rlogin spawn set|remove <moment>} and {@code /rlogin spawn list}.
+     *
+     * <p>The moment <em>is</em> the spawn — there are no spawn names to
+     * invent, remember or keep in sync. {@code set} always uses where the
+     * sender is standing, so there is nothing to type but which moment it's
+     * for.</p>
+     */
     private void spawn(CommandSender sender, String[] args) {
-        if (args.length == 0) {
-            sender.sendMessage("/rlogin spawn <" + String.join("|", SPAWN_ACTIONS) + "> ...");
-            return;
-        }
-        String action = args[0].toLowerCase(Locale.ROOT);
         SpawnManager spawns = plugin.spawnManager();
+        String action = args.length == 0 ? "" : args[0].toLowerCase(Locale.ROOT);
 
         switch (action) {
             case "set" -> {
                 if (!(sender instanceof Player player)) {
-                    sender.sendMessage("Only a player can set a spawn point (needs a location).");
+                    sender.sendMessage(plugin.messages().get("general.player-only"));
                     return;
                 }
-                if (args.length < 2) {
-                    sender.sendMessage("/rlogin spawn set <name>");
+                SpawnManager.Role role = parseRole(sender, args, "set");
+                if (role == null) {
                     return;
                 }
-                Location location = player.getLocation();
-                spawns.set(args[1], location);
-                sender.sendMessage("Spawn '" + args[1] + "' saved at your current location.");
-            }
-            case "list" -> {
-                var names = spawns.names();
-                sender.sendMessage(names.isEmpty() ? "No spawn points defined." : "Spawns: " + String.join(", ", names));
+                spawns.set(role, player.getLocation());
+                sender.sendMessage(plugin.messages().get("spawn.set", Map.of(
+                        "role", role.key(),
+                        "location", spawns.get(role).orElseThrow().describe())));
             }
             case "remove" -> {
-                if (args.length < 2) {
-                    sender.sendMessage("/rlogin spawn remove <name>");
+                SpawnManager.Role role = parseRole(sender, args, "remove");
+                if (role == null) {
                     return;
                 }
-                boolean removed = spawns.remove(args[1]);
-                sender.sendMessage(removed ? "Spawn '" + args[1] + "' removed." : "No such spawn: " + args[1]);
+                sender.sendMessage(plugin.messages().get(
+                        spawns.remove(role) ? "spawn.removed" : "spawn.not-removed",
+                        Map.of("role", role.key())));
             }
-            case "join", "firstjoin", "login", "register" -> {
-                SpawnManager.Role role = SpawnManager.Role.valueOf(action.toUpperCase(Locale.ROOT));
-                if (args.length < 2) {
-                    var current = spawns.roleAssignment(role);
-                    sender.sendMessage("rlogin." + action + " -> "
-                            + current.orElse("(not set - players stay where they logged out)"));
+            case "teleport", "tp" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(plugin.messages().get("general.player-only"));
                     return;
                 }
-                if (args[1].equalsIgnoreCase("none")) {
-                    spawns.clearRole(role);
-                    sender.sendMessage(action + " spawn cleared.");
+                SpawnManager.Role role = parseRole(sender, args, "teleport");
+                if (role == null) {
                     return;
                 }
-                boolean ok = spawns.assignRole(role, args[1]);
-                sender.sendMessage(ok ? action + " spawn set to '" + args[1] + "'." : "No such spawn: " + args[1]);
+                teleportToSpawn(player, spawns, role);
             }
-            default -> sender.sendMessage("/rlogin spawn <" + String.join("|", SPAWN_ACTIONS) + "> ...");
+            case "list" -> {
+                sender.sendMessage(plugin.messages().get("spawn.header"));
+                String notSet = plugin.messages().get("spawn.not-set");
+                for (SpawnManager.Role role : SpawnManager.Role.values()) {
+                    sender.sendMessage(plugin.messages().get("spawn.entry", Map.of(
+                            "role", role.key(),
+                            "location", spawns.get(role)
+                                    .map(SpawnManager.SpawnPoint::describe).orElse(notSet))));
+                }
+                sender.sendMessage(plugin.messages().get("spawn.roles-help"));
+            }
+            default -> {
+                sendSpawnUsage(sender);
+            }
         }
+    }
+
+    /**
+     * Sends the admin to a spawn so they can see it for themselves. Every
+     * way this can fail is reported separately — "not set" and "the world
+     * isn't loaded" look identical to a player who just doesn't move, and
+     * telling them apart is the entire reason to have this command.
+     */
+    private void teleportToSpawn(Player player, SpawnManager spawns, SpawnManager.Role role) {
+        var point = spawns.get(role);
+        if (point.isEmpty()) {
+            player.sendMessage(plugin.messages().get("spawn.teleport-not-set", Map.of("role", role.key())));
+            return;
+        }
+        var location = point.get().toLocation();
+        if (location.isEmpty()) {
+            player.sendMessage(plugin.messages().get("spawn.teleport-world-missing",
+                    Map.of("role", role.key(), "world", point.get().world())));
+            return;
+        }
+        player.teleportAsync(location.get());
+        player.sendMessage(plugin.messages().get("spawn.teleported",
+                Map.of("role", role.key(), "location", point.get().describe())));
+    }
+
+    private void sendSpawnUsage(CommandSender sender) {
+        sender.sendMessage(plugin.messages().get("spawn.usage",
+                Map.of("roles", String.join("|", SPAWN_ROLES))));
+        sender.sendMessage(plugin.messages().get("spawn.roles-help"));
+    }
+
+    /** Null (with the usage already sent) when the moment is missing or misspelled. */
+    private SpawnManager.Role parseRole(CommandSender sender, String[] args, String action) {
+        if (args.length < 2) {
+            sendSpawnUsage(sender);
+            return null;
+        }
+        return SpawnManager.Role.parse(args[1]).orElseGet(() -> {
+            sender.sendMessage(plugin.messages().get("spawn.unknown-role",
+                    Map.of("role", args[1], "roles", String.join(", ", SPAWN_ROLES))));
+            return null;
+        });
     }
 
     private UUID resolveUuid(String name) {
@@ -319,12 +376,11 @@ public final class RLoginAdminCommand implements CommandExecutor, TabCompleter {
                     .filter(s -> s.startsWith(args[1].toLowerCase(Locale.ROOT)))
                     .collect(Collectors.toList());
         }
+        // "set" and "remove" both take one of the four moments; "list" takes nothing.
         if (args.length == 3 && args[0].equalsIgnoreCase("spawn")
-                && List.of("remove", "join", "firstjoin", "login", "register").contains(args[1].toLowerCase(Locale.ROOT))
+                && List.of("set", "remove", "teleport", "tp").contains(args[1].toLowerCase(Locale.ROOT))
                 && sender.hasPermission("rlogin.admin")) {
-            List<String> names = new ArrayList<>(plugin.spawnManager().names());
-            names.add("none");
-            return names.stream()
+            return SPAWN_ROLES.stream()
                     .filter(s -> s.startsWith(args[2].toLowerCase(Locale.ROOT)))
                     .collect(Collectors.toList());
         }

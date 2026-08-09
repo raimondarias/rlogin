@@ -34,11 +34,16 @@ public final class SyncListener {
     private final ProxyServer server;
     private final RLoginConfig config;
     private final PreLoginListener preLoginListener;
+    private final LobbyListener lobbyListener;
+    private final BackendCheck backendCheck;
 
-    public SyncListener(ProxyServer server, RLoginConfig config, PreLoginListener preLoginListener) {
+    public SyncListener(ProxyServer server, RLoginConfig config, PreLoginListener preLoginListener,
+                         LobbyListener lobbyListener, BackendCheck backendCheck) {
+        this.backendCheck = backendCheck;
         this.server = server;
         this.config = config;
         this.preLoginListener = preLoginListener;
+        this.lobbyListener = lobbyListener;
     }
 
     @Subscribe
@@ -53,6 +58,10 @@ public final class SyncListener {
     @Subscribe
     public void onServerPostConnect(ServerPostConnectEvent event) {
         Player player = event.getPlayer();
+        // Recorded whether they are trusted yet or not: redirect.last-server needs to know
+        // where they were, and by the time they log in they are already somewhere.
+        player.getCurrentServer().ifPresent(connection ->
+                lobbyListener.rememberServer(player, connection.getServerInfo().getName()));
         if (!preLoginListener.trustedThisSession().contains(player.getUniqueId())) {
             return;
         }
@@ -76,27 +85,18 @@ public final class SyncListener {
             return;
         }
         preLoginListener.trustedThisSession().add(message.uuid());
-        maybeLeaveAuthLobby(message.uuid(), sourceConnection);
-    }
-
-    /** If this login just happened on the configured auth lobby, transfer the player onward. */
-    private void maybeLeaveAuthLobby(UUID uuid, ServerConnection sourceConnection) {
-        String authServer = config.authLobbyServer();
-        String defaultServer = config.defaultLobbyServer();
-        if (authServer.isBlank() || defaultServer.isBlank()) {
-            return;
-        }
-        if (!authServer.equalsIgnoreCase(sourceConnection.getServerInfo().getName())) {
-            return;
-        }
-        server.getPlayer(uuid).ifPresent(player ->
-                server.getServer(defaultServer).ifPresent(target ->
-                        player.createConnectionRequest(target).fireAndForget()));
+        backendCheck.heardFrom(message.uuid(), sourceConnection.getServerInfo().getName());
+        // The backend just told us this player is in. Where they go from here is entirely
+        // redirect:'s business, so hand it over rather than deciding anything here.
+        server.getPlayer(message.uuid()).ifPresent(lobbyListener::onAuthenticated);
     }
 
     @Subscribe
     public void onDisconnect(DisconnectEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
         preLoginListener.trustedThisSession().remove(uuid);
+        lobbyListener.forget(uuid);
+        backendCheck.playerGone(uuid, event.getPlayer().getCurrentServer()
+                .map(connection -> connection.getServer()));
     }
 }

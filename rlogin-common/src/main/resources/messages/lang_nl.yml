@@ -71,3 +71,39 @@ admin:
   migration-done: "{prefix}&#91f251Import voltooid: &#fd8ddb{count} &#91f251accounts geïmporteerd."
   migration-failed: "{prefix}&#fd5e5eImportfout: &#fd8ddb{error}"
   info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, laatste login: &#5e9dfd{last-login}"
+  help: "{prefix}&#d4d9d8Commando's: &#e39fff{commands}"
+  unknown-subcommand: "{prefix}&#fd5e5eOnbekend subcommando: &#fd8ddb{sub}"
+  usage-unregister: "{prefix}&#fd5e5eGebruik: &#e39fff/rlogin unregister <player>"
+  usage-info: "{prefix}&#fd5e5eGebruik: &#e39fff/rlogin info <player>"
+  usage-forcelogin: "{prefix}&#fd5e5eGebruik: &#e39fff/rlogin forcelogin <player>"
+  usage-migrate: "{prefix}&#fd5e5eGebruik: &#e39fff/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>"
+  unknown-importer: "{prefix}&#fd5e5eOnbekende importer: &#fd8ddb{importer}"
+  lang-hint: "{prefix}&#fdba5eWijzig &#fd8ddbgeneral.language&#fdba5e in config.yml en voer &#e39fff/rlogin reload&#fdba5e uit."
+  changeuuid-usage: "{prefix}&#fd5e5eGebruik: &#e39fff/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>"
+  changeuuid-scope: "{prefix}&#fdba5eVerplaatst alleen wachtwoord, 2FA en registratiedatum. Inventaris, rechten en economie blijven achter: die horen bij de wereld en bij andere plugins."
+  changeuuid-resolved: "{prefix}&#d4d9d8{input} -> &#fd8ddb{uuid}"
+  changeuuid-success: "{prefix}&#91f251Account verplaatst. Als die speler online is, moet hij opnieuw verbinden."
+  changeuuid-not-found: "{prefix}&#fd5e5eGeen rLogin-account gevonden voor &#fd8ddb{input}&#fd5e5e."
+  changeuuid-target-exists: "{prefix}&#fd5e5eHet doel heeft al een rLogin-account. Verwijder dat eerst met &#e39fff/rlogin unregister&#fd5e5e."
+  changeuuid-same: "{prefix}&#fdba5eBron en doel zijn dezelfde UUID; niets te doen."
+  changeuuid-failed: "{prefix}&#fd5e5echangeuuid mislukt: &#fd8ddb{error}"
+
+setup:
+  # Shown on the connection screen when the server is missing PacketEvents.
+  # {link} is replaced with a clickable download link.
+  packetevents-missing: "&#fd5e5e&lServer verkeerd ingesteld\n\n&#d4d9d8Op deze server ontbreekt een vereiste plugin, dus niemand kan verbinden.\n&#fdba5eZeg tegen een beheerder dat hij PacketEvents installeert:\n&#e39fff{link}"
+
+
+spawn:
+  header: "{prefix}&#d4d9d8rLogin-spawns:"
+  entry: "&#d4d9d8  {role} - &#fd8ddb{location}"
+  not-set: "niet ingesteld (spelers blijven waar ze uitlogden)"
+  roles-help: "&#fdba5ejoin&#d4d9d8 = al geverifieerde join  &#fdba5efirstjoin&#d4d9d8 = allereerste join  &#fdba5elogin&#d4d9d8 = na /login  &#fdba5eregister&#d4d9d8 = na /register"
+  usage: "{prefix}&#fd5e5eGebruik: &#e39fff/rlogin spawn <set|remove|teleport> <{roles}>&#fd5e5e / &#e39fff/rlogin spawn list"
+  unknown-role: "{prefix}&#fd5e5eOnbekend moment: &#fd8ddb{role}&#fd5e5e. Gebruik een van: &#fd8ddb{roles}"
+  set: "{prefix}&#91f251Spawn voor &#fd8ddb{role}&#91f251 opgeslagen waar je staat: &#fd8ddb{location}"
+  removed: "{prefix}&#91f251Spawn voor &#fd8ddb{role}&#91f251 verwijderd. Spelers blijven nu waar ze uitlogden."
+  not-removed: "{prefix}&#fdba5e{role}&#fdba5e had geen spawn ingesteld."
+  teleported: "{prefix}&#91f251Geteleporteerd naar de &#fd8ddb{role}&#91f251-spawn: &#fd8ddb{location}"
+  teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e heeft geen spawn ingesteld."
+  teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e wijst naar wereld &#fd8ddb{world}&#fd5e5e, die niet geladen is. Spelers zouden blijven waar ze zijn."

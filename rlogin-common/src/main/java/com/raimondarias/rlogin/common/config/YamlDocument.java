@@ -43,6 +43,17 @@ public final class YamlDocument {
         }
     }
 
+    /**
+     * Reads a file that already exists and is not rLogin's to create — the
+     * server's own {@code spigot.yml} and {@code paper-global.yml}, read to
+     * find out whether a proxy is in front. Never writes anything.
+     */
+    public static YamlDocument read(Path file) throws IOException {
+        try (InputStream in = Files.newInputStream(file)) {
+            return new YamlDocument(readMap(in));
+        }
+    }
+
     public static YamlDocument fromClasspath(String classpathResource) throws IOException {
         try (InputStream in = YamlDocument.class.getClassLoader().getResourceAsStream(classpathResource)) {
             if (in == null) {

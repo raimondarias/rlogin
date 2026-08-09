@@ -71,3 +71,39 @@ admin:
   migration-done: "{prefix}&#91f251Importação concluída: &#fd8ddb{count} &#91f251contas importadas."
   migration-failed: "{prefix}&#fd5e5eErro ao importar: &#fd8ddb{error}"
   info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, último login: &#5e9dfd{last-login}"
+  help: "{prefix}&#d4d9d8Comandos: &#e39fff{commands}"
+  unknown-subcommand: "{prefix}&#fd5e5eSubcomando desconhecido: &#fd8ddb{sub}"
+  usage-unregister: "{prefix}&#fd5e5eUso: &#e39fff/rlogin unregister <player>"
+  usage-info: "{prefix}&#fd5e5eUso: &#e39fff/rlogin info <player>"
+  usage-forcelogin: "{prefix}&#fd5e5eUso: &#e39fff/rlogin forcelogin <player>"
+  usage-migrate: "{prefix}&#fd5e5eUso: &#e39fff/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>"
+  unknown-importer: "{prefix}&#fd5e5eImportador desconhecido: &#fd8ddb{importer}"
+  lang-hint: "{prefix}&#fdba5eAltere &#fd8ddbgeneral.language&#fdba5e no config.yml e execute &#e39fff/rlogin reload&#fdba5e."
+  changeuuid-usage: "{prefix}&#fd5e5eUso: &#e39fff/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>"
+  changeuuid-scope: "{prefix}&#fdba5eMove apenas a senha, o 2FA e a data de registro. Inventário, permissões e economia ficam: pertencem ao mundo e a outros plugins."
+  changeuuid-resolved: "{prefix}&#d4d9d8{input} -> &#fd8ddb{uuid}"
+  changeuuid-success: "{prefix}&#91f251Conta movida. Se esse jogador estiver conectado, precisa entrar de novo."
+  changeuuid-not-found: "{prefix}&#fd5e5eNenhuma conta do rLogin encontrada para &#fd8ddb{input}&#fd5e5e."
+  changeuuid-target-exists: "{prefix}&#fd5e5eO destino já tem uma conta do rLogin. Apague-a primeiro com &#e39fff/rlogin unregister&#fd5e5e."
+  changeuuid-same: "{prefix}&#fdba5eOrigem e destino são o mesmo UUID; nada a fazer."
+  changeuuid-failed: "{prefix}&#fd5e5echangeuuid falhou: &#fd8ddb{error}"
+
+setup:
+  # Shown on the connection screen when the server is missing PacketEvents.
+  # {link} is replaced with a clickable download link.
+  packetevents-missing: "&#fd5e5e&lServidor mal configurado\n\n&#d4d9d8Falta um plugin necessário neste servidor, por isso ninguém consegue entrar.\n&#fdba5eAvise um administrador para instalar o PacketEvents:\n&#e39fff{link}"
+
+
+spawn:
+  header: "{prefix}&#d4d9d8Spawns do rLogin:"
+  entry: "&#d4d9d8  {role} - &#fd8ddb{location}"
+  not-set: "não definido (os jogadores ficam onde saíram)"
+  roles-help: "&#fdba5ejoin&#d4d9d8 = entrada já autenticada  &#fdba5efirstjoin&#d4d9d8 = primeira entrada de todas  &#fdba5elogin&#d4d9d8 = depois de /login  &#fdba5eregister&#d4d9d8 = depois de /register"
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/rlogin spawn <set|remove|teleport> <{roles}>&#fd5e5e / &#e39fff/rlogin spawn list"
+  unknown-role: "{prefix}&#fd5e5eMomento desconhecido: &#fd8ddb{role}&#fd5e5e. Use um destes: &#fd8ddb{roles}"
+  set: "{prefix}&#91f251Spawn de &#fd8ddb{role}&#91f251 salvo onde você está: &#fd8ddb{location}"
+  removed: "{prefix}&#91f251Spawn de &#fd8ddb{role}&#91f251 removido. Agora os jogadores ficam onde saíram."
+  not-removed: "{prefix}&#fdba5e{role}&#fdba5e não tinha spawn definido."
+  teleported: "{prefix}&#91f251Teletransportado para o spawn de &#fd8ddb{role}&#91f251: &#fd8ddb{location}"
+  teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e não tem spawn definido."
+  teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e aponta para o mundo &#fd8ddb{world}&#fd5e5e, que não está carregado. Os jogadores ficariam onde estão."

@@ -71,3 +71,39 @@ admin:
   migration-done: "{prefix}&#91f251İçe aktarma tamamlandı: &#fd8ddb{count} &#91f251hesap aktarıldı."
   migration-failed: "{prefix}&#fd5e5eİçe aktarma hatası: &#fd8ddb{error}"
   info: "{prefix}&#d4d9d8{player} -> premium: &#fd8ddb{premium}&#d4d9d8, 2FA: &#fd8ddb{totp}&#d4d9d8, son giriş: &#5e9dfd{last-login}"
+  help: "{prefix}&#d4d9d8Komutlar: &#e39fff{commands}"
+  unknown-subcommand: "{prefix}&#fd5e5eBilinmeyen alt komut: &#fd8ddb{sub}"
+  usage-unregister: "{prefix}&#fd5e5eKullanım: &#e39fff/rlogin unregister <player>"
+  usage-info: "{prefix}&#fd5e5eKullanım: &#e39fff/rlogin info <player>"
+  usage-forcelogin: "{prefix}&#fd5e5eKullanım: &#e39fff/rlogin forcelogin <player>"
+  usage-migrate: "{prefix}&#fd5e5eKullanım: &#e39fff/rlogin migrate <authme|nlogin|jpremium> <path-or-jdbc-url>"
+  unknown-importer: "{prefix}&#fd5e5eBilinmeyen içe aktarıcı: &#fd8ddb{importer}"
+  lang-hint: "{prefix}&#fdba5e&#fd8ddbgeneral.language&#fdba5e ayarını config.yml içinde değiştir ve &#e39fff/rlogin reload&#fdba5e çalıştır."
+  changeuuid-usage: "{prefix}&#fd5e5eKullanım: &#e39fff/rlogin changeuuid <from-name|from-uuid> <to-name|to-uuid>"
+  changeuuid-scope: "{prefix}&#fdba5eSadece şifreyi, 2FA ve kayıt tarihini taşır. Envanter, yetkiler ve ekonomi kalır: onlar dünyaya ve diğer eklentilere aittir."
+  changeuuid-resolved: "{prefix}&#d4d9d8{input} -> &#fd8ddb{uuid}"
+  changeuuid-success: "{prefix}&#91f251Hesap taşındı. O oyuncu bağlantıdaysa yeniden girmeli."
+  changeuuid-not-found: "{prefix}&#fd5e5eŞu ad için rLogin hesabı bulunamadı: &#fd8ddb{input}&#fd5e5e"
+  changeuuid-target-exists: "{prefix}&#fd5e5eHedefin zaten bir rLogin hesabı var. Önce şunu kullanarak sil: &#e39fff/rlogin unregister&#fd5e5e."
+  changeuuid-same: "{prefix}&#fdba5eKaynak ve hedef aynı UUID; yapacak bir şey yok."
+  changeuuid-failed: "{prefix}&#fd5e5echangeuuid başarısız: &#fd8ddb{error}"
+
+setup:
+  # Shown on the connection screen when the server is missing PacketEvents.
+  # {link} is replaced with a clickable download link.
+  packetevents-missing: "&#fd5e5e&lSunucu yanlış yapılandırılmış\n\n&#d4d9d8Bu sunucuda gerekli bir eklenti eksik, bu yüzden kimse giremiyor.\n&#fdba5eBir yöneticiye PacketEvents kurmasını söyle:\n&#e39fff{link}"
+
+
+spawn:
+  header: "{prefix}&#d4d9d8rLogin spawnları:"
+  entry: "&#d4d9d8  {role} - &#fd8ddb{location}"
+  not-set: "ayarlanmamış (oyuncular çıkış yaptıkları yerde kalır)"
+  roles-help: "&#fdba5ejoin&#d4d9d8 = zaten doğrulanmış giriş  &#fdba5efirstjoin&#d4d9d8 = ilk kez giriş  &#fdba5elogin&#d4d9d8 = /login sonrası  &#fdba5eregister&#d4d9d8 = /register sonrası"
+  usage: "{prefix}&#fd5e5eKullanım: &#e39fff/rlogin spawn <set|remove|teleport> <{roles}>&#fd5e5e / &#e39fff/rlogin spawn list"
+  unknown-role: "{prefix}&#fd5e5eBilinmeyen an: &#fd8ddb{role}&#fd5e5e. Şunlardan birini kullan: &#fd8ddb{roles}"
+  set: "{prefix}&#91f251&#fd8ddb{role}&#91f251 spawnı durduğun yere kaydedildi: &#fd8ddb{location}"
+  removed: "{prefix}&#91f251&#fd8ddb{role}&#91f251 spawnı kaldırıldı. Oyuncular artık çıkış yaptıkları yerde kalır."
+  not-removed: "{prefix}&#fdba5e{role}&#fdba5e için spawn ayarlanmamıştı."
+  teleported: "{prefix}&#91f251&#fd8ddb{role}&#91f251 spawnına ışınlandın: &#fd8ddb{location}"
+  teleport-not-set: "{prefix}&#fd5e5e{role}&#fd5e5e için spawn ayarlanmamış."
+  teleport-world-missing: "{prefix}&#fd5e5e{role}&#fd5e5e &#fd8ddb{world}&#fd5e5e dünyasını gösteriyor ama o dünya yüklü değil. Oyuncular oldukları yerde kalırdı."
