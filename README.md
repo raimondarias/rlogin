@@ -6,14 +6,13 @@
 
 **Premium players join without typing anything. Everyone else logs in with a password.**
 
-[![Documentation](https://img.shields.io/badge/Read%20the-Documentation-ef7025?style=for-the-badge&logo=gitbook&logoColor=white)](https://pyrelight.mintlify.app/rlogin/introduction)
-[![Discord](https://img.shields.io/badge/Chat%20with%20us%20on-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/5tuSrNRk3a)
-[![GitHub](https://img.shields.io/badge/Source%20on-GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/pyrelightmc/rlogin)
+[![Documentation](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/generic_vector.svg)](https://pyrelight.mintlify.app/rlogin/introduction)
+[![Discord](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-plural_vector.svg)](https://discord.gg/5tuSrNRk3a)
+[![Ko-fi](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/donate/kofi-plural_vector.svg)](https://ko-fi.com/pyrelightmc)
 
-[![Hangar](https://img.shields.io/badge/Download%20on-Hangar-004ee9?style=for-the-badge&logo=papermc&logoColor=white)](https://hangar.papermc.io/raimondarias/rlg)
-[![Modrinth](https://img.shields.io/modrinth/dt/rlg?style=for-the-badge&logo=modrinth&logoColor=white&label=Modrinth&color=00AF5C)](https://modrinth.com/plugin/rlg)
-[![Stars](https://img.shields.io/github/stars/pyrelightmc/rlogin?style=for-the-badge&logo=github&logoColor=white&label=Stars&color=eec9bc)](https://github.com/pyrelightmc/rlogin/stargazers)
-[![License](https://img.shields.io/github/license/pyrelightmc/rlogin?style=for-the-badge&color=4fa1ab)](LICENSE)
+[![Hangar](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/hangar_vector.svg)](https://hangar.papermc.io/raimondarias/rlg)
+[![Modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg)](https://modrinth.com/plugin/rlg)
+[![GitHub](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/github_vector.svg)](https://github.com/pyrelightmc/rlogin/releases)
 
 </div>
 
@@ -32,14 +31,14 @@ proxy, and 17 languages ship with it.
 
 <div align="center">
 
-[![Paper](https://img.shields.io/badge/Available%20for-Paper-2c2c2c?style=for-the-badge&logo=papermc&logoColor=white)](https://papermc.io)
-[![Purpur](https://img.shields.io/badge/Available%20for-Purpur-c68fff?style=for-the-badge&logoColor=white)](https://purpurmc.org)
-[![Folia](https://img.shields.io/badge/Available%20for-Folia-1f8a70?style=for-the-badge&logo=papermc&logoColor=white)](https://papermc.io/software/folia)
-[![Velocity](https://img.shields.io/badge/Available%20for-Velocity-1899d6?style=for-the-badge&logo=papermc&logoColor=white)](https://papermc.io/software/velocity)
+[![Paper](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/paper_vector.svg)](https://papermc.io)
+[![Purpur](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/purpur_vector.svg)](https://purpurmc.org)
+[![Velocity](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/velocity_vector.svg)](https://papermc.io/software/velocity)
 
 </div>
 
-One download, `rLogin-<version>.jar`, runs on all of them — the same file goes into a
+**Folia** too — it has no badge in this set, but rLogin has supported it from day one.
+One download, `rLogin-<version>.jar`, runs on all of them: the same file goes into a
 Paper/Folia server's `plugins/` and into a Velocity proxy's. Velocity **3.x and 4.x**
 both work.
 
@@ -57,6 +56,15 @@ both work.
 - **Bedrock support** through Geyser/Floodgate
 - **AuthMe import**, hashes included
 - **MySQL or SQLite**
+
+## Requirements
+
+| | |
+|---|---|
+| **Server** | Paper, Folia or Velocity |
+| **Minecraft** | 1.21 or newer |
+| **Java** | 21 or newer |
+| **[PacketEvents](https://modrinth.com/plugin/packetevents)** | Required on a standalone `online-mode: false` server — that is where rLogin does the Mojang verification itself. Not needed behind a proxy, or with `auth-mode: online`. |
 
 ## Installation
 
@@ -92,25 +100,24 @@ Every setting, all commands and permissions, and troubleshooting:
 Join the [Discord](https://discord.gg/5tuSrNRk3a) and we will help you out, or open a
 [GitHub issue](https://github.com/pyrelightmc/rlogin/issues).
 
+## Want to support us and the plugin?
+
+rLogin is free, and stays free, so that any server can use it. If it saved you some
+trouble and you would like to say thanks, a donation helps keep the work going.
+
+[![Ko-fi](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/donate/kofi-plural_vector.svg)](https://ko-fi.com/pyrelightmc)
+
 ## Sponsors
 
 Thanks to the following sponsor for supporting this project:
 
-<div align="center">
-
 [<img src="assets/xerohost.png" alt="XeroHost" height="46">](https://www.xerohost.net)
 
-</div>
-
 ## Statistics
-
-<div align="center">
 
 [![rLogin Paper](https://bstats.org/signatures/bukkit/rLogin%20Paper.svg)](https://bstats.org/plugin/bukkit/rLogin%20Paper/33271)
 
 [![rLogin Velocity](https://bstats.org/signatures/velocity/rLogin%20Velocity.svg)](https://bstats.org/plugin/velocity/rLogin%20Velocity/33272)
-
-</div>
 
 ## Building from source
 
