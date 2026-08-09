@@ -18,28 +18,15 @@ import java.util.Locale;
  */
 public final class MetricsService {
 
-    /**
-     * The id bStats assigns when the plugin is registered at
-     * <a href="https://bstats.org/getting-started">bstats.org</a>.
-     *
-     * <p>Left unset on purpose: rLogin hasn't been registered there yet, and
-     * shipping someone else's id would file this server's stats under
-     * someone else's plugin. Until it's replaced with the real number,
-     * {@link #startIfEnabled} does nothing at all.</p>
-     */
-    private static final int BSTATS_PLUGIN_ID = 0;
+    /** rLogin's own id at <a href="https://bstats.org">bstats.org</a>. */
+    private static final int BSTATS_PLUGIN_ID = 33271;
 
     private MetricsService() {
     }
 
-    /** No-ops when metrics are off in config, or while {@link #BSTATS_PLUGIN_ID} is still unset. */
+    /** No-ops when metrics are off in config, or in bStats' own server-wide config. */
     public static void startIfEnabled(RLoginPaperPlugin plugin) {
         if (!plugin.config().bstatsEnabled()) {
-            return;
-        }
-        if (BSTATS_PLUGIN_ID <= 0) {
-            plugin.getLogger().info("Metrics are enabled in config but rLogin has no bStats plugin id yet, "
-                    + "so nothing is being sent. (Register at bstats.org and set BSTATS_PLUGIN_ID.)");
             return;
         }
         try {
@@ -49,6 +36,8 @@ public final class MetricsService {
             // useful thing to know when deciding what to support.
             metrics.addCustomChart(new SimplePie("server_topology",
                     () -> plugin.topology().name().toLowerCase(Locale.ROOT)));
+            metrics.addCustomChart(new SimplePie("auth_mode",
+                    () -> plugin.config().authMode().name().toLowerCase(Locale.ROOT)));
             metrics.addCustomChart(new SimplePie("uuid_type",
                     () -> plugin.config().uuidType().name().toLowerCase(Locale.ROOT)));
             metrics.addCustomChart(new SimplePie("language", () -> plugin.config().language()));

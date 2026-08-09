@@ -21,22 +21,21 @@
 #  proxy or the server already did the verifying.
 # ============================================================
 
-# Who is allowed on this server. The one decision worth making consciously;
-# everything below has a sensible default.
-#
-#   auto     Both kinds of player. Premium accounts are verified and join
-#            without typing anything; everyone else registers and logs in
-#            with a password. What most servers want.
-#   online   Premium accounts only. Anyone Mojang doesn't vouch for is
-#            refused, and /register serves no purpose. The one mode where
-#            online-mode: true is the right setting: let the server do the
-#            verifying instead of rLogin.
-#   offline  Passwords only. Nothing is checked against Mojang, so a premium
-#            player registers like everybody else. This is the only mode
-#            that does NOT need PacketEvents on a standalone server.
-auth-mode: auto
-
 general:
+  # Who is allowed on this server. The one decision worth making consciously;
+  # everything below has a sensible default.
+  #
+  #   auto     Both kinds of player. Premium accounts are verified and join
+  #            without typing anything; everyone else registers and logs in
+  #            with a password. What most servers want.
+  #   online   Premium accounts only. Anyone Mojang doesn't vouch for is
+  #            refused, and /register serves no purpose. The one mode where
+  #            online-mode: true is the right setting: let the server do the
+  #            verifying instead of rLogin.
+  #   offline  Passwords only. Nothing is checked against Mojang, so a premium
+  #            player registers like everybody else. This is the only mode
+  #            that does NOT need PacketEvents on a standalone server.
+  auth-mode: auto
   # Any of the 17 languages in the messages/ folder next to this file:
   # en, es, pt_BR, de, fr, ru, zh_CN, pl, it, nl, tr, uk, ja, ko, ar, vi, id
   # To add your own, drop a lang_<code>.yml in that folder and name it here.

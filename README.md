@@ -8,8 +8,8 @@
 
 Authentication for Paper, Folia and Velocity — including on a standalone `online-mode: false` server, with real Mojang UUIDs and skins.
 
-[![Modrinth](https://img.shields.io/modrinth/dt/rlg?logo=modrinth&logoColor=white&label=Modrinth&color=00AF5C&style=for-the-badge)](https://modrinth.com/plugin/rlg)
 [![Hangar](https://img.shields.io/badge/Hangar-Download-004ee9?logo=papermc&logoColor=white&style=for-the-badge)](https://hangar.papermc.io/raimondarias/rlg)
+[![Modrinth](https://img.shields.io/modrinth/dt/rlg?logo=modrinth&logoColor=white&label=Modrinth&color=00AF5C&style=for-the-badge)](https://modrinth.com/plugin/rlg)
 [![Docs](https://img.shields.io/badge/Docs-pyrelight-ef7025?logo=readthedocs&logoColor=white&style=for-the-badge)](https://pyrelight.mintlify.app/rlogin/introduction)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/5tuSrNRk3a)
 [![Stars](https://img.shields.io/github/stars/raimondarias/rlogin?logo=github&logoColor=white&label=Stars&color=eec9bc&style=for-the-badge)](https://github.com/raimondarias/rlogin/stargazers)
@@ -45,10 +45,16 @@ a Velocity proxy's.
 
 1. Drop `rLogin-<version>.jar` into `plugins/` on every server. Running a proxy?
    The same jar goes into the proxy's `plugins/` too.
-2. Standalone `online-mode: false`? Install
+2. Set `online-mode=false` — in `server.properties`, and in `velocity.toml` if
+   you run a proxy. rLogin refuses to start otherwise, because with it on the
+   server turns away every non-premium player before rLogin is consulted.
+3. Standalone? Install
    [PacketEvents](https://modrinth.com/plugin/packetevents) next to it.
-3. Start the server. There is nothing to configure — premium auto-login turns
-   itself on wherever it is needed.
+4. Start the server. There is nothing else to configure — premium auto-login
+   turns itself on wherever it is needed.
+
+Premium-only server? Set `general.auth-mode: online` instead, and keep
+`online-mode` on — there rLogin lets the server do the verifying.
 
 Everything else — MySQL, 2FA, the authentication lobby, spawn points,
 importing from AuthMe — is optional and documented below.
@@ -58,6 +64,10 @@ importing from AuthMe — is optional and documented below.
 **[pyrelight.mintlify.app](https://pyrelight.mintlify.app/rlogin/introduction)** —
 installation, every setting explained, commands, permissions, and
 troubleshooting.
+
+Downloads: [Hangar](https://hangar.papermc.io/raimondarias/rlg) ·
+[Modrinth](https://modrinth.com/plugin/rlg) ·
+[GitHub Releases](https://github.com/raimondarias/rlogin/releases)
 
 ## Support
 

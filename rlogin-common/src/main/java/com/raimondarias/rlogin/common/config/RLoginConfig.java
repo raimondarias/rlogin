@@ -62,7 +62,7 @@ public final class RLoginConfig {
      * make consciously, and everything else has a sensible default.
      */
     public AuthMode authMode() {
-        return AuthMode.parse(doc.getString("auth-mode", "auto"));
+        return AuthMode.parse(doc.getString("general.auth-mode", "auto"));
     }
 
     // --- general ---

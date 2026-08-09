@@ -17,21 +17,22 @@
 #  on one is known on the others. The proxy never reads or writes it.
 # ============================================================
 
-# Who this network is for. Must match what your backends have in their own
-# config.yml -- the proxy and the backends have to agree on who gets in.
-#
-#   auto     Premium accounts join without typing anything, everyone else with
-#            a password. Requires online-mode = false in velocity.toml, so the
-#            proxy can decide per player instead of turning non-premium away.
-#   online   Premium accounts only. Here online-mode = true in velocity.toml is
-#            the right setup: let Velocity do the verifying.
-#   offline  Passwords only. Nothing is checked against Mojang. Also requires
-#            online-mode = false.
-#
-# With auto or offline and online-mode = true, rLogin refuses every connection
-# and says so: Velocity would already have rejected the players this network
-# exists for, before rLogin ever saw them.
-auth-mode: auto
+general:
+  # Who this network is for. Must match what your backends have in their own
+  # config.yml -- the proxy and the backends have to agree on who gets in.
+  #
+  #   auto     Premium accounts join without typing anything, everyone else with
+  #            a password. Requires online-mode = false in velocity.toml, so the
+  #            proxy can decide per player instead of turning non-premium away.
+  #   online   Premium accounts only. Here online-mode = true in velocity.toml is
+  #            the right setup: let Velocity do the verifying.
+  #   offline  Passwords only. Nothing is checked against Mojang. Also requires
+  #            online-mode = false.
+  #
+  # With auto or offline and online-mode = true, rLogin refuses every connection
+  # and says so: Velocity would already have rejected the players this network
+  # exists for, before rLogin ever saw them.
+  auth-mode: auto
 
 login-servers:
   # Servers running rLogin, i.e. the ones that can ask a player to log in.
@@ -73,3 +74,9 @@ timing:
   # If a switch fails, wait this long (milliseconds) and try once more.
   # Covers a backend that was briefly starting up or full.
   retry-delay: 5000
+
+metrics:
+  # Anonymous statistics via bStats (https://bstats.org): proxy count, Java
+  # version, and which auth-mode and routing this network uses. No player
+  # data, no IPs, no account information.
+  bstats: true

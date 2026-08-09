@@ -17,7 +17,7 @@ packetevents = "2.13.0"
 log4j = "2.24.3"
 # bStats: SHADED (and relocated below) — bStats requires every plugin to ship
 # its own relocated copy so plugins never fight over one shared class.
-bstats = "3.1.0"
+bstats = "3.2.1"
 
 # --- Dependencias embebidas (shaded) ---
 hikaricp = "5.1.0"
@@ -45,6 +45,7 @@ packetevents-spigot = { module = "com.github.retrooper:packetevents-spigot", ver
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 
 bstats-bukkit = { module = "org.bstats:bstats-bukkit", version.ref = "bstats" }
+bstats-velocity = { module = "org.bstats:bstats-velocity", version.ref = "bstats" }
 
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }

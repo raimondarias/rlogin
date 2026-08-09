@@ -10,6 +10,8 @@ import com.raimondarias.rlogin.velocity.listener.LobbyListener;
 import com.raimondarias.rlogin.velocity.listener.OnlineModeConflictListener;
 import com.raimondarias.rlogin.velocity.listener.PreLoginListener;
 import com.raimondarias.rlogin.velocity.listener.SyncListener;
+import com.raimondarias.rlogin.velocity.metrics.VelocityMetricsService;
+import org.bstats.velocity.Metrics;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -52,16 +54,19 @@ public final class RLoginVelocityPlugin {
     private final ProxyServer server;
     private final Logger logger;
     private final Path dataDirectory;
+    private final Metrics.Factory metricsFactory;
 
     private RLoginConfig config;
     private PremiumChecker premiumChecker;
     private SyncListener syncListener;
 
     @Inject
-    public RLoginVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
+    public RLoginVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory,
+                                Metrics.Factory metricsFactory) {
         this.server = server;
         this.logger = logger;
         this.dataDirectory = dataDirectory;
+        this.metricsFactory = metricsFactory;
     }
 
     @Subscribe
@@ -99,6 +104,7 @@ public final class RLoginVelocityPlugin {
                 config.afterLoginAction().name().toLowerCase(java.util.Locale.ROOT));
 
         checkForUpdates();
+        VelocityMetricsService.startIfEnabled(metricsFactory, this, config, logger);
     }
 
     /**
