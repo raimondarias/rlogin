@@ -131,7 +131,6 @@ Thanks to the following sponsor for supporting this project:
 
 [![Java](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/java_vector.svg)](https://www.java.com)
 [![Gradle](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/gradle_vector.svg)](https://gradle.org)
-[![Java 21+](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/java21_vector.svg)](https://www.java.com)
 
 ```bash
 ./gradlew build
