@@ -36,11 +36,17 @@ proxy, and 17 languages ship with it.
 [![Folia](https://raw.githubusercontent.com/pyrelightmc/rlogin/main/assets/folia.svg)](https://papermc.io/software/folia)
 [![Velocity](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/velocity_vector.svg)](https://papermc.io/software/velocity)
 
+**Not compatible:**
+
+[![BungeeCord](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/unsupported/bungeecord_vector.svg)](https://github.com/SpigotMC/BungeeCord)
+
 </div>
 
 One download, `rLogin-<version>.jar`, runs on all of them: the same file goes into a
 Paper/Folia server's `plugins/` and into a Velocity proxy's. Velocity **3.x and 4.x**
-both work.
+both work. Velocity is the only proxy rLogin has a plugin for — a backend behind
+BungeeCord will detect the forwarding and stop double-verifying, but nothing routes
+the login, so players are asked again on every server switch.
 
 ## Features
 
@@ -115,11 +121,17 @@ Thanks to the following sponsor for supporting this project:
 
 ## Statistics
 
+[![bStats](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/bstats_vector.svg)](https://bstats.org/plugin/bukkit/rLogin%20Paper/33271)
+
 [![rLogin Paper](https://bstats.org/signatures/bukkit/rLogin%20Paper.svg)](https://bstats.org/plugin/bukkit/rLogin%20Paper/33271)
 
 [![rLogin Velocity](https://bstats.org/signatures/velocity/rLogin%20Velocity.svg)](https://bstats.org/plugin/velocity/rLogin%20Velocity/33272)
 
 ## Building from source
+
+[![Java](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/java_vector.svg)](https://www.java.com)
+[![Gradle](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/gradle_vector.svg)](https://gradle.org)
+[![Java 21+](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/java21_vector.svg)](https://www.java.com)
 
 ```bash
 ./gradlew build
