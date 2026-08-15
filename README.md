@@ -6,7 +6,7 @@
 
 **Premium players join without typing anything. Everyone else logs in with a password.**
 
-[![Documentation](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/generic_vector.svg)](https://pyrelight.mintlify.app/rlogin/introduction)
+[![Documentation](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/ghpages_vector.svg)](https://pyrelight.mintlify.app/rlogin/introduction)
 [![Discord](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-plural_vector.svg)](https://discord.gg/5tuSrNRk3a)
 [![Ko-fi](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/donate/kofi-plural_vector.svg)](https://ko-fi.com/pyrelightmc)
 
@@ -33,11 +33,11 @@ proxy, and 17 languages ship with it.
 
 [![Paper](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/paper_vector.svg)](https://papermc.io)
 [![Purpur](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/purpur_vector.svg)](https://purpurmc.org)
+[![Folia](https://raw.githubusercontent.com/pyrelightmc/rlogin/main/assets/folia.svg)](https://papermc.io/software/folia)
 [![Velocity](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/supported/velocity_vector.svg)](https://papermc.io/software/velocity)
 
 </div>
 
-**Folia** too — it has no badge in this set, but rLogin has supported it from day one.
 One download, `rLogin-<version>.jar`, runs on all of them: the same file goes into a
 Paper/Folia server's `plugins/` and into a Velocity proxy's. Velocity **3.x and 4.x**
 both work.
