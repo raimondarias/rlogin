@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eВи вже увійшли. Використайте /changepassword."
   no-codes: "{prefix}&#fd5e5eУ цього акаунта не залишилося кодів відновлення. Зверніться до адміністратора."
   wrong-code: "{prefix}&#fd5e5eЦей код відновлення недійсний."
+  throttled: "{prefix}&#fd5e5eЗабагато невірних кодів відновлення. Зачекайте &#5e9dfd{seconds} секунд&#fd5e5e."
   success: "{prefix}&#91f251Акаунт відновлено. Пароль змінено, 2FA вимкнено. Залишилось кодів: &#fd8ddb{remaining}&#91f251."
   none-left: "{prefix}&#fdba5eЦе був останній код. Попросіть в адміністратора новий набір."
   issued-header: "{prefix}&#fdba5eКоди відновлення - запишіть їх зараз:"

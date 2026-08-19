@@ -15,10 +15,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Pinned to release SHAs (not moving tags) so a compromised action
+      # repository can never rewrite what this workflow runs.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@2dfa2011c5b2a0f1489bf9e433881c92c1631f88 # v4.3.0
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -39,7 +41,7 @@ jobs:
           fi
 
       - name: Publish the release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           name: rLogin ${{ github.ref_name }}
           files: rlogin-plugin/build/libs/rLogin-*.jar

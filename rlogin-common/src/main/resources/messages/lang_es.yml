@@ -133,6 +133,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eYa has iniciado sesión. Usa /changepassword."
   no-codes: "{prefix}&#fd5e5eA esta cuenta no le quedan códigos de recuperación. Habla con un administrador."
   wrong-code: "{prefix}&#fd5e5eEse código de recuperación no es válido."
+  throttled: "{prefix}&#fd5e5eDemasiados códigos de recuperación incorrectos. Espera &#5e9dfd{seconds} segundos&#fd5e5e."
   success: "{prefix}&#91f251Cuenta recuperada. Tu contraseña ha cambiado y el 2FA se ha desactivado. Te quedan &#fd8ddb{remaining}&#91f251 códigos."
   none-left: "{prefix}&#fdba5eEse era tu último código. Pídele a un administrador un juego nuevo."
   issued-header: "{prefix}&#fdba5eCódigos de recuperación - apúntalos ahora:"

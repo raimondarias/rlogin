@@ -16,6 +16,7 @@ class SensitiveCommandsTest {
         assertTrue(commands.revealsSecret("/login hunter2"));
         assertTrue(commands.revealsSecret("/register hunter2 hunter2"));
         assertTrue(commands.revealsSecret("/changepassword old new"));
+        assertTrue(commands.revealsSecret("/recover AB12-CD34 newPassword"));
         assertTrue(commands.revealsSecret("/2fa confirm 123456"));
     }
 
@@ -24,6 +25,7 @@ class SensitiveCommandsTest {
         assertTrue(commands.revealsSecret("/l hunter2"));
         assertTrue(commands.revealsSecret("/reg hunter2 hunter2"));
         assertTrue(commands.revealsSecret("/changepass old new"));
+        assertTrue(commands.revealsSecret("/rlogin recover AB12-CD34 newPassword"));
     }
 
     @Test
@@ -69,6 +71,7 @@ class SensitiveCommandsTest {
     void masksArgumentsButKeepsTheCommandReadable() {
         assertEquals("/login ***", commands.mask("/login hunter2"));
         assertEquals("/register ***", commands.mask("/register hunter2 hunter2"));
+        assertEquals("/recover ***", commands.mask("/recover AB12-CD34 newPassword"));
         assertEquals("/rlogin login ***", commands.mask("/rlogin login hunter2"));
         assertEquals("/login", commands.mask("/login"));
     }

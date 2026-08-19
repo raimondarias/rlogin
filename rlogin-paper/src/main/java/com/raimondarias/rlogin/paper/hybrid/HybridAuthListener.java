@@ -29,7 +29,9 @@ import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -84,7 +86,15 @@ import java.util.logging.Logger;
  */
 public final class HybridAuthListener extends PacketListenerAbstract {
 
-    private record Pending(String username, String ip, byte[] verifyToken, ClientVersion clientVersion, UUID loginUuid) {
+    /**
+     * How long a handshake may stay open before it is forgotten. A client
+     * that answers the {@code EncryptionRequest} with nothing (and never
+     * disconnects) would otherwise park its entry here forever.
+     */
+    private static final long PENDING_TIMEOUT_SECONDS = 15;
+
+    private record Pending(String username, String ip, byte[] verifyToken, ClientVersion clientVersion,
+                           UUID loginUuid, Instant createdAt) {
     }
 
     private final Logger logger;
@@ -189,7 +199,8 @@ public final class HybridAuthListener extends PacketListenerAbstract {
             }
             byte[] verifyToken = new byte[4];
             new SecureRandom().nextBytes(verifyToken);
-            pending.put(key, new Pending(username, ip, verifyToken, clientVersion, loginUuid));
+            purgeExpiredPending();
+            pending.put(key, new Pending(username, ip, verifyToken, clientVersion, loginUuid, Instant.now()));
             user.sendPacket(new WrapperLoginServerEncryptionRequest("", serverKeyPair.getPublic(), verifyToken, true));
         }).exceptionally(e -> {
             logger.warning("[hybrid-auth] Could not decide how to handle " + username + ", treating as cracked: " + e);
@@ -444,6 +455,23 @@ public final class HybridAuthListener extends PacketListenerAbstract {
     private static String ipOf(User user) {
         InetSocketAddress address = user.getAddress();
         return address == null ? "unknown" : address.getAddress().getHostAddress();
+    }
+
+    /**
+     * Drops handshakes nobody finished. A client that stops answering after
+     * the {@code EncryptionRequest} — but keeps the connection open — leaves
+     * its entry behind; this sweeps those on the same rare path that adds
+     * them, so the map cannot grow without bound. The connection itself is
+     * left for the server's own idle handling; forgetting the entry just
+     * means a later response can never be matched to a handshake we started.
+     */
+    private void purgeExpiredPending() {
+        Instant cutoff = Instant.now().minusSeconds(PENDING_TIMEOUT_SECONDS);
+        for (Iterator<Map.Entry<String, Pending>> it = pending.entrySet().iterator(); it.hasNext(); ) {
+            if (it.next().getValue().createdAt().isBefore(cutoff)) {
+                it.remove();
+            }
+        }
     }
 
     /** Address+port, so two players behind the same IP are never confused for each other. */

@@ -75,6 +75,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
     private ServerTopology topology;
     private LuckPermsSupport luckPerms;
 
+    private volatile SensitiveCommands sensitiveCommands;
     private SchedulerAdapter.CancellableTask sessionCleanupTask;
 
     @Override
@@ -89,6 +90,13 @@ public final class RLoginPaperPlugin extends JavaPlugin {
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, SYNC_CHANNEL);
         getServer().getMessenger().registerIncomingPluginChannel(this, SYNC_CHANNEL, new SyncMessageListener(this));
+
+        if (config.syncSecret().isBlank()) {
+            getLogger().warning("sync.secret is empty: the rlogin:sync channel is not trusted. "
+                    + "Nobody gets the \"skip login on server switch\" shortcut, and a forged "
+                    + "message can never authenticate anyone. Set the same sync.secret here and "
+                    + "on the proxy.");
+        }
 
         // Before anything else can log a command: the server writes passwords to the console
         // in the clear, and it does so before any event a plugin could cancel.
@@ -294,15 +302,24 @@ public final class RLoginPaperPlugin extends JavaPlugin {
      * through a command must not become the way around that.</p>
      */
     private void hidePasswordsInLogs() {
-        SensitiveCommands sensitiveCommands = sensitiveCommands();
+        this.sensitiveCommands = sensitiveCommands();
         if (CommandLogFilter.install(sensitiveCommands)) {
             getServer().getPluginManager().registerEvents(
-                    new CommandAuditListener(getLogger(), sensitiveCommands), this);
+                    new CommandAuditListener(getLogger(), this), this);
         } else {
             getLogger().warning("Could not hook this server's logging (not Log4j2?), so passwords typed "
                     + "into /login and /register will appear in the console. Consider setting "
                     + "commands.log: false in spigot.yml.");
         }
+    }
+
+    /**
+     * The command lines currently protected from the console and logs.
+     * Read live by {@link CommandAuditListener}, so a reload can never leave
+     * the audit masking a stale set of commands.
+     */
+    public SensitiveCommands sensitiveCommands() {
+        return sensitiveCommands;
     }
 
     /**
@@ -330,10 +347,19 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         }
     }
 
-    /** Tells Velocity (if present) this player just authenticated, so it trusts them on other backends too. */
+    /**
+     * Tells Velocity (if present) this player just authenticated, so it
+     * trusts them on other backends too. The message is signed with
+     * {@code sync.secret}; without one configured it is not sent at all,
+     * because the proxy would rightly refuse to trust an unsigned one.
+     */
     public void notifyProxyAuthenticated(Player player) {
+        String secret = config.syncSecret();
+        if (secret.isBlank()) {
+            return;
+        }
         player.sendPluginMessage(this, SYNC_CHANNEL,
-                new SyncMessage(SyncMessage.Type.AUTHENTICATED, player.getUniqueId()).encode());
+                new SyncMessage(SyncMessage.Type.AUTHENTICATED, player.getUniqueId()).encode(secret));
     }
 
     /**
@@ -348,6 +374,11 @@ public final class RLoginPaperPlugin extends JavaPlugin {
      */
     public void reload() {
         loadConfigAndServices();
+        // The audit listener reads the list live and the Log4j filter holds its
+        // own copy: refresh both so a change in what rLogin registered is never
+        // left behind in either.
+        this.sensitiveCommands = sensitiveCommands();
+        CommandLogFilter.updateCommands(sensitiveCommands);
         if (hybridAuthListener != null) {
             getLogger().info("Config reloaded. Note: premium.* settings only take effect after a full restart.");
         }

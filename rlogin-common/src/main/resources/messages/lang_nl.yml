@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eJe bent al ingelogd. Gebruik /changepassword."
   no-codes: "{prefix}&#fd5e5eDit account heeft geen herstelcodes meer. Vraag een beheerder."
   wrong-code: "{prefix}&#fd5e5eDie herstelcode is niet geldig."
+  throttled: "{prefix}&#fd5e5eTe veel foute herstelcodes. Wacht &#5e9dfd{seconds} seconden&#fd5e5e."
   success: "{prefix}&#91f251Account hersteld. Je wachtwoord is gewijzigd en 2FA is uitgezet. Nog &#fd8ddb{remaining}&#91f251 codes over."
   none-left: "{prefix}&#fdba5eDat was je laatste code. Vraag een beheerder om een nieuwe set."
   issued-header: "{prefix}&#fdba5eHerstelcodes - schrijf ze nu op:"

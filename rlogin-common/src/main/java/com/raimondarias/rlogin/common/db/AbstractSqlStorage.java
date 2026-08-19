@@ -46,6 +46,14 @@ public abstract class AbstractSqlStorage implements Storage {
 
     protected abstract String createRecoveryCodesTableSql();
 
+    /**
+     * Creates the index that backs {@link #findByUsername} (which filters on
+     * {@code LOWER(username)}, so the index must be functional on that
+     * expression to be of any use). Engine-specific: MySQL has no
+     * {@code IF NOT EXISTS} for indexes, SQLite does.
+     */
+    protected abstract void createUsernameIndex(Statement st) throws SQLException;
+
     @Override
     public CompletableFuture<Void> init() {
         return CompletableFuture.runAsync(() -> {
@@ -54,7 +62,7 @@ public abstract class AbstractSqlStorage implements Storage {
                 st.execute(createAccountsTableSql());
                 st.execute(createSessionsTableSql());
                 st.execute(createRecoveryCodesTableSql());
-                st.execute("CREATE INDEX IF NOT EXISTS idx_rlogin_accounts_username ON rlogin_accounts (username)");
+                createUsernameIndex(st);
             } catch (SQLException e) {
                 throw new RuntimeException("Could not initialise rLogin's database", e);
             }

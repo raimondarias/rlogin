@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Locale;
@@ -40,11 +41,22 @@ public final class Totp {
         }
         long currentStep = Instant.now().getEpochSecond() / TIME_STEP_SECONDS;
         for (long drift = -ALLOWED_DRIFT_STEPS; drift <= ALLOWED_DRIFT_STEPS; drift++) {
-            if (generateCode(base32Secret, currentStep + drift).equals(code)) {
+            if (constantTimeEquals(generateCode(base32Secret, currentStep + drift), code)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * A code comparison must not leak how many leading digits matched, or a
+     * remote attacker could recover the code digit by digit from response
+     * timings. Six digits are too small to risk it.
+     */
+    private static boolean constantTimeEquals(String a, String b) {
+        return MessageDigest.isEqual(
+                a.getBytes(StandardCharsets.UTF_8),
+                b.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String currentCode(String base32Secret) {

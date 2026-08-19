@@ -3,16 +3,28 @@ package com.raimondarias.rlogin.common.db;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.zaxxer.hikari.HikariConfig;
 
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * MySQL/MariaDB storage, recommended when several Paper/Folia backends
  * need to share the same rLogin accounts.
  */
 public final class MysqlStorage extends AbstractSqlStorage {
 
+    private static final Logger LOGGER = Logger.getLogger("rlogin");
+
     private final RLoginConfig config;
 
     public MysqlStorage(RLoginConfig config) {
         this.config = config;
+        if (!config.mysqlUseSsl()) {
+            LOGGER.log(Level.WARNING, "rLogin: database.mysql.use-ssl is false, so the MySQL password "
+                    + "travels in the clear over the wire. Enable it unless the database is on a "
+                    + "trusted private network.");
+        }
     }
 
     @Override
@@ -28,6 +40,25 @@ public final class MysqlStorage extends AbstractSqlStorage {
         hikari.setPoolName("rlogin-mysql");
         hikari.setConnectionTestQuery("SELECT 1");
         return hikari;
+    }
+
+    /**
+     * MySQL has no {@code CREATE INDEX IF NOT EXISTS} (that is MariaDB-only
+     * syntax), so the index is created best-effort and a duplicate-key error
+     * (1061) is treated as "already there". The index is functional on
+     * {@code LOWER(username)}, which is what {@code findByUsername} actually
+     * filters on — a plain index on the column would never be used.
+     */
+    @Override
+    protected void createUsernameIndex(Statement st) throws SQLException {
+        try {
+            st.execute("CREATE INDEX idx_rlogin_accounts_username "
+                    + "ON rlogin_accounts ((LOWER(username)))");
+        } catch (SQLException e) {
+            if (e.getErrorCode() != 1061) { // 1061 = Duplicate key name
+                throw e;
+            }
+        }
     }
 
     @Override

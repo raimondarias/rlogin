@@ -112,8 +112,8 @@ class AccountServiceTest {
         UUID uuid = UUID.randomUUID();
         accountService.register(uuid, "Steve", "viejaClave1", "viejaClave1", "203.0.113.7").join();
 
-        boolean changed = accountService.changePassword(uuid, "viejaClave1", "nuevaClave2").join();
-        assertTrue(changed);
+        var changed = accountService.changePassword(uuid, "viejaClave1", "nuevaClave2").join();
+        assertEquals(AccountService.ChangePasswordResult.SUCCESS, changed.result());
 
         var outcome = accountService.login(uuid, "nuevaClave2", null, "127.0.0.1").join();
         assertEquals(AccountService.LoginResult.SUCCESS, outcome.result());
@@ -124,8 +124,26 @@ class AccountServiceTest {
         UUID uuid = UUID.randomUUID();
         accountService.register(uuid, "Steve", "viejaClave1", "viejaClave1", "203.0.113.7").join();
 
-        boolean changed = accountService.changePassword(uuid, "incorrecta", "nuevaClave2").join();
-        assertEquals(false, changed);
+        var changed = accountService.changePassword(uuid, "incorrecta", "nuevaClave2").join();
+        assertEquals(AccountService.ChangePasswordResult.WRONG_CURRENT_PASSWORD, changed.result());
+    }
+
+    @Test
+    void changePasswordRejectsCommonPassword() {
+        UUID uuid = UUID.randomUUID();
+        accountService.register(uuid, "Steve", "viejaClave1", "viejaClave1", "203.0.113.7").join();
+
+        var changed = accountService.changePassword(uuid, "viejaClave1", "123456").join();
+        assertEquals(AccountService.ChangePasswordResult.PASSWORD_REJECTED, changed.result());
+    }
+
+    @Test
+    void changePasswordRejectsPasswordThatIsTheName() {
+        UUID uuid = UUID.randomUUID();
+        accountService.register(uuid, "Steve", "viejaClave1", "viejaClave1", "203.0.113.7").join();
+
+        var changed = accountService.changePassword(uuid, "viejaClave1", "steve").join();
+        assertEquals(AccountService.ChangePasswordResult.PASSWORD_REJECTED, changed.result());
     }
 
     @Test

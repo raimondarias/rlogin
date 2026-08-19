@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eZaten giriş yaptın. /changepassword kullan."
   no-codes: "{prefix}&#fd5e5eBu hesapta kurtarma kodu kalmadı. Bir yöneticiye başvur."
   wrong-code: "{prefix}&#fd5e5eBu kurtarma kodu geçerli değil."
+  throttled: "{prefix}&#fd5e5eÇok fazla hatalı kurtarma kodu. &#5e9dfd{seconds} saniye&#fd5e5e bekleyin."
   success: "{prefix}&#91f251Hesap kurtarıldı. Şifren değişti ve 2FA kapatıldı. &#fd8ddb{remaining}&#91f251 kod kaldı."
   none-left: "{prefix}&#fdba5eBu son kodundu. Bir yöneticiden yeni bir set iste."
   issued-header: "{prefix}&#fdba5eKurtarma kodları - şimdi bir yere yaz:"

@@ -259,16 +259,38 @@ public final class AccountService {
         });
     }
 
-    public CompletableFuture<Boolean> changePassword(UUID uuid, String oldPassword, String newPassword) {
-        if (newPassword.length() < config.passwordMinLength() || newPassword.length() > config.passwordMaxLength()) {
-            return CompletableFuture.completedFuture(false);
+    public enum ChangePasswordResult {
+        SUCCESS,
+        WRONG_CURRENT_PASSWORD,
+        PASSWORD_REJECTED
+    }
+
+    public record ChangePasswordOutcome(ChangePasswordResult result, PasswordPolicy.Verdict passwordVerdict) {
+        static ChangePasswordOutcome of(ChangePasswordResult result) {
+            return new ChangePasswordOutcome(result, PasswordPolicy.Verdict.OK);
         }
+    }
+
+    /**
+     * The new password goes through the same policy as {@code /register}:
+     * a length rule alone accepts {@code 123456}, and the moment someone
+     * changes their password is exactly when they reach for something
+     * memorable and terrible.
+     */
+    public CompletableFuture<ChangePasswordOutcome> changePassword(UUID uuid, String oldPassword, String newPassword) {
         return storage.findByUuid(uuid).thenCompose(opt -> {
             if (opt.isEmpty() || opt.get().premium() || !verifyPassword(oldPassword, opt.get())) {
-                return CompletableFuture.completedFuture(false);
+                return CompletableFuture.completedFuture(
+                        ChangePasswordOutcome.of(ChangePasswordResult.WRONG_CURRENT_PASSWORD));
             }
-            RLoginAccount updated = opt.get().withPassword(hasher.hash(newPassword), PasswordHasher.ALGO_ID);
-            return storage.save(updated).thenApply(saved -> true);
+            RLoginAccount account = opt.get();
+            PasswordPolicy.Verdict verdict = passwordPolicy.check(newPassword, account.username());
+            if (verdict != PasswordPolicy.Verdict.OK) {
+                return CompletableFuture.completedFuture(
+                        new ChangePasswordOutcome(ChangePasswordResult.PASSWORD_REJECTED, verdict));
+            }
+            RLoginAccount updated = account.withPassword(hasher.hash(newPassword), PasswordHasher.ALGO_ID);
+            return storage.save(updated).thenApply(saved -> ChangePasswordOutcome.of(ChangePasswordResult.SUCCESS));
         });
     }
 

@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eDu bist bereits angemeldet. Nutze /changepassword."
   no-codes: "{prefix}&#fd5e5eDieses Konto hat keine Wiederherstellungscodes mehr. Wende dich an einen Administrator."
   wrong-code: "{prefix}&#fd5e5eDieser Wiederherstellungscode ist ungültig."
+  throttled: "{prefix}&#fd5e5eZu viele falsche Wiederherstellungscodes. Warte &#5e9dfd{seconds} Sekunden&#fd5e5e."
   success: "{prefix}&#91f251Konto wiederhergestellt. Dein Passwort wurde geändert und 2FA deaktiviert. Noch &#fd8ddb{remaining}&#91f251 Codes übrig."
   none-left: "{prefix}&#fdba5eDas war dein letzter Code. Bitte einen Administrator um einen neuen Satz."
   issued-header: "{prefix}&#fdba5eWiederherstellungscodes - schreib sie dir jetzt auf:"

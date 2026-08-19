@@ -1,6 +1,6 @@
 package com.raimondarias.rlogin.paper.security;
 
-import com.raimondarias.rlogin.common.security.SensitiveCommands;
+import com.raimondarias.rlogin.paper.RLoginPaperPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,22 +30,26 @@ import java.util.logging.Logger;
  * command:", which is the exact string the filter matches on: keeping them
  * different is what makes it impossible for this line to be caught by the
  * filter it exists to compensate for.</p>
+ *
+ * <p>The command list is read from the plugin on every event, so a
+ * {@code /reload} that changes what rLogin registered never leaves this
+ * listener masking the wrong lines.</p>
  */
 public final class CommandAuditListener implements Listener {
 
     private final Logger logger;
-    private final SensitiveCommands sensitiveCommands;
+    private final RLoginPaperPlugin plugin;
 
-    public CommandAuditListener(Logger logger, SensitiveCommands sensitiveCommands) {
+    public CommandAuditListener(Logger logger, RLoginPaperPlugin plugin) {
         this.logger = logger;
-        this.sensitiveCommands = sensitiveCommands;
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
-        if (sensitiveCommands.revealsSecret(command)) {
-            logger.info(event.getPlayer().getName() + " ran " + sensitiveCommands.mask(command));
+        if (plugin.sensitiveCommands().revealsSecret(command)) {
+            logger.info(event.getPlayer().getName() + " ran " + plugin.sensitiveCommands().mask(command));
         }
     }
 }

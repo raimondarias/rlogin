@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eHai già effettuato l'accesso. Usa /changepassword."
   no-codes: "{prefix}&#fd5e5eQuesto account non ha più codici di recupero. Parla con un amministratore."
   wrong-code: "{prefix}&#fd5e5eQuel codice di recupero non è valido."
+  throttled: "{prefix}&#fd5e5eTroppi codici di recupero errati. Attendi &#5e9dfd{seconds} secondi&#fd5e5e."
   success: "{prefix}&#91f251Account recuperato. La password è stata cambiata e la 2FA disattivata. Restano &#fd8ddb{remaining}&#91f251 codici."
   none-left: "{prefix}&#fdba5eEra il tuo ultimo codice. Chiedi a un amministratore una nuova serie."
   issued-header: "{prefix}&#fdba5eCodici di recupero - segnateli adesso:"

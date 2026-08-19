@@ -46,7 +46,7 @@ public final class CommandLogFilter extends AbstractFilter {
 
     private static CommandLogFilter installed;
 
-    private final SensitiveCommands sensitiveCommands;
+    private volatile SensitiveCommands sensitiveCommands;
     private volatile boolean active = true;
 
     private CommandLogFilter(SensitiveCommands sensitiveCommands) {
@@ -63,6 +63,10 @@ public final class CommandLogFilter extends AbstractFilter {
      */
     public static synchronized boolean install(SensitiveCommands sensitiveCommands) {
         if (installed != null) {
+            // Re-arm AND refresh: after a /reload the server may have registered
+            // different command labels, and a stale list would quietly leave a
+            // renamed command's password visible in the log.
+            installed.setCommands(sensitiveCommands);
             installed.setActive(true);
             return true;
         }
@@ -84,8 +88,22 @@ public final class CommandLogFilter extends AbstractFilter {
         }
     }
 
+    /**
+     * Refreshes which command lines the installed filter protects, without
+     * touching anything else. Safe when nothing was installed.
+     */
+    public static synchronized void updateCommands(SensitiveCommands commands) {
+        if (installed != null) {
+            installed.setCommands(commands);
+        }
+    }
+
     private void setActive(boolean active) {
         this.active = active;
+    }
+
+    private void setCommands(SensitiveCommands commands) {
+        this.sensitiveCommands = commands;
     }
 
     @Override

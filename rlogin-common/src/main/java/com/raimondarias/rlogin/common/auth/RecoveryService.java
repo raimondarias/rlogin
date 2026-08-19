@@ -5,8 +5,10 @@ import com.raimondarias.rlogin.api.db.Storage;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.raimondarias.rlogin.common.security.PasswordHasher;
 import com.raimondarias.rlogin.common.security.PasswordPolicy;
+import com.raimondarias.rlogin.common.security.RecoveryThrottle;
 
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +52,7 @@ public final class RecoveryService {
     private final RLoginConfig config;
     private final PasswordHasher hasher;
     private final PasswordPolicy passwordPolicy;
+    private final RecoveryThrottle throttle;
     private final SecureRandom random = new SecureRandom();
 
     public RecoveryService(Storage storage, RLoginConfig config, PasswordHasher hasher,
@@ -58,6 +61,7 @@ public final class RecoveryService {
         this.config = config;
         this.hasher = hasher;
         this.passwordPolicy = passwordPolicy;
+        this.throttle = new RecoveryThrottle(config);
     }
 
     public enum RecoverResult {
@@ -66,13 +70,14 @@ public final class RecoveryService {
         NOT_REGISTERED,
         NO_CODES,
         WRONG_CODE,
-        PASSWORD_REJECTED
+        PASSWORD_REJECTED,
+        THROTTLED
     }
 
     public record RecoverOutcome(RecoverResult result, int codesRemaining,
-                                 PasswordPolicy.Verdict passwordVerdict) {
+                                 PasswordPolicy.Verdict passwordVerdict, long lockedSecondsRemaining) {
         static RecoverOutcome of(RecoverResult result) {
-            return new RecoverOutcome(result, 0, PasswordPolicy.Verdict.OK);
+            return new RecoverOutcome(result, 0, PasswordPolicy.Verdict.OK, 0);
         }
     }
 
@@ -112,9 +117,15 @@ public final class RecoveryService {
      * an account being recovered is exactly when somebody reaches for
      * something memorable and terrible.</p>
      */
-    public CompletableFuture<RecoverOutcome> recover(UUID uuid, String code, String newPassword) {
+    public CompletableFuture<RecoverOutcome> recover(UUID uuid, String ip, String code, String newPassword) {
         if (!isEnabled()) {
             return CompletableFuture.completedFuture(RecoverOutcome.of(RecoverResult.DISABLED));
+        }
+        Instant now = Instant.now();
+        long lockedFor = throttle.lockedSecondsRemaining(ip, uuid, now);
+        if (lockedFor > 0) {
+            return CompletableFuture.completedFuture(
+                    new RecoverOutcome(RecoverResult.THROTTLED, 0, PasswordPolicy.Verdict.OK, lockedFor));
         }
         return storage.findByUuid(uuid).thenCompose(found -> {
             if (found.isEmpty()) {
@@ -124,7 +135,7 @@ public final class RecoveryService {
             PasswordPolicy.Verdict verdict = passwordPolicy.check(newPassword, account.username());
             if (verdict != PasswordPolicy.Verdict.OK) {
                 return CompletableFuture.completedFuture(
-                        new RecoverOutcome(RecoverResult.PASSWORD_REJECTED, 0, verdict));
+                        new RecoverOutcome(RecoverResult.PASSWORD_REJECTED, 0, verdict, 0));
             }
             return storage.unusedRecoveryCodeHashes(uuid).thenCompose(hashes -> {
                 if (hashes.isEmpty()) {
@@ -134,6 +145,7 @@ public final class RecoveryService {
                         .filter(hash -> hasher.verify(normalise(code), hash))
                         .findFirst();
                 if (match.isEmpty()) {
+                    throttle.recordFailure(ip, uuid, now);
                     return CompletableFuture.completedFuture(RecoverOutcome.of(RecoverResult.WRONG_CODE));
                 }
                 RLoginAccount recovered = new RLoginAccount(
@@ -150,8 +162,11 @@ public final class RecoveryService {
                         // Any session predates the recovery, and whoever held it is the
                         // reason this account needed recovering in the first place.
                         .thenCompose(ignored -> storage.clearSession(uuid))
-                        .thenApply(ignored -> new RecoverOutcome(
-                                RecoverResult.SUCCESS, hashes.size() - 1, PasswordPolicy.Verdict.OK));
+                        .thenApply(ignored -> {
+                            throttle.recordSuccess(ip, uuid);
+                            return new RecoverOutcome(
+                                    RecoverResult.SUCCESS, hashes.size() - 1, PasswordPolicy.Verdict.OK, 0);
+                        });
             });
         });
     }

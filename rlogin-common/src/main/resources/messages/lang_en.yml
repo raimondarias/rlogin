@@ -134,6 +134,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eYou're already logged in. Use /changepassword instead."
   no-codes: "{prefix}&#fd5e5eThis account has no recovery codes left. Ask an administrator."
   wrong-code: "{prefix}&#fd5e5eThat recovery code isn't valid."
+  throttled: "{prefix}&#fd5e5eToo many wrong recovery codes. Wait &#5e9dfd{seconds} seconds&#fd5e5e."
   success: "{prefix}&#91f251Account recovered. Your password has been changed, and 2FA was turned off. &#fd8ddb{remaining}&#91f251 codes left."
   none-left: "{prefix}&#fdba5eThat was your last code. Ask an administrator for a new set."
   issued-header: "{prefix}&#fdba5eRecovery codes - write these down now:"

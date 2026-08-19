@@ -57,7 +57,10 @@ database:
     database: rlogin
     username: root
     password: ""
-    use-ssl: false
+    # Encrypts the connection to the database. Leave it on unless the two
+    # machines are on a trusted private network: with use-ssl: false the
+    # password travels in the clear over the wire.
+    use-ssl: true
     pool-size: 10
 
 premium:
@@ -157,6 +160,11 @@ security:
   recovery:
     enabled: true
     codes: 5
+    # Wrong codes earn the ADDRESS and the ACCOUNT a timeout. Without this,
+    # every /recover attempt costs a bcrypt verify per stored code and nothing
+    # stops someone from trying codes all day. 0 turns the limit off.
+    max-attempts: 5
+    lockout-minutes: 15
 
 limbo:
   # Until they log in, players are frozen where they are (no separate limbo
@@ -182,6 +190,21 @@ bedrock:
   floodgate-auto-login: true
   # Must match the "username-prefix" in Floodgate's own config.
   prefix: "."
+
+sync:
+  # Shared secret between this backend and its Velocity proxy. It signs the
+  # rlogin:sync messages that tell a backend "this player already
+  # authenticated", so nobody can forge them.
+  #
+  # MUST be identical in this file AND in the proxy's config.yml.
+  #
+  # While it is empty, the proxy and the backends do not trust each other's
+  # messages: nobody gets the "skip login on server switch" shortcut, and a
+  # forged message can never authenticate anyone. Every player is simply
+  # asked to log in again on each backend, which is the safe state.
+  #
+  # Generate one with: openssl rand -base64 32   (or any long random string)
+  secret: ""
 
 update-checker:
   # Checks GitHub once at startup and prints a line if a newer release

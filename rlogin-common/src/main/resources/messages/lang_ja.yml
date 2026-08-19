@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eすでにログインしています。/changepassword を使ってください。"
   no-codes: "{prefix}&#fd5e5eこのアカウントには復旧コードが残っていません。管理者に連絡してください。"
   wrong-code: "{prefix}&#fd5e5eその復旧コードは無効です。"
+  throttled: "{prefix}&#fd5e5e復旧コードの間違いが多すぎます。&#5e9dfd{seconds} 秒&#fd5e5eお待ちください。"
   success: "{prefix}&#91f251アカウントを復旧しました。パスワードを変更し、2FA を解除しました。残り &#fd8ddb{remaining}&#91f251 個。"
   none-left: "{prefix}&#fdba5eそれが最後のコードでした。管理者に新しいコードを依頼してください。"
   issued-header: "{prefix}&#fdba5e復旧コード - 今すぐ控えてください:"

@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5e你已经登录了，请使用 /changepassword。"
   no-codes: "{prefix}&#fd5e5e该账户已没有剩余的找回代码，请联系管理员。"
   wrong-code: "{prefix}&#fd5e5e该找回代码无效。"
+  throttled: "{prefix}&#fd5e5e找回代码错误次数过多。请等待 &#5e9dfd{seconds} 秒&#fd5e5e。"
   success: "{prefix}&#91f251账户已找回。密码已更改，两步验证已关闭。剩余 &#fd8ddb{remaining}&#91f251 个代码。"
   none-left: "{prefix}&#fdba5e那是你最后一个代码，请向管理员申请一组新的。"
   issued-header: "{prefix}&#fdba5e找回代码 - 请立刻抄下来："

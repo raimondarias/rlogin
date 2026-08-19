@@ -75,6 +75,21 @@ timing:
   # Covers a backend that was briefly starting up or full.
   retry-delay: 5000
 
+sync:
+  # Shared secret between this proxy and its backends. It signs the
+  # rlogin:sync messages that tell a backend "this player already
+  # authenticated", so nobody can forge them.
+  #
+  # MUST be identical in this file AND in every backend's config.yml.
+  #
+  # While it is empty, the proxy and the backends do not trust each other's
+  # messages: nobody gets the "skip login on server switch" shortcut, and a
+  # forged message can never authenticate anyone. Every player is simply
+  # asked to log in again on each backend, which is the safe state.
+  #
+  # Generate one with: openssl rand -base64 32   (or any long random string)
+  secret: ""
+
 metrics:
   # Anonymous statistics via bStats (https://bstats.org): proxy count, Java
   # version, and which auth-mode and routing this network uses. No player

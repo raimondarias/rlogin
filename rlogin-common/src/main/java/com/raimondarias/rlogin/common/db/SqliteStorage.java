@@ -3,6 +3,8 @@ package com.raimondarias.rlogin.common.db;
 import com.zaxxer.hikari.HikariConfig;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * SQLite storage: zero configuration, great for a single server. A single
@@ -27,6 +29,13 @@ public final class SqliteStorage extends AbstractSqlStorage {
         config.setPoolName("rlogin-sqlite");
         config.setConnectionTestQuery("SELECT 1");
         return config;
+    }
+
+    /** SQLite supports functional indexes and {@code IF NOT EXISTS}. */
+    @Override
+    protected void createUsernameIndex(Statement st) throws SQLException {
+        st.execute("CREATE INDEX IF NOT EXISTS idx_rlogin_accounts_username "
+                + "ON rlogin_accounts (LOWER(username))");
     }
 
     @Override

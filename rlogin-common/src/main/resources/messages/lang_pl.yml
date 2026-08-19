@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eJesteś już zalogowany. Użyj /changepassword."
   no-codes: "{prefix}&#fd5e5eTo konto nie ma już kodów odzyskiwania. Zwróć się do administratora."
   wrong-code: "{prefix}&#fd5e5eTen kod odzyskiwania jest nieprawidłowy."
+  throttled: "{prefix}&#fd5e5eZbyt wiele błędnych kodów odzyskiwania. Poczekaj &#5e9dfd{seconds} sekund&#fd5e5e."
   success: "{prefix}&#91f251Konto odzyskane. Hasło zostało zmienione, a 2FA wyłączone. Pozostało &#fd8ddb{remaining}&#91f251 kodów."
   none-left: "{prefix}&#fdba5eTo był twój ostatni kod. Poproś administratora o nowy zestaw."
   issued-header: "{prefix}&#fdba5eKody odzyskiwania - zapisz je teraz:"

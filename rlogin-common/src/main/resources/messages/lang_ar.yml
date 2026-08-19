@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eأنت مسجّل الدخول بالفعل. استخدم /changepassword."
   no-codes: "{prefix}&#fd5e5eلم يتبقَّ لهذا الحساب رموز استعادة. راجع أحد المسؤولين."
   wrong-code: "{prefix}&#fd5e5eرمز الاستعادة هذا غير صالح."
+  throttled: "{prefix}&#fd5e5eمحاولات استعادة خاطئة كثيرة. انتظر &#5e9dfd{seconds} ثانية&#fd5e5e."
   success: "{prefix}&#91f251تمت استعادة الحساب. غُيّرت كلمة المرور وأُوقف التحقق بخطوتين. تبقّى &#fd8ddb{remaining}&#91f251 رموز."
   none-left: "{prefix}&#fdba5eكان ذلك آخر رمز لديك. اطلب من المسؤول مجموعة جديدة."
   issued-header: "{prefix}&#fdba5eرموز الاستعادة - دوّنها الآن:"

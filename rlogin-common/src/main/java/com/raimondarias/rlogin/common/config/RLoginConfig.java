@@ -104,7 +104,7 @@ public final class RLoginConfig {
     }
 
     public boolean mysqlUseSsl() {
-        return doc.getBoolean("database.mysql.use-ssl", false);
+        return doc.getBoolean("database.mysql.use-ssl", true);
     }
 
     public int mysqlPoolSize() {
@@ -197,6 +197,15 @@ public final class RLoginConfig {
         return doc.getInt("security.recovery.codes", 5);
     }
 
+    /** Wrong codes that earn an address+account a timeout; 0 turns the throttle off. */
+    public int recoveryMaxAttempts() {
+        return doc.getInt("security.recovery.max-attempts", 5);
+    }
+
+    public int recoveryLockoutMinutes() {
+        return doc.getInt("security.recovery.lockout-minutes", 15);
+    }
+
     public boolean rejectCommonPasswords() {
         return doc.getBoolean("security.password.reject-common", true);
     }
@@ -278,6 +287,17 @@ public final class RLoginConfig {
     /** Pause before retrying a server switch that failed. */
     public int retryDelayMs() {
         return doc.getInt("timing.retry-delay", 5000);
+    }
+
+    // --- sync (Paper + Velocity; the value must be identical on every side) ---
+    /**
+     * Shared secret signing the {@code rlogin:sync} channel between the
+     * proxy and its backends. Empty means the channel is not trusted at
+     * all: nobody gets the "skip login on server switch" shortcut, and a
+     * forged message can never authenticate anyone.
+     */
+    public String syncSecret() {
+        return doc.getString("sync.secret", "");
     }
 
     // --- misc ---

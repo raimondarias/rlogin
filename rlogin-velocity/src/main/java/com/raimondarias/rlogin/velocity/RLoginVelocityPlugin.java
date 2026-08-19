@@ -88,7 +88,12 @@ public final class RLoginVelocityPlugin {
         PreLoginListener preLoginListener = new PreLoginListener(config, premiumChecker, logger);
         BackendCheck backendCheck = new BackendCheck(server, config, logger);
         LobbyListener lobbyListener = new LobbyListener(this, server, config, preLoginListener, backendCheck, logger);
-        this.syncListener = new SyncListener(server, config, preLoginListener, lobbyListener, backendCheck);
+        this.syncListener = new SyncListener(server, config, preLoginListener, lobbyListener, backendCheck, logger);
+        if (config.syncSecret().isBlank()) {
+            logger.warn("sync.secret is empty: the rlogin:sync channel is not trusted. Nobody gets "
+                    + "the \"skip login on server switch\" shortcut, and a forged message can never "
+                    + "authenticate anyone. Set the same sync.secret here and on every backend.");
+        }
         backendCheck.checkNamesResolve();
 
         server.getEventManager().register(this, preLoginListener);

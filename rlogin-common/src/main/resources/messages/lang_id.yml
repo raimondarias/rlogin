@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eKamu sudah masuk. Gunakan /changepassword."
   no-codes: "{prefix}&#fd5e5eAkun ini tidak punya sisa kode pemulihan. Hubungi administrator."
   wrong-code: "{prefix}&#fd5e5eKode pemulihan itu tidak valid."
+  throttled: "{prefix}&#fd5e5eTerlalu banyak kode pemulihan yang salah. Tunggu &#5e9dfd{seconds} detik&#fd5e5e."
   success: "{prefix}&#91f251Akun dipulihkan. Kata sandi diubah dan 2FA dimatikan. Sisa &#fd8ddb{remaining}&#91f251 kode."
   none-left: "{prefix}&#fdba5eItu kode terakhirmu. Minta administrator satu set baru."
   issued-header: "{prefix}&#fdba5eKode pemulihan - catat sekarang:"

@@ -33,7 +33,7 @@ public final class SensitiveCommands {
 
     /** Base names of the commands that take a secret as an argument. */
     public static final List<String> PASSWORD_COMMANDS =
-            List.of("login", "register", "changepassword", "2fa");
+            List.of("login", "register", "changepassword", "recover", "2fa");
 
     /** The umbrella command: only sensitive when followed by one of {@link #PASSWORD_COMMANDS}. */
     public static final List<String> ROOT_COMMANDS = List.of("rlogin");
@@ -56,7 +56,7 @@ public final class SensitiveCommands {
 
     /** Fallback when the platform can't be asked: the names and aliases rLogin ships with. */
     public static SensitiveCommands withDefaults() {
-        return of(List.of("login", "l", "register", "reg", "changepassword", "changepass", "2fa"),
+        return of(List.of("login", "l", "register", "reg", "changepassword", "changepass", "recover", "2fa"),
                 List.of("rlogin", "rl"));
     }
 

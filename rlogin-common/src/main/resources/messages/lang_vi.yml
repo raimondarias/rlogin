@@ -128,6 +128,7 @@ recovery:
   already-logged-in: "{prefix}&#fdba5eBạn đã đăng nhập rồi. Hãy dùng /changepassword."
   no-codes: "{prefix}&#fd5e5eTài khoản này không còn mã khôi phục. Hãy liên hệ quản trị viên."
   wrong-code: "{prefix}&#fd5e5eMã khôi phục đó không hợp lệ."
+  throttled: "{prefix}&#fd5e5eQuá nhiều mã khôi phục sai. Chờ &#5e9dfd{seconds} giây&#fd5e5e."
   success: "{prefix}&#91f251Đã khôi phục tài khoản. Mật khẩu đã đổi và 2FA đã tắt. Còn &#fd8ddb{remaining}&#91f251 mã."
   none-left: "{prefix}&#fdba5eĐó là mã cuối cùng của bạn. Hãy xin quản trị viên một bộ mới."
   issued-header: "{prefix}&#fdba5eMã khôi phục - hãy ghi lại ngay:"

@@ -52,7 +52,7 @@ public final class RecoverCommand implements CommandExecutor {
 
         String code = args[0];
         String newPassword = args[1];
-        plugin.recoveryService().recover(player.getUniqueId(), code, newPassword)
+        plugin.recoveryService().recover(player.getUniqueId(), LoginCommand.ipOf(player), code, newPassword)
                 .thenAccept(outcome -> plugin.scheduler().runForPlayer(player, () -> handle(player, outcome)));
         return true;
     }
@@ -74,6 +74,8 @@ public final class RecoverCommand implements CommandExecutor {
             case NOT_REGISTERED -> player.sendMessage(plugin.messages().get("login.not-registered"));
             case NO_CODES -> player.sendMessage(plugin.messages().get("recovery.no-codes"));
             case WRONG_CODE -> player.sendMessage(plugin.messages().get("recovery.wrong-code"));
+            case THROTTLED -> player.sendMessage(plugin.messages().get("recovery.throttled",
+                    Map.of("seconds", String.valueOf(outcome.lockedSecondsRemaining()))));
             case PASSWORD_REJECTED -> player.sendMessage(passwordRejection(outcome.passwordVerdict()));
         }
     }
