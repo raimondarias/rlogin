@@ -37,6 +37,7 @@ tasks.shadowJar {
     relocate("com.mysql", "com.raimondarias.rlogin.libs.mysql")
     relocate("org.yaml.snakeyaml", "com.raimondarias.rlogin.libs.snakeyaml")
     relocate("at.favre.lib.crypto.bcrypt", "com.raimondarias.rlogin.libs.bcrypt")
+    relocate("com.google.gson", "com.raimondarias.rlogin.libs.gson")
     // Required by bStats itself: two plugins shipping the same unrelocated
     // org.bstats classes would clash over which one initialises first.
     relocate("org.bstats", "com.raimondarias.rlogin.libs.bstats")

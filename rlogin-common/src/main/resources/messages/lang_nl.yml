@@ -55,6 +55,7 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eTe veel mislukte pogingen. Wacht &#5e9dfd{seconds} seconden&#fd5e5e."
+  new-device-warning: "{prefix}&#fdba5eDit account zojuist ingelogd vanaf &#fd8ddb{ip}&#fdba5e, een adres dat nog nooit is gebruikt. Was jij dat niet, verander dan je wachtwoord met &#e39fff/changepassword&#fdba5e en zet 2FA aan met &#e39fff/2fa enable&#fdba5e."
 
 totp:
   enabled: "{prefix}&#91f251Tweefactorauthenticatie ingeschakeld."

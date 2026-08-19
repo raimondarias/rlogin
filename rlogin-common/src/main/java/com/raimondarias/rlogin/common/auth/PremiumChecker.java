@@ -1,5 +1,8 @@
 package com.raimondarias.rlogin.common.auth;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 
 import java.net.URI;
@@ -16,8 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Checks whether a name belongs to a premium (Java-original) account via
@@ -55,9 +56,6 @@ public final class PremiumChecker {
         }
     }
 
-    private static final Pattern ID_PATTERN = Pattern.compile("\"id\"\\s*:\\s*\"([0-9a-fA-F]{32})\"");
-    private static final Pattern NAME_PATTERN = Pattern.compile("\"name\"\\s*:\\s*\"([^\"]+)\"");
-
     private final RLoginConfig config;
     private final HttpClient http;
     private final ExecutorService executor;
@@ -89,6 +87,7 @@ public final class PremiumChecker {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + urlEncode(username)))
                 .timeout(Duration.ofMillis(config.premiumApiTimeoutMs()))
+                .header("User-Agent", USER_AGENT)
                 .GET()
                 .build();
 
@@ -113,11 +112,18 @@ public final class PremiumChecker {
 
     private PremiumLookup parseResponse(HttpResponse<String> response) {
         if (response.statusCode() == 200 && !response.body().isBlank()) {
-            Matcher idMatcher = ID_PATTERN.matcher(response.body());
-            Matcher nameMatcher = NAME_PATTERN.matcher(response.body());
-            if (idMatcher.find() && nameMatcher.find()) {
-                UUID uuid = dashUuid(idMatcher.group(1));
-                return PremiumLookup.premium(new MojangProfile(uuid, nameMatcher.group(1)));
+            try {
+                // Real JSON parsing: Mojang's API answers in JSON, and regex
+                // matching on it is one harmless format change away from a
+                // misread (see MojangSessionVerifier for the same choice).
+                JsonObject root = JsonParser.parseString(response.body()).getAsJsonObject();
+                JsonElement id = root.get("id");
+                JsonElement name = root.get("name");
+                if (id != null && name != null) {
+                    return PremiumLookup.premium(new MojangProfile(dashUuid(id.getAsString()), name.getAsString()));
+                }
+            } catch (RuntimeException e) {
+                // Not the shape Mojang sends; treat as not premium rather than crash.
             }
         }
         // 204/404 -> Mojang doesn't know this name as a premium account.
@@ -134,6 +140,10 @@ public final class PremiumChecker {
     private static String urlEncode(String s) {
         return java.net.URLEncoder.encode(s, StandardCharsets.UTF_8);
     }
+
+    /** Mojang asks callers to identify themselves; without it the API rate-limits harder. */
+    private static final String USER_AGENT =
+            "rLogin (Minecraft authentication plugin; https://github.com/pyrelightmc/rlogin)";
 
     public void shutdown() {
         executor.shutdown();

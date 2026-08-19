@@ -1,5 +1,9 @@
 package com.raimondarias.rlogin.common.auth;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 
 import javax.crypto.SecretKey;
@@ -21,8 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Verifies that a connecting client genuinely owns the premium account it
@@ -58,12 +60,9 @@ public final class MojangSessionVerifier {
     public record VerifiedProfile(UUID uuid, String name, List<ProfileProperty> properties) {
     }
 
-    private static final Pattern ID_PATTERN = Pattern.compile("\"id\"\\s*:\\s*\"([0-9a-fA-F]{32})\"");
-    private static final Pattern PROPERTIES_PATTERN = Pattern.compile("\"properties\"\\s*:\\s*\\[(.*)]", Pattern.DOTALL);
-    private static final Pattern PROPERTY_PATTERN = Pattern.compile("\\{([^{}]*)}", Pattern.DOTALL);
-    private static final Pattern PROP_NAME_PATTERN = Pattern.compile("\"name\"\\s*:\\s*\"([^\"]*)\"");
-    private static final Pattern PROP_VALUE_PATTERN = Pattern.compile("\"value\"\\s*:\\s*\"([^\"]*)\"");
-    private static final Pattern PROP_SIGNATURE_PATTERN = Pattern.compile("\"signature\"\\s*:\\s*\"([^\"]*)\"");
+    /** Mojang asks callers to identify themselves; without it the endpoint rate-limits harder. */
+    private static final String USER_AGENT =
+            "rLogin (Minecraft authentication plugin; https://github.com/pyrelightmc/rlogin)";
 
     private final RLoginConfig config;
     private final HttpClient http;
@@ -108,6 +107,7 @@ public final class MojangSessionVerifier {
                 .uri(URI.create("https://sessionserver.mojang.com/session/minecraft/hasJoined?username="
                         + urlEncode(username) + "&serverId=" + serverIdHash))
                 .timeout(Duration.ofMillis(config.premiumApiTimeoutMs()))
+                .header("User-Agent", USER_AGENT)
                 .GET()
                 .build();
         return http.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
@@ -122,38 +122,48 @@ public final class MojangSessionVerifier {
         return parseBody(response.body());
     }
 
-    /** Package-private for the tests; {@code body} is a {@code hasJoined} 200 response. */
+    /**
+     * Parses the profile with a real JSON parser instead of regular
+     * expressions: Mojang's response format is JSON, and matching it with
+     * regex means every harmless change in spacing or ordering is a
+     * potential misparse. Package-private for the tests; {@code body} is a
+     * {@code hasJoined} 200 response. Empty when the body isn't the shape
+     * Mojang actually sends.
+     */
     static Optional<VerifiedProfile> parseBody(String body) {
-        Matcher id = ID_PATTERN.matcher(body);
-        if (!id.find()) {
+        try {
+            JsonObject root = JsonParser.parseString(body).getAsJsonObject();
+            JsonElement id = root.get("id");
+            JsonElement name = root.get("name");
+            if (id == null || name == null) {
+                return Optional.empty();
+            }
+            JsonArray properties = root.getAsJsonArray("properties");
+            return Optional.of(new VerifiedProfile(PremiumChecker.dashUuid(id.getAsString()),
+                    name.getAsString(),
+                    properties == null ? List.of() : parseProperties(properties)));
+        } catch (RuntimeException e) {
+            // Malformed JSON, a missing field, an id that isn't 32 hex chars —
+            // none of it is a valid profile.
             return Optional.empty();
         }
-        Matcher properties = PROPERTIES_PATTERN.matcher(body);
-        boolean hasProperties = properties.find();
-
-        // "name" appears both at the top level and inside every property, so the profile's
-        // own name is only looked for in what comes before the properties array.
-        String head = hasProperties ? body.substring(0, properties.start()) : body;
-        Matcher name = PROP_NAME_PATTERN.matcher(head);
-
-        return Optional.of(new VerifiedProfile(PremiumChecker.dashUuid(id.group(1)),
-                name.find() ? name.group(1) : null,
-                hasProperties ? parseProperties(properties.group(1)) : List.of()));
     }
 
-    private static List<ProfileProperty> parseProperties(String arrayBody) {
+    private static List<ProfileProperty> parseProperties(JsonArray array) {
         List<ProfileProperty> parsed = new ArrayList<>();
-        Matcher entries = PROPERTY_PATTERN.matcher(arrayBody);
-        while (entries.find()) {
-            String entry = entries.group(1);
-            Matcher name = PROP_NAME_PATTERN.matcher(entry);
-            Matcher value = PROP_VALUE_PATTERN.matcher(entry);
-            if (!name.find() || !value.find()) {
+        for (JsonElement element : array) {
+            if (!element.isJsonObject()) {
                 continue; // Not a property object we understand — skip rather than guess.
             }
-            Matcher signature = PROP_SIGNATURE_PATTERN.matcher(entry);
-            parsed.add(new ProfileProperty(name.group(1), value.group(1),
-                    signature.find() ? signature.group(1) : null));
+            JsonObject obj = element.getAsJsonObject();
+            JsonElement name = obj.get("name");
+            JsonElement value = obj.get("value");
+            if (name == null || value == null) {
+                continue;
+            }
+            JsonElement signature = obj.get("signature");
+            parsed.add(new ProfileProperty(name.getAsString(), value.getAsString(),
+                    signature == null ? null : signature.getAsString()));
         }
         return List.copyOf(parsed);
     }

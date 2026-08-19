@@ -10,6 +10,7 @@ import com.raimondarias.rlogin.common.db.StorageFactory;
 import com.raimondarias.rlogin.common.i18n.Messages;
 import com.raimondarias.rlogin.common.migrate.ImporterRegistry;
 import com.raimondarias.rlogin.common.migrate.MigrationService;
+import com.raimondarias.rlogin.common.security.BcryptBenchmark;
 import com.raimondarias.rlogin.common.security.PremiumNameGuard;
 import com.raimondarias.rlogin.common.security.SensitiveCommands;
 import com.raimondarias.rlogin.common.sync.SyncMessage;
@@ -134,6 +135,7 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         // Last, so its answer reads as a footnote to the line above rather than
         // arriving before anyone knows what version is even starting.
         checkForUpdates();
+        suggestBcryptCost();
     }
 
     @Override
@@ -255,6 +257,28 @@ public final class RLoginPaperPlugin extends JavaPlugin {
             case BEHIND_PROXY -> "handled by the proxy";
             case STANDALONE_OFFLINE -> "active";
         };
+    }
+
+    /**
+     * Times one bcrypt hash at the configured cost and says whether that
+     * cost is a good fit for this machine. A suggestion only — nothing is
+     * re-hashed and nothing is changed. Runs off the main thread because the
+     * measurement itself takes roughly as long as one real login would.
+     */
+    private void suggestBcryptCost() {
+        int cost = config.bcryptCost();
+        scheduler.runAsync(() -> {
+            long ms = BcryptBenchmark.measureMs(cost);
+            int suggested = BcryptBenchmark.suggestedCost(cost, ms);
+            if (suggested == cost) {
+                getLogger().info("bcrypt cost " + cost + " takes ~" + ms
+                        + "ms here, inside the recommended range.");
+            } else {
+                getLogger().info("bcrypt cost " + cost + " takes ~" + ms + "ms here. Consider setting "
+                        + "security.password.bcrypt-cost to " + suggested
+                        + " (each +1 doubles the time).");
+            }
+        });
     }
 
     /**

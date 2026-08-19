@@ -55,6 +55,7 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eÇok fazla başarısız deneme. &#5e9dfd{seconds} saniye&#fd5e5e bekle."
+  new-device-warning: "{prefix}&#fdba5eBu hesaba az önce &#fd8ddb{ip}&#fdba5e adresinden giriş yapıldı; bu adres daha önce hiç kullanılmamıştı. Sen değilsen &#e39fff/changepassword&#fdba5e ile şifreni değiştir ve &#e39fff/2fa enable&#fdba5e ile 2FA'yı aç."
 
 totp:
   enabled: "{prefix}&#91f251İki faktörlü kimlik doğrulama etkinleştirildi."

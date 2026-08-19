@@ -55,6 +55,7 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5e실패한 시도가 너무 많습니다. &#5e9dfd{seconds}초&#fd5e5e 기다려주세요."
+  new-device-warning: "{prefix}&#fdba5e이 계정이 방금 &#fd8ddb{ip}&#fdba5e에서 로그인되었습니다. 이전에 사용된 적 없는 주소입니다. 본인이 아니라면 &#e39fff/changepassword&#fdba5e로 비밀번호를 바꾸고 &#e39fff/2fa enable&#fdba5e로 2FA를 켜세요."
 
 totp:
   enabled: "{prefix}&#91f2512단계 인증이 활성화되었습니다."

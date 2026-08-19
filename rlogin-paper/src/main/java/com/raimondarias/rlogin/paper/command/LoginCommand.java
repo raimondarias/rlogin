@@ -52,6 +52,7 @@ public final class LoginCommand implements CommandExecutor {
                 plugin.authSessions().markAuthenticated(player.getUniqueId(), AuthReason.PASSWORD);
                 plugin.fireAuthenticated(player, AuthReason.PASSWORD, true);
                 player.sendMessage(plugin.messages().get("login.success", Map.of("player", player.getName())));
+                warnIfNewAddress(plugin, player, outcome, ip);
                 plugin.sessionService().remember(player.getUniqueId(), ip, plugin.getServer().getName());
                 plugin.notifyProxyAuthenticated(player);
                 plugin.spawnManager().teleportForRole(player, SpawnManager.Role.LOGIN);
@@ -65,6 +66,23 @@ public final class LoginCommand implements CommandExecutor {
             case NEEDS_TOTP -> player.sendMessage(plugin.messages().get("login.need-totp"));
             case PREMIUM_NO_PASSWORD -> player.sendMessage(plugin.messages().get("premium.info-premium"));
         }
+    }
+
+    /**
+     * A successful login from an address this account hasn't used before is
+     * worth saying out loud: it may be the owner on a new connection, or it
+     * may be someone who just obtained the password. Either way the player
+     * should know it happened. Accounts with 2FA are left alone — the second
+     * factor is the stronger answer to that same question.
+     */
+    private static void warnIfNewAddress(RLoginPaperPlugin plugin, Player player,
+                                         AccountService.LoginOutcome outcome, String ip) {
+        if (outcome.previousIp() == null
+                || outcome.previousIp().equals(ip)
+                || (outcome.account() != null && outcome.account().totpEnabled())) {
+            return;
+        }
+        player.sendMessage(plugin.messages().get("security.new-device-warning", Map.of("ip", ip)));
     }
 
     public static String ipOf(Player player) {

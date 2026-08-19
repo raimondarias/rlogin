@@ -60,6 +60,7 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eDemasiados intentos fallidos. Espera &#5e9dfd{seconds} segundos&#fd5e5e."
+  new-device-warning: "{prefix}&#fdba5eEsta cuenta acaba de iniciar sesión desde &#fd8ddb{ip}&#fdba5e, una dirección que no había usado antes. Si no fuiste tú, cambia tu contraseña con &#e39fff/changepassword&#fdba5e y activa el 2FA con &#e39fff/2fa enable&#fdba5e."
 
 totp:
   enabled: "{prefix}&#91f251Verificación en dos pasos activada."

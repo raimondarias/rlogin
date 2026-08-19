@@ -55,6 +55,7 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eЗабагато невдалих спроб. Зачекайте &#5e9dfd{seconds} секунд&#fd5e5e."
+  new-device-warning: "{prefix}&#fdba5eЗ цим акаунтом щойно виконано вхід з &#fd8ddb{ip}&#fdba5e — адреси, яка раніше не використовувалася. Якщо це були не ви, змініть пароль через &#e39fff/changepassword&#fdba5e і увімкніть 2FA через &#e39fff/2fa enable&#fdba5e."
 
 totp:
   enabled: "{prefix}&#91f251Двофакторну автентифікацію увімкнено."

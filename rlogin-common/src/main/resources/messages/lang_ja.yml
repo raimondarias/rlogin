@@ -55,6 +55,7 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5e失敗した試行回数が多すぎます。&#5e9dfd{seconds}秒&#fd5e5e待ってください。"
+  new-device-warning: "{prefix}&#fdba5eこのアカウントが &#fd8ddb{ip}&#fdba5e からログインしました。今まで使われたことのないアドレスです。心当たりがなければ &#e39fff/changepassword&#fdba5e でパスワードを変更し、&#e39fff/2fa enable&#fdba5e で 2FA を有効にしてください。"
 
 totp:
   enabled: "{prefix}&#91f251二要素認証が有効になりました。"

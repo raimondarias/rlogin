@@ -6,6 +6,7 @@ dependencies {
     implementation(libs.mysql.connector)
     implementation(libs.snakeyaml)
     implementation(libs.bcrypt)
+    implementation(libs.gson)
 
     // Provided at runtime by Paper/Velocity (both bundle Adventure end-to-end
     // and expose it to plugin classloaders) — never shaded, see rlogin-plugin.

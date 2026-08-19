@@ -55,6 +55,7 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5e失败尝试次数过多。请等待 &#5e9dfd{seconds} 秒&#fd5e5e。"
+  new-device-warning: "{prefix}&#fdba5e此账户刚刚从 &#fd8ddb{ip}&#fdba5e 登录，该地址以前从未使用过。如果不是你本人，请用 &#e39fff/changepassword&#fdba5e 修改密码，并用 &#e39fff/2fa enable&#fdba5e 开启两步验证。"
 
 totp:
   enabled: "{prefix}&#91f251双重验证已启用。"

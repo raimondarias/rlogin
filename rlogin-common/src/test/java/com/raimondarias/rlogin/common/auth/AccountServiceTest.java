@@ -3,6 +3,7 @@ package com.raimondarias.rlogin.common.auth;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.raimondarias.rlogin.common.db.SqliteStorage;
 import com.raimondarias.rlogin.common.security.PremiumNameGuard;
+import com.raimondarias.rlogin.common.security.Totp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,6 +97,45 @@ class AccountServiceTest {
         var lockedAttempt = accountService.login(uuid, "hunter22", null, "127.0.0.1").join();
         assertEquals(AccountService.LoginResult.LOCKED, lockedAttempt.result());
         assertTrue(lockedAttempt.lockedSecondsRemaining() > 0);
+    }
+
+    @Test
+    void registerRejectsCommonPasswords() {
+        var result = accountService.register(UUID.randomUUID(), "Steve", "123456", "123456", "203.0.113.7").join();
+        assertEquals(AccountService.RegisterResult.PASSWORD_TOO_COMMON, result);
+    }
+
+    @Test
+    void registerRejectsPasswordThatIsTheName() {
+        var result = accountService.register(UUID.randomUUID(), "Steve", "steve", "steve", "203.0.113.7").join();
+        assertEquals(AccountService.RegisterResult.PASSWORD_IS_NAME, result);
+    }
+
+    @Test
+    void loginAsksForTotpOnceEnabled() {
+        UUID uuid = UUID.randomUUID();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
+        String secret = accountService.beginTotpSetup(uuid).join();
+        assertTrue(accountService.confirmTotp(uuid, Totp.currentCode(secret)).join());
+
+        var withoutCode = accountService.login(uuid, "hunter22", null, "127.0.0.1").join();
+        assertEquals(AccountService.LoginResult.NEEDS_TOTP, withoutCode.result());
+
+        var withCode = accountService.login(uuid, "hunter22", Totp.currentCode(secret), "127.0.0.1").join();
+        assertEquals(AccountService.LoginResult.SUCCESS, withCode.result());
+    }
+
+    @Test
+    void wrongTotpCountsAsAFailedAttempt() {
+        UUID uuid = UUID.randomUUID();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
+        String secret = accountService.beginTotpSetup(uuid).join();
+        accountService.confirmTotp(uuid, Totp.currentCode(secret)).join();
+
+        var outcome = accountService.login(uuid, "hunter22", "000000", "127.0.0.1").join();
+
+        assertEquals(AccountService.LoginResult.WRONG_TOTP, outcome.result());
+        assertEquals(2, outcome.attemptsLeft()); // max-attempts=3, este fue el 1er fallo
     }
 
     @Test

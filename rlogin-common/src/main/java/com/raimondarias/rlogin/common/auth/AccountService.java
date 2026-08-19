@@ -33,9 +33,10 @@ public final class AccountService {
         SUCCESS, WRONG_PASSWORD, NOT_REGISTERED, LOCKED, NEEDS_TOTP, WRONG_TOTP, PREMIUM_NO_PASSWORD
     }
 
-    public record LoginOutcome(LoginResult result, RLoginAccount account, long lockedSecondsRemaining, int attemptsLeft) {
+    public record LoginOutcome(LoginResult result, RLoginAccount account, long lockedSecondsRemaining,
+                               int attemptsLeft, String previousIp) {
         static LoginOutcome of(LoginResult result) {
-            return new LoginOutcome(result, null, 0, 0);
+            return new LoginOutcome(result, null, 0, 0, null);
         }
     }
 
@@ -142,19 +143,21 @@ public final class AccountService {
                 return CompletableFuture.completedFuture(LoginOutcome.of(LoginResult.PREMIUM_NO_PASSWORD));
             }
             Instant now = Instant.now();
+            String previousIp = account.lastIp();
             // Locked by ADDRESS, never by account: locking the account would let anyone who
             // knows a name keep its owner out by failing logins on purpose. See IpThrottle.
             long lockedFor = ipThrottle.lockedSecondsRemaining(ip, now);
             if (lockedFor > 0) {
                 return CompletableFuture.completedFuture(
-                        new LoginOutcome(LoginResult.LOCKED, account, lockedFor, 0));
+                        new LoginOutcome(LoginResult.LOCKED, account, lockedFor, 0, previousIp));
             }
             if (!verifyPassword(password, account)) {
                 return registerFailedAttempt(account, ip, now, LoginResult.WRONG_PASSWORD);
             }
             if (account.totpEnabled()) {
                 if (totpCode == null || totpCode.isBlank()) {
-                    return CompletableFuture.completedFuture(new LoginOutcome(LoginResult.NEEDS_TOTP, account, 0, 0));
+                    return CompletableFuture.completedFuture(
+                            new LoginOutcome(LoginResult.NEEDS_TOTP, account, 0, 0, previousIp));
                 }
                 if (!Totp.verify(account.totpSecret(), totpCode)) {
                     return registerFailedAttempt(account, ip, now, LoginResult.WRONG_TOTP);
@@ -167,7 +170,8 @@ public final class AccountService {
             if (!PasswordHasher.ALGO_ID.equals(account.hashAlgo())) {
                 authenticated = authenticated.withPassword(hasher.hash(password), PasswordHasher.ALGO_ID);
             }
-            return storage.save(authenticated).thenApply(saved -> new LoginOutcome(LoginResult.SUCCESS, saved, 0, 0));
+            return storage.save(authenticated)
+                    .thenApply(saved -> new LoginOutcome(LoginResult.SUCCESS, saved, 0, 0, previousIp));
         });
     }
 
@@ -190,7 +194,8 @@ public final class AccountService {
                                                                     Instant now, LoginResult reason) {
         int attemptsLeft = ipThrottle.recordFailure(ip, now);
         RLoginAccount updated = account.withFailedAttempt(account.failedAttempts() + 1, null);
-        return storage.save(updated).thenApply(saved -> new LoginOutcome(reason, saved, 0, attemptsLeft));
+        return storage.save(updated)
+                .thenApply(saved -> new LoginOutcome(reason, saved, 0, attemptsLeft, account.lastIp()));
     }
 
     /**

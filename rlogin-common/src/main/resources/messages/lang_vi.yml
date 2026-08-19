@@ -55,6 +55,7 @@ limbo:
 
 security:
   locked-out: "{prefix}&#fd5e5eQuá nhiều lần thử thất bại. Đợi &#5e9dfd{seconds} giây&#fd5e5e."
+  new-device-warning: "{prefix}&#fdba5eTài khoản này vừa đăng nhập từ &#fd8ddb{ip}&#fdba5e, một địa chỉ chưa từng được dùng trước đây. Nếu không phải bạn, hãy đổi mật khẩu bằng &#e39fff/changepassword&#fdba5e và bật 2FA bằng &#e39fff/2fa enable&#fdba5e."
 
 totp:
   enabled: "{prefix}&#91f251Đã bật xác thực hai yếu tố."
