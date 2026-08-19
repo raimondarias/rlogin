@@ -114,7 +114,12 @@ public final class FreezeListener implements Listener {
         }
         String usedLabel = event.getMessage().split(" ")[0].toLowerCase(Locale.ROOT);
         List<String> allowed = plugin.config().limboAllowedCommands();
+        // The authentication commands themselves are always allowed, like /rlogin:
+        // a new-device confirmation or a session-code redemption must work even on
+        // servers whose allowlist predates the feature.
         boolean permitted = usedLabel.equals("/rlogin")
+                || usedLabel.equals("/confirm")
+                || usedLabel.equals("/session")
                 || allowed.stream().anyMatch(cmd -> cmd.toLowerCase(Locale.ROOT).equals(usedLabel));
         if (!permitted) {
             event.setCancelled(true);

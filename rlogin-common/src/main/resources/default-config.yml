@@ -111,6 +111,28 @@ session:
   # cancels it immediately. Set remember-me: false to switch it off entirely.
   remember-me: true
   remember-me-minutes: 30
+  # Cross-device sign-in: an authenticated player runs /session to mint a
+  # short-lived, single-use code, and types it on the new device instead of
+  # the password. The code expires after this many minutes. 0 switches the
+  # feature off.
+  transfer-token-minutes: 5
+
+device-memory:
+  # The first time an account logs in from an address it has never used
+  # before, the password alone isn't enough: the player must confirm the
+  # device with /confirm <password> [2fa-code] before the freeze lifts. A
+  # stolen password then buys a frozen, confirmed login attempt instead of
+  # the account. The device is trusted from then on.
+  #
+  # Existing addresses are kept per account, so a player who already played
+  # from home isn't asked to confirm home again. Set enabled: false to skip
+  # the extra step entirely.
+  enabled: true
+  # How many addresses per account are remembered; the oldest drop off.
+  max-known-ips: 8
+  # How long a player has to run /confirm after logging in from a new
+  # device, before the window closes and they must log in again.
+  confirm-timeout-seconds: 45
 
 security:
   # Slows down password guessing. After too many wrong passwords the
@@ -169,6 +191,8 @@ limbo:
     - /reg
     - /2fa
     - /recover
+    - /confirm
+    - /session
   # How often to remind them to log in, in seconds.
   reminder-interval-seconds: 5
   # Kick a player who never logs in, after this many seconds. A connection

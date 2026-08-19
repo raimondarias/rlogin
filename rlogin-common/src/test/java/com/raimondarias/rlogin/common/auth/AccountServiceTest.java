@@ -137,4 +137,36 @@ class AccountServiceTest {
         var outcome = accountService.login(uuid, "hunter22", null, "127.0.0.1").join();
         assertEquals(AccountService.LoginResult.NOT_REGISTERED, outcome.result());
     }
+
+    @Test
+    void confirmDeviceSucceedsWithCorrectPassword() {
+        UUID uuid = UUID.randomUUID();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
+        assertTrue(accountService.confirmDevice(uuid, "hunter22", null).join());
+    }
+
+    @Test
+    void confirmDeviceFailsWithWrongPassword() {
+        UUID uuid = UUID.randomUUID();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
+        assertEquals(false, accountService.confirmDevice(uuid, "incorrecta", null).join());
+    }
+
+    @Test
+    void confirmDeviceFailsForUnknownAccount() {
+        assertEquals(false, accountService.confirmDevice(UUID.randomUUID(), "hunter22", null).join());
+    }
+
+    @Test
+    void confirmDeviceRequiresTotpWhenEnabled() {
+        UUID uuid = UUID.randomUUID();
+        accountService.register(uuid, "Steve", "hunter22", "hunter22", "203.0.113.7").join();
+        String secret = accountService.beginTotpSetup(uuid).join();
+        String code = com.raimondarias.rlogin.common.security.Totp.currentCode(secret);
+        assertTrue(accountService.confirmTotp(uuid, code).join());
+
+        // Password alone is not enough once 2FA is on.
+        assertEquals(false, accountService.confirmDevice(uuid, "hunter22", null).join());
+        assertTrue(accountService.confirmDevice(uuid, "hunter22", code).join());
+    }
 }

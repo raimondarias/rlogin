@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eZbyt wiele nieudanych prób. Poczekaj &#5e9dfd{seconds} sekund&#fd5e5e."
 
+device:
+  new-device: "{prefix}&#fdba5ePierwszy raz na tym urządzeniu. Potwierdź, że to ty: &#e39fff/confirm <hasło> [kod-2fa]"
+  confirmed: "{prefix}&#91f251To urządzenie jest teraz zaufane."
+  not-pending: "{prefix}&#fd5e5eNie ma teraz nic do potwierdzenia. Najpierw zaloguj się przez &#e39fff/login&#fd5e5e."
+  confirm-usage: "{prefix}&#fd5e5eUżycie: &#e39fff/confirm <hasło> [kod-2fa]"
+  confirmation-failed: "{prefix}&#fd5e5ePotwierdzenie nie powiodło się — nieprawidłowe hasło lub kod 2FA. Spróbuj ponownie."
+
+session:
+  usage: "{prefix}&#fd5e5eUżycie: &#e39fff/session <kod>"
+  generated: "{prefix}&#91f251Kod transferu: &#fd8ddb{code}&#91f251 — ważny przez &#5e9dfd{minutes} minut&#91f251, jednorazowy."
+  invalid: "{prefix}&#fd5e5eTen kod jest nieprawidłowy lub wygasł."
+  unavailable: "{prefix}&#fdba5eKody transferu sesji są wyłączone na tym serwerze."
+
 totp:
   enabled: "{prefix}&#91f251Weryfikacja dwuetapowa włączona."
   disabled: "{prefix}&#91f251Weryfikacja dwuetapowa wyłączona."

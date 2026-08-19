@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eTroppi tentativi falliti. Attendi &#5e9dfd{seconds} secondi&#fd5e5e."
 
+device:
+  new-device: "{prefix}&#fdba5ePrima volta su questo dispositivo. Conferma che sei tu: &#e39fff/confirm <password> [codice-2fa]"
+  confirmed: "{prefix}&#91f251Questo dispositivo è ora attendibile."
+  not-pending: "{prefix}&#fd5e5eNon c'è nulla da confermare ora. Accedi prima con &#e39fff/login&#fd5e5e."
+  confirm-usage: "{prefix}&#fd5e5eUso: &#e39fff/confirm <password> [codice-2fa]"
+  confirmation-failed: "{prefix}&#fd5e5eConferma fallita — password o codice 2FA errato. Riprova."
+
+session:
+  usage: "{prefix}&#fd5e5eUso: &#e39fff/session <codice>"
+  generated: "{prefix}&#91f251Codice di trasferimento: &#fd8ddb{code}&#91f251 — valido per &#5e9dfd{minutes} minuti&#91f251, monouso."
+  invalid: "{prefix}&#fd5e5eQuesto codice non è valido o è scaduto."
+  unavailable: "{prefix}&#fdba5eI codici di trasferimento sessione sono disattivati su questo server."
+
 totp:
   enabled: "{prefix}&#91f251Autenticazione a due fattori attivata."
   disabled: "{prefix}&#91f251Autenticazione a due fattori disattivata."

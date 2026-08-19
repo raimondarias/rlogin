@@ -26,7 +26,11 @@ public final class LimboService {
         player.sendMessage(plugin.messages().get("limbo.freeze-reminder"));
         long period = Math.max(1, plugin.config().limboReminderIntervalSeconds()) * 20L;
         var task = plugin.scheduler().runForPlayerTimer(player, period, period, () -> {
-            if (!plugin.authSessions().isAuthenticated(player.getUniqueId())) {
+            // A player inside the new-device confirmation window is told exactly
+            // what to do by the /confirm prompt itself; the generic "please log
+            // in" would only contradict it.
+            if (!plugin.authSessions().isAuthenticated(player.getUniqueId())
+                    && !plugin.authSessions().isAwaitingDeviceConfirmation(player.getUniqueId())) {
                 player.sendMessage(plugin.messages().get("limbo.freeze-reminder"));
             }
         });

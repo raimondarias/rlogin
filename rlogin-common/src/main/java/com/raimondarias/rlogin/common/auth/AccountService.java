@@ -53,7 +53,7 @@ public final class AccountService {
         this.config = config;
         this.hasher = new PasswordHasher(config.bcryptCost());
         this.bruteforceGuard = new BruteforceGuard(config);
-        this.ipThrottle = new IpThrottle(config, bruteforceGuard);
+        this.ipThrottle = new IpThrottle(storage, config, bruteforceGuard);
         this.registrationLimiter = new RegistrationLimiter(config);
         this.passwordPolicy = new PasswordPolicy(config);
         this.premiumNameGuard = premiumNameGuard;
@@ -149,26 +149,58 @@ public final class AccountService {
                 return CompletableFuture.completedFuture(
                         new LoginOutcome(LoginResult.LOCKED, account, lockedFor, 0));
             }
-            if (!verifyPassword(password, account)) {
-                return registerFailedAttempt(account, ip, now, LoginResult.WRONG_PASSWORD);
-            }
-            if (account.totpEnabled()) {
-                if (totpCode == null || totpCode.isBlank()) {
-                    return CompletableFuture.completedFuture(new LoginOutcome(LoginResult.NEEDS_TOTP, account, 0, 0));
+            // The authoritative check is the shared record: every backend of a proxy
+            // network writes its failures there, so a guesser spreading tries across
+            // servers (or hopping addresses for the same name) hits the same limit
+            // instead of one fresh counter per server. The local map above is only
+            // the fast path for the single-server case.
+            Instant windowStart = now.minusSeconds(config.bruteforceLockoutSeconds());
+            return storage.countLoginFailures(ip, account.username(), windowStart).thenCompose(failures -> {
+                if (failures >= config.bruteforceMaxAttempts()) {
+                    return storage.oldestLoginFailureWithin(ip, account.username(), windowStart)
+                            .thenApply(oldest -> new LoginOutcome(LoginResult.LOCKED, account,
+                                    remainingLockoutSeconds(oldest, windowStart, now), 0));
                 }
-                if (!Totp.verify(account.totpSecret(), totpCode)) {
-                    return registerFailedAttempt(account, ip, now, LoginResult.WRONG_TOTP);
-                }
-            }
-            ipThrottle.recordSuccess(ip);
-            RLoginAccount authenticated = account.withLogin(ip, now);
-            // Account migrated from another plugin (e.g. AuthMe SHA256): on a successful
-            // login, it gets re-hashed to bcrypt, retiring the legacy algorithm for good.
-            if (!PasswordHasher.ALGO_ID.equals(account.hashAlgo())) {
-                authenticated = authenticated.withPassword(hasher.hash(password), PasswordHasher.ALGO_ID);
-            }
-            return storage.save(authenticated).thenApply(saved -> new LoginOutcome(LoginResult.SUCCESS, saved, 0, 0));
+                return verifyAndComplete(account, password, totpCode, ip, now);
+            });
         });
+    }
+
+    /** Password + 2FA verification and the bookkeeping that follows a correct one. */
+    private CompletableFuture<LoginOutcome> verifyAndComplete(RLoginAccount account, String password,
+                                                              String totpCode, String ip, Instant now) {
+        if (!verifyPassword(password, account)) {
+            return registerFailedAttempt(account, ip, now, LoginResult.WRONG_PASSWORD);
+        }
+        if (account.totpEnabled()) {
+            if (totpCode == null || totpCode.isBlank()) {
+                return CompletableFuture.completedFuture(new LoginOutcome(LoginResult.NEEDS_TOTP, account, 0, 0));
+            }
+            if (!Totp.verify(account.totpSecret(), totpCode)) {
+                return registerFailedAttempt(account, ip, now, LoginResult.WRONG_TOTP);
+            }
+        }
+        ipThrottle.recordSuccess(ip, account.username());
+        RLoginAccount authenticated = account.withLogin(ip, now);
+        // Account migrated from another plugin (e.g. AuthMe SHA256): on a successful
+        // login, it gets re-hashed to bcrypt, retiring the legacy algorithm for good.
+        if (!PasswordHasher.ALGO_ID.equals(account.hashAlgo())) {
+            authenticated = authenticated.withPassword(hasher.hash(password), PasswordHasher.ALGO_ID);
+        }
+        return storage.save(authenticated).thenApply(saved -> new LoginOutcome(LoginResult.SUCCESS, saved, 0, 0));
+    }
+
+    /**
+     * How long the shared-record lockout still has to run: the window measured
+     * from the oldest failure that crossed the limit.
+     */
+    private long remainingLockoutSeconds(long oldestEpochMillis, Instant windowStart, Instant now) {
+        if (oldestEpochMillis < 0) {
+            return config.bruteforceLockoutSeconds();
+        }
+        Instant lockedUntil = Instant.ofEpochMilli(oldestEpochMillis)
+                .plusSeconds(config.bruteforceLockoutSeconds());
+        return Math.max(1, lockedUntil.getEpochSecond() - now.getEpochSecond());
     }
 
     /** Bcrypt is the native format; legacy SHA256 from accounts imported from AuthMe is accepted too. */
@@ -188,9 +220,29 @@ public final class AccountService {
      */
     private CompletableFuture<LoginOutcome> registerFailedAttempt(RLoginAccount account, String ip,
                                                                     Instant now, LoginResult reason) {
-        int attemptsLeft = ipThrottle.recordFailure(ip, now);
+        int attemptsLeft = ipThrottle.recordFailure(ip, account.username(), now);
         RLoginAccount updated = account.withFailedAttempt(account.failedAttempts() + 1, null);
         return storage.save(updated).thenApply(saved -> new LoginOutcome(reason, saved, 0, attemptsLeft));
+    }
+
+    /**
+     * Second step of a new-device login: {@code /login} already succeeded, and
+     * the player now proves control of the account again — password, plus the
+     * TOTP code when 2FA is on — before this device is trusted and the freeze
+     * lifts. (With 2FA on, the password alone is exactly what a stolen
+     * password would still have, so the code is required too.)
+     */
+    public CompletableFuture<Boolean> confirmDevice(UUID uuid, String password, String totpCode) {
+        return storage.findByUuid(uuid).thenApply(opt -> {
+            if (opt.isEmpty()) {
+                return false;
+            }
+            RLoginAccount account = opt.get();
+            if (account.premium() || !verifyPassword(password, account)) {
+                return false;
+            }
+            return !account.totpEnabled() || (totpCode != null && Totp.verify(account.totpSecret(), totpCode));
+        });
     }
 
     /**

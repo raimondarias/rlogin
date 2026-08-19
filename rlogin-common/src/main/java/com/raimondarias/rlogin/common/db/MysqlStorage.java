@@ -3,6 +3,9 @@ package com.raimondarias.rlogin.common.db;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 import com.zaxxer.hikari.HikariConfig;
 
+import java.sql.SQLException;
+import java.sql.Statement;
+
 /**
  * MySQL/MariaDB storage, recommended when several Paper/Folia backends
  * need to share the same rLogin accounts.
@@ -28,6 +31,25 @@ public final class MysqlStorage extends AbstractSqlStorage {
         hikari.setPoolName("rlogin-mysql");
         hikari.setConnectionTestQuery("SELECT 1");
         return hikari;
+    }
+
+    /**
+     * MySQL has no {@code CREATE INDEX IF NOT EXISTS} (that is MariaDB-only
+     * syntax), so the index is created best-effort and a duplicate-key error
+     * (1061) is treated as "already there". The index is functional on
+     * {@code LOWER(username)}, which is what {@code findByUsername} actually
+     * filters on — a plain index on the column would never be used.
+     */
+    @Override
+    protected void createUsernameIndex(Statement st) throws SQLException {
+        try {
+            st.execute("CREATE INDEX idx_rlogin_accounts_username "
+                    + "ON rlogin_accounts ((LOWER(username)))");
+        } catch (SQLException e) {
+            if (e.getErrorCode() != 1061) { // 1061 = Duplicate key name
+                throw e;
+            }
+        }
     }
 
     @Override
@@ -60,7 +82,49 @@ public final class MysqlStorage extends AbstractSqlStorage {
                     server VARCHAR(64),
                     created_at BIGINT NOT NULL,
                     expires_at BIGINT NOT NULL,
+                    token_hash VARCHAR(64),
                     PRIMARY KEY (uuid, ip)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+                """;
+    }
+
+    @Override
+    protected String createLoginFailuresTableSql() {
+        return """
+                CREATE TABLE IF NOT EXISTS rlogin_login_failures (
+                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                    ip VARCHAR(45) NOT NULL,
+                    username VARCHAR(16) NOT NULL,
+                    attempted_at BIGINT NOT NULL,
+                    INDEX idx_failures_ip (ip, attempted_at),
+                    INDEX idx_failures_name (username, attempted_at)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+                """;
+    }
+
+    @Override
+    protected String createKnownIpsTableSql() {
+        return """
+                CREATE TABLE IF NOT EXISTS rlogin_known_ips (
+                    uuid VARCHAR(36) NOT NULL,
+                    ip VARCHAR(45) NOT NULL,
+                    first_seen BIGINT NOT NULL,
+                    last_seen BIGINT NOT NULL,
+                    PRIMARY KEY (uuid, ip)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+                """;
+    }
+
+    @Override
+    protected String createTransferTokensTableSql() {
+        return """
+                CREATE TABLE IF NOT EXISTS rlogin_transfer_tokens (
+                    uuid VARCHAR(36) NOT NULL,
+                    token_hash VARCHAR(64) NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    expires_at BIGINT NOT NULL,
+                    INDEX idx_transfer_uuid (uuid),
+                    INDEX idx_transfer_expiry (expires_at)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
                 """;
     }

@@ -17,7 +17,9 @@ import com.raimondarias.rlogin.common.update.UpdateChecker;
 import com.raimondarias.rlogin.paper.bedrock.FloodgateSupport;
 import com.raimondarias.rlogin.paper.integration.LuckPermsSupport;
 import com.raimondarias.rlogin.paper.command.ChangePasswordCommand;
+import com.raimondarias.rlogin.paper.command.ConfirmCommand;
 import com.raimondarias.rlogin.paper.command.LoginCommand;
+import com.raimondarias.rlogin.paper.command.SessionCommand;
 import com.raimondarias.rlogin.paper.command.LogoutCommand;
 import com.raimondarias.rlogin.paper.command.PremiumInfoCommand;
 import com.raimondarias.rlogin.paper.command.RLoginAdminCommand;
@@ -118,9 +120,15 @@ public final class RLoginPaperPlugin extends JavaPlugin {
 
         MetricsService.startIfEnabled(this);
 
-        // Periodic cleanup of expired "remember me" sessions: every 30 minutes, on an async thread.
-        this.sessionCleanupTask = scheduler.runAsyncTimer(20L * 60, 20L * 60 * 30,
-                () -> storage.purgeExpiredSessions(Instant.now()));
+        // Periodic cleanup of everything that expires: "remember me" sessions,
+        // the shared login-failure record, and session transfer codes — every
+        // 30 minutes, on an async thread.
+        this.sessionCleanupTask = scheduler.runAsyncTimer(20L * 60, 20L * 60 * 30, () -> {
+            Instant now = Instant.now();
+            storage.purgeExpiredSessions(now);
+            storage.purgeExpiredLoginFailures(now);
+            storage.purgeExpiredTransferTokens(now);
+        });
 
         getLogger().info("rLogin ready. Server: " + serverBrand()
                 + " | Folia: " + SchedulerAdapter.isFolia()
@@ -215,6 +223,8 @@ public final class RLoginPaperPlugin extends JavaPlugin {
         getCommand("2fa").setExecutor(new TotpCommand(this));
         getCommand("premium").setExecutor(new PremiumInfoCommand(this));
         getCommand("recover").setExecutor(new RecoverCommand(this));
+        getCommand("confirm").setExecutor(new ConfirmCommand(this));
+        getCommand("session").setExecutor(new SessionCommand(this));
 
         RLoginAdminCommand adminCommand = new RLoginAdminCommand(this);
         getCommand("rlogin").setExecutor(adminCommand);
@@ -369,6 +379,10 @@ public final class RLoginPaperPlugin extends JavaPlugin {
 
     public AccountService accountService() {
         return accountService;
+    }
+
+    public Storage storage() {
+        return storage;
     }
 
     public SessionService sessionService() {

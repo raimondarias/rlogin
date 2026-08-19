@@ -17,6 +17,9 @@ class SensitiveCommandsTest {
         assertTrue(commands.revealsSecret("/register hunter2 hunter2"));
         assertTrue(commands.revealsSecret("/changepassword old new"));
         assertTrue(commands.revealsSecret("/2fa confirm 123456"));
+        // New-device confirmation and session codes carry a secret too.
+        assertTrue(commands.revealsSecret("/confirm hunter2 123456"));
+        assertTrue(commands.revealsSecret("/session 9f2c4a71d0b8e3f6a1c4d7e9b2f5a8c1"));
     }
 
     @Test
@@ -50,6 +53,8 @@ class SensitiveCommandsTest {
         // No arguments -> nothing to hide, and the attempt itself is worth seeing.
         assertFalse(commands.revealsSecret("/login"));
         assertFalse(commands.revealsSecret("/register"));
+        // A bare /session with no code has nothing to hide.
+        assertFalse(commands.revealsSecret("/session"));
 
         assertFalse(commands.revealsSecret("/rlogin reload"));
         assertFalse(commands.revealsSecret("/rlogin info Steve"));
@@ -70,6 +75,8 @@ class SensitiveCommandsTest {
         assertEquals("/login ***", commands.mask("/login hunter2"));
         assertEquals("/register ***", commands.mask("/register hunter2 hunter2"));
         assertEquals("/rlogin login ***", commands.mask("/rlogin login hunter2"));
+        assertEquals("/confirm ***", commands.mask("/confirm hunter2 123456"));
+        assertEquals("/session ***", commands.mask("/session 9f2c4a71d0b8e3f6a1c4d7e9b2f5a8c1"));
         assertEquals("/login", commands.mask("/login"));
     }
 

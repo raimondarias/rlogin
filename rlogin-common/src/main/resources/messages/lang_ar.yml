@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eعدد كبير جدًا من المحاولات الفاشلة. انتظر &#5e9dfd{seconds} ثانية&#fd5e5e."
 
+device:
+  new-device: "{prefix}&#fdba5eأول مرة على هذا الجهاز. أكد أنك أنت: &#e39fff/confirm <كلمة المرور> [رمز-2fa]"
+  confirmed: "{prefix}&#91f251تم الوثوق بهذا الجهاز الآن."
+  not-pending: "{prefix}&#fd5e5eلا يوجد شيء لتأكيده الآن. سجل الدخول أولاً بـ &#e39fff/login&#fd5e5e."
+  confirm-usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/confirm <كلمة المرور> [رمز-2fa]"
+  confirmation-failed: "{prefix}&#fd5e5eفشل التأكيد — كلمة المرور أو رمز 2FA غير صحيحة. حاول مرة أخرى."
+
+session:
+  usage: "{prefix}&#fd5e5eالاستخدام: &#e39fff/session <الرمز>"
+  generated: "{prefix}&#91f251رمز النقل: &#fd8ddb{code}&#91f251 — صالح لمدة &#5e9dfd{minutes} دقيقة&#91f251، استخدام واحد."
+  invalid: "{prefix}&#fd5e5eهذا الرمز غير صالح أو منتهي."
+  unavailable: "{prefix}&#fdba5eرموز نقل الجلسة معطلة على هذا الخادم."
+
 totp:
   enabled: "{prefix}&#91f251تم تفعيل المصادقة الثنائية."
   disabled: "{prefix}&#91f251تم إلغاء تفعيل المصادقة الثنائية."

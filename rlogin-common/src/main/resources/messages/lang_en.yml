@@ -61,6 +61,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eToo many failed attempts. Wait &#5e9dfd{seconds} seconds&#fd5e5e."
 
+device:
+  new-device: "{prefix}&#fdba5eFirst time on this device. Confirm it's you: &#e39fff/confirm <password> [2fa-code]"
+  confirmed: "{prefix}&#91f251This device is now trusted."
+  not-pending: "{prefix}&#fd5e5eThere's nothing to confirm right now. Log in first with &#e39fff/login&#fd5e5e."
+  confirm-usage: "{prefix}&#fd5e5eUsage: &#e39fff/confirm <password> [2fa-code]"
+  confirmation-failed: "{prefix}&#fd5e5eConfirmation failed — wrong password or 2FA code. Try again."
+
+session:
+  usage: "{prefix}&#fd5e5eUsage: &#e39fff/session <code>"
+  generated: "{prefix}&#91f251Transfer code: &#fd8ddb{code}&#91f251 — valid for &#5e9dfd{minutes} minutes&#91f251, single use."
+  invalid: "{prefix}&#fd5e5eThat code is invalid or has expired."
+  unavailable: "{prefix}&#fdba5eSession transfer codes are disabled on this server."
+
 totp:
   enabled: "{prefix}&#91f251Two-factor authentication enabled."
   disabled: "{prefix}&#91f251Two-factor authentication disabled."

@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eTe veel mislukte pogingen. Wacht &#5e9dfd{seconds} seconden&#fd5e5e."
 
+device:
+  new-device: "{prefix}&#fdba5eEerste keer op dit apparaat. Bevestig dat jij het bent: &#e39fff/confirm <wachtwoord> [2fa-code]"
+  confirmed: "{prefix}&#91f251Dit apparaat is nu vertrouwd."
+  not-pending: "{prefix}&#fd5e5eEr valt nu niets te bevestigen. Log eerst in met &#e39fff/login&#fd5e5e."
+  confirm-usage: "{prefix}&#fd5e5eGebruik: &#e39fff/confirm <wachtwoord> [2fa-code]"
+  confirmation-failed: "{prefix}&#fd5e5eBevestiging mislukt — onjuist wachtwoord of 2fa-code. Probeer opnieuw."
+
+session:
+  usage: "{prefix}&#fd5e5eGebruik: &#e39fff/session <code>"
+  generated: "{prefix}&#91f251Overdrachtscode: &#fd8ddb{code}&#91f251 — geldig voor &#5e9dfd{minutes} minuten&#91f251, eenmalig gebruik."
+  invalid: "{prefix}&#fd5e5eDie code is ongeldig of verlopen."
+  unavailable: "{prefix}&#fdba5eSessie-overdrachtscodes zijn uitgeschakeld op deze server."
+
 totp:
   enabled: "{prefix}&#91f251Tweefactorauthenticatie ingeschakeld."
   disabled: "{prefix}&#91f251Tweefactorauthenticatie uitgeschakeld."

@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5e失败尝试次数过多。请等待 &#5e9dfd{seconds} 秒&#fd5e5e。"
 
+device:
+  new-device: "{prefix}&#fdba5e首次在此设备登录。请确认是您本人: &#e39fff/confirm <密码> [2FA验证码]"
+  confirmed: "{prefix}&#91f251此设备现在受信任。"
+  not-pending: "{prefix}&#fd5e5e当前没有需要确认的内容。请先使用 &#e39fff/login&#fd5e5e 登录。"
+  confirm-usage: "{prefix}&#fd5e5e用法: &#e39fff/confirm <密码> [2FA验证码]"
+  confirmation-failed: "{prefix}&#fd5e5e确认失败 — 密码或2FA验证码错误。请重试。"
+
+session:
+  usage: "{prefix}&#fd5e5e用法: &#e39fff/session <代码>"
+  generated: "{prefix}&#91f251转移代码: &#fd8ddb{code}&#91f251 — 有效 &#5e9dfd{minutes} 分钟&#91f251，仅限一次。"
+  invalid: "{prefix}&#fd5e5e该代码无效或已过期。"
+  unavailable: "{prefix}&#fdba5e此服务器已禁用会话转移代码。"
+
 totp:
   enabled: "{prefix}&#91f251双重验证已启用。"
   disabled: "{prefix}&#91f251双重验证已禁用。"

@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eÇok fazla başarısız deneme. &#5e9dfd{seconds} saniye&#fd5e5e bekle."
 
+device:
+  new-device: "{prefix}&#fdba5eBu cihazda ilk kez. Sen olduğunu doğrula: &#e39fff/confirm <şifre> [2fa-kodu]"
+  confirmed: "{prefix}&#91f251Bu cihaz artık güvenilir."
+  not-pending: "{prefix}&#fd5e5eŞu anda doğrulanacak bir şey yok. Önce &#e39fff/login&#fd5e5e ile giriş yap."
+  confirm-usage: "{prefix}&#fd5e5eKullanım: &#e39fff/confirm <şifre> [2fa-kodu]"
+  confirmation-failed: "{prefix}&#fd5e5eDoğrulama başarısız — yanlış şifre veya 2FA kodu. Tekrar dene."
+
+session:
+  usage: "{prefix}&#fd5e5eKullanım: &#e39fff/session <kod>"
+  generated: "{prefix}&#91f251Aktarım kodu: &#fd8ddb{code}&#91f251 — &#5e9dfd{minutes} dakika&#91f251 geçerli, tek kullanımlık."
+  invalid: "{prefix}&#fd5e5eBu kod geçersiz veya süresi dolmuş."
+  unavailable: "{prefix}&#fdba5eBu sunucuda oturum aktarım kodları devre dışı."
+
 totp:
   enabled: "{prefix}&#91f251İki faktörlü kimlik doğrulama etkinleştirildi."
   disabled: "{prefix}&#91f251İki faktörlü kimlik doğrulama devre dışı bırakıldı."

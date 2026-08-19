@@ -3,6 +3,8 @@ package com.raimondarias.rlogin.common.db;
 import com.zaxxer.hikari.HikariConfig;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * SQLite storage: zero configuration, great for a single server. A single
@@ -27,6 +29,13 @@ public final class SqliteStorage extends AbstractSqlStorage {
         config.setPoolName("rlogin-sqlite");
         config.setConnectionTestQuery("SELECT 1");
         return config;
+    }
+
+    /** SQLite supports functional indexes and {@code IF NOT EXISTS}. */
+    @Override
+    protected void createUsernameIndex(Statement st) throws SQLException {
+        st.execute("CREATE INDEX IF NOT EXISTS idx_rlogin_accounts_username "
+                + "ON rlogin_accounts (LOWER(username))");
     }
 
     @Override
@@ -59,7 +68,45 @@ public final class SqliteStorage extends AbstractSqlStorage {
                     server VARCHAR(64),
                     created_at BIGINT NOT NULL,
                     expires_at BIGINT NOT NULL,
+                    token_hash VARCHAR(64),
                     PRIMARY KEY (uuid, ip)
+                )
+                """;
+    }
+
+    @Override
+    protected String createLoginFailuresTableSql() {
+        return """
+                CREATE TABLE IF NOT EXISTS rlogin_login_failures (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ip VARCHAR(45) NOT NULL,
+                    username VARCHAR(16) NOT NULL,
+                    attempted_at BIGINT NOT NULL
+                )
+                """;
+    }
+
+    @Override
+    protected String createKnownIpsTableSql() {
+        return """
+                CREATE TABLE IF NOT EXISTS rlogin_known_ips (
+                    uuid VARCHAR(36) NOT NULL,
+                    ip VARCHAR(45) NOT NULL,
+                    first_seen BIGINT NOT NULL,
+                    last_seen BIGINT NOT NULL,
+                    PRIMARY KEY (uuid, ip)
+                )
+                """;
+    }
+
+    @Override
+    protected String createTransferTokensTableSql() {
+        return """
+                CREATE TABLE IF NOT EXISTS rlogin_transfer_tokens (
+                    uuid VARCHAR(36) NOT NULL,
+                    token_hash VARCHAR(64) NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    expires_at BIGINT NOT NULL
                 )
                 """;
     }

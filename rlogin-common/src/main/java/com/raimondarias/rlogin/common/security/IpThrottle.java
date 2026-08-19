@@ -1,5 +1,6 @@
 package com.raimondarias.rlogin.common.security;
 
+import com.raimondarias.rlogin.api.db.Storage;
 import com.raimondarias.rlogin.common.config.RLoginConfig;
 
 import java.time.Instant;
@@ -21,8 +22,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * trying. That is a much more expensive attack than typing a name into a
  * chat box, and it is the trade every serious auth plugin makes.</p>
  *
- * <p>State lives in memory only. A restart forgives everyone, which is
- * fine: the point is to make guessing slow, not to keep a permanent
+ * <p>State lives in memory for the fast, per-server path, and every failure
+ * is mirrored into {@link Storage} so the backends of a proxy network
+ * (sharing a database) stop a guesser together: spreading tries across
+ * servers must not multiply the attempts each one sees. {@link
+ * AccountService} consults the stored counts as the authoritative check,
+ * and a restart forgiving the local map no longer forgives the shared
  * record.</p>
  */
 public final class IpThrottle {
@@ -33,11 +38,13 @@ public final class IpThrottle {
     /** Entries older than this with no activity are dropped, so the map can't grow forever. */
     private static final long FORGET_AFTER_SECONDS = 3600;
 
+    private final Storage storage;
     private final RLoginConfig config;
     private final BruteforceGuard guard;
     private final Map<String, Attempts> byAddress = new ConcurrentHashMap<>();
 
-    public IpThrottle(RLoginConfig config, BruteforceGuard guard) {
+    public IpThrottle(Storage storage, RLoginConfig config, BruteforceGuard guard) {
+        this.storage = storage;
         this.config = config;
         this.guard = guard;
     }
@@ -57,9 +64,12 @@ public final class IpThrottle {
     /**
      * Records one wrong password from this address.
      *
+     * @param username the account name that was tried, so the shared record
+     *                 can also stop someone guessing the <em>same</em> name
+     *                 from many different addresses.
      * @return how many tries are left before it is locked out; 0 means it just was.
      */
-    public int recordFailure(String ip, Instant now) {
+    public int recordFailure(String ip, String username, Instant now) {
         if (!guard.isEnabled() || ip == null) {
             return Integer.MAX_VALUE;
         }
@@ -71,13 +81,21 @@ public final class IpThrottle {
                     : null;
             return new Attempts(failures, lockedUntil);
         });
+        // Fire-and-forget into the shared record; the login that called this is
+        // already async, and the write's job is to be there for the NEXT attempt.
+        if (username != null) {
+            storage.recordLoginFailure(ip, username, now);
+        }
         return Math.max(0, config.bruteforceMaxAttempts() - updated.failures());
     }
 
     /** Clears the address after a correct password; nothing is held against it any more. */
-    public void recordSuccess(String ip) {
+    public void recordSuccess(String ip, String username) {
         if (ip != null) {
             byAddress.remove(ip);
+        }
+        if (username != null) {
+            storage.clearLoginFailures(ip, username);
         }
     }
 

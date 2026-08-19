@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eQuá nhiều lần thử thất bại. Đợi &#5e9dfd{seconds} giây&#fd5e5e."
 
+device:
+  new-device: "{prefix}&#fdba5eLần đầu đăng nhập trên thiết bị này. Xác nhận bạn là chính chủ: &#e39fff/confirm <mật khẩu> [mã-2fa]"
+  confirmed: "{prefix}&#91f251Thiết bị này hiện đã được tin cậy."
+  not-pending: "{prefix}&#fd5e5eHiện không có gì để xác nhận. Hãy đăng nhập trước bằng &#e39fff/login&#fd5e5e."
+  confirm-usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/confirm <mật khẩu> [mã-2fa]"
+  confirmation-failed: "{prefix}&#fd5e5eXác nhận thất bại — sai mật khẩu hoặc mã 2FA. Thử lại."
+
+session:
+  usage: "{prefix}&#fd5e5eCách dùng: &#e39fff/session <mã>"
+  generated: "{prefix}&#91f251Mã chuyển: &#fd8ddb{code}&#91f251 — hiệu lực &#5e9dfd{minutes} phút&#91f251, dùng một lần."
+  invalid: "{prefix}&#fd5e5eMã đó không hợp lệ hoặc đã hết hạn."
+  unavailable: "{prefix}&#fdba5eMã chuyển phiên bị tắt trên máy chủ này."
+
 totp:
   enabled: "{prefix}&#91f251Đã bật xác thực hai yếu tố."
   disabled: "{prefix}&#91f251Đã tắt xác thực hai yếu tố."

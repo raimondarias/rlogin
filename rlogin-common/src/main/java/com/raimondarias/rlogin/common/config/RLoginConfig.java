@@ -147,6 +147,26 @@ public final class RLoginConfig {
         return doc.getInt("session.remember-me-minutes", 30);
     }
 
+    /** Minutes a {@code /session} transfer code stays valid; 0 switches the feature off. */
+    public int transferTokenMinutes() {
+        return doc.getInt("session.transfer-token-minutes", 5);
+    }
+
+    // --- device memory (Paper/Folia only) ---
+    public boolean deviceMemoryEnabled() {
+        return doc.getBoolean("device-memory.enabled", true);
+    }
+
+    /** How many addresses per account are remembered; older ones are dropped. */
+    public int deviceMemoryMaxKnownIps() {
+        return doc.getInt("device-memory.max-known-ips", 8);
+    }
+
+    /** How long a player has to run {@code /confirm} before the window closes. */
+    public int deviceMemoryConfirmTimeoutSeconds() {
+        return doc.getInt("device-memory.confirm-timeout-seconds", 45);
+    }
+
     // --- security (Paper/Folia only) ---
     public boolean bruteforceEnabled() {
         return doc.getBoolean("security.bruteforce.enabled", true);

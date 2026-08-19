@@ -44,4 +44,27 @@ public final class SessionService {
     public CompletableFuture<Void> forget(UUID uuid) {
         return storage.clearSession(uuid);
     }
+
+    /**
+     * Mints a short-lived, single-use transfer code the player can redeem
+     * from another device instead of typing the password there. Returns the
+     * code, or {@code null} when the feature is switched off
+     * ({@code session.transfer-token-minutes: 0}).
+     */
+    public CompletableFuture<String> issueTransferToken(UUID uuid) {
+        int minutes = config.transferTokenMinutes();
+        if (minutes <= 0) {
+            return CompletableFuture.completedFuture(null);
+        }
+        Instant expiresAt = Instant.now().plusSeconds(minutes * 60L);
+        return storage.issueTransferToken(uuid, expiresAt);
+    }
+
+    /** Spends a transfer code; false when unknown, already used, or expired. */
+    public CompletableFuture<Boolean> redeemTransferToken(UUID uuid, String token) {
+        if (token == null || token.isBlank()) {
+            return CompletableFuture.completedFuture(false);
+        }
+        return storage.consumeTransferToken(uuid, token, Instant.now());
+    }
 }

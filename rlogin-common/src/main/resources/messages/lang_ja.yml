@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5e失敗した試行回数が多すぎます。&#5e9dfd{seconds}秒&#fd5e5e待ってください。"
 
+device:
+  new-device: "{prefix}&#fdba5eこの端末での初回ログインです。本人確認を行ってください: &#e39fff/confirm <パスワード> [2FAコード]"
+  confirmed: "{prefix}&#91f251この端末は信頼済みになりました。"
+  not-pending: "{prefix}&#fd5e5e現在確認するものはありません。まず &#e39fff/login&#fd5e5e でログインしてください。"
+  confirm-usage: "{prefix}&#fd5e5e使用方法: &#e39fff/confirm <パスワード> [2FAコード]"
+  confirmation-failed: "{prefix}&#fd5e5e確認に失敗しました — パスワードまたは2FAコードが正しくありません。もう一度お試しください。"
+
+session:
+  usage: "{prefix}&#fd5e5e使用方法: &#e39fff/session <コード>"
+  generated: "{prefix}&#91f251転送コード: &#fd8ddb{code}&#91f251 — &#5e9dfd{minutes}分&#91f251有効、一度きりです。"
+  invalid: "{prefix}&#fd5e5eそのコードは無効か期限切れです。"
+  unavailable: "{prefix}&#fdba5eこのサーバーではセッション転送コードは無効です。"
+
 totp:
   enabled: "{prefix}&#91f251二要素認証が有効になりました。"
   disabled: "{prefix}&#91f251二要素認証が無効になりました。"

@@ -12,6 +12,8 @@ public enum AuthReason {
     FLOODGATE,
     /** Typed /login with the correct password. */
     PASSWORD,
+    /** Redeemed a single-use session transfer code minted on a device they already trust. */
+    SESSION_TOKEN,
     /** Valid "remember me" session by IP+UUID within the configured window. */
     REMEMBERED_SESSION,
     /** An admin forced the login manually. */

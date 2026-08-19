@@ -5,6 +5,10 @@ import com.raimondarias.rlogin.api.db.Storage;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,6 +51,20 @@ public abstract class AbstractSqlStorage implements Storage {
 
     protected abstract String createRecoveryCodesTableSql();
 
+    protected abstract String createLoginFailuresTableSql();
+
+    protected abstract String createKnownIpsTableSql();
+
+    protected abstract String createTransferTokensTableSql();
+
+    /**
+     * Creates the index that backs {@link #findByUsername} (which filters on
+     * {@code LOWER(username)}, so the index must be functional on that
+     * expression to be of any use). Engine-specific: MySQL has no
+     * {@code IF NOT EXISTS} for indexes, SQLite does.
+     */
+    protected abstract void createUsernameIndex(Statement st) throws SQLException;
+
     @Override
     public CompletableFuture<Void> init() {
         return CompletableFuture.runAsync(() -> {
@@ -54,11 +73,71 @@ public abstract class AbstractSqlStorage implements Storage {
                 st.execute(createAccountsTableSql());
                 st.execute(createSessionsTableSql());
                 st.execute(createRecoveryCodesTableSql());
-                st.execute("CREATE INDEX IF NOT EXISTS idx_rlogin_accounts_username ON rlogin_accounts (username)");
+                st.execute(createLoginFailuresTableSql());
+                st.execute(createKnownIpsTableSql());
+                st.execute(createTransferTokensTableSql());
+                createUsernameIndex(st);
+                migrateSessionsTable(c);
+                seedKnownIps(c);
             } catch (SQLException e) {
                 throw new RuntimeException("Could not initialise rLogin's database", e);
             }
         }, executor);
+    }
+
+    /**
+     * Older versions created {@code rlogin_sessions} without the
+     * {@code token_hash} column, and {@code CREATE TABLE IF NOT EXISTS}
+     * leaves an existing table alone — so the column is added here when
+     * missing. The duplicate-column error is expected on every run after
+     * the first.
+     */
+    private void migrateSessionsTable(Connection c) throws SQLException {
+        try (Statement st = c.createStatement()) {
+            st.execute("ALTER TABLE rlogin_sessions ADD COLUMN token_hash VARCHAR(64)");
+        } catch (SQLException e) {
+            boolean duplicate = e.getErrorCode() == 1060 // MySQL: Duplicate column name
+                    || String.valueOf(e.getMessage()).toLowerCase(java.util.Locale.ROOT).contains("duplicate column");
+            if (!duplicate) {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * A device a player has already logged in from before the device-memory
+     * feature existed should not suddenly look brand-new: their recorded
+     * last address is trusted on upgrade, so nobody is forced through a
+     * device confirmation for the machine they already play on.
+     */
+    private void seedKnownIps(Connection c) throws SQLException {
+        try (PreparedStatement select = c.prepareStatement(
+                "SELECT uuid, last_ip, last_login_at FROM rlogin_accounts "
+                        + "WHERE last_ip IS NOT NULL AND last_login_at IS NOT NULL");
+             ResultSet rs = select.executeQuery()) {
+            while (rs.next()) {
+                String uuid = rs.getString("uuid");
+                String ip = rs.getString("last_ip");
+                long when = rs.getLong("last_login_at");
+                try (PreparedStatement upd = c.prepareStatement(
+                        "UPDATE rlogin_known_ips SET last_seen = ? WHERE uuid = ? AND ip = ?")) {
+                    upd.setLong(1, when);
+                    upd.setString(2, uuid);
+                    upd.setString(3, ip);
+                    if (upd.executeUpdate() == 0) {
+                        try (PreparedStatement ins = c.prepareStatement(
+                                "INSERT INTO rlogin_known_ips (uuid, ip, first_seen, last_seen) "
+                                        + "VALUES (?, ?, ?, ?)")) {
+                            ins.setString(1, uuid);
+                            ins.setString(2, ip);
+                            ins.setLong(3, when);
+                            ins.setLong(4, when);
+                            ins.executeUpdate();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -188,8 +267,11 @@ public abstract class AbstractSqlStorage implements Storage {
     }
 
     @Override
-    public CompletableFuture<Void> saveSession(UUID uuid, String ip, String server, Instant expiresAt) {
-        return CompletableFuture.runAsync(() -> {
+    public CompletableFuture<String> saveSession(UUID uuid, String ip, String server, Instant expiresAt) {
+        return CompletableFuture.supplyAsync(() -> {
+            // 256 bits of entropy, hex-encoded; only the SHA-256 of it is stored,
+            // so a database read can never be replayed as a session.
+            String token = generateToken();
             try (Connection c = dataSource.getConnection()) {
                 try (PreparedStatement del = c.prepareStatement(
                         "DELETE FROM rlogin_sessions WHERE uuid = ? AND ip = ?")) {
@@ -198,14 +280,38 @@ public abstract class AbstractSqlStorage implements Storage {
                     del.executeUpdate();
                 }
                 try (PreparedStatement ins = c.prepareStatement(
-                        "INSERT INTO rlogin_sessions (uuid, ip, server, created_at, expires_at) VALUES (?, ?, ?, ?, ?)")) {
+                        "INSERT INTO rlogin_sessions (uuid, ip, server, created_at, expires_at, token_hash) "
+                                + "VALUES (?, ?, ?, ?, ?, ?)")) {
                     ins.setString(1, uuid.toString());
                     ins.setString(2, ip);
                     ins.setString(3, server);
                     ins.setLong(4, Instant.now().toEpochMilli());
                     ins.setLong(5, expiresAt.toEpochMilli());
+                    ins.setString(6, sha256Hex(token));
                     ins.executeUpdate();
                 }
+                return token;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> consumeSessionToken(UUID uuid, String token, Instant now) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (token == null || token.isBlank()) {
+                return false;
+            }
+            // Deleting on match makes the token single-use with no extra step:
+            // the same token can never be presented twice.
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "DELETE FROM rlogin_sessions WHERE uuid = ? AND token_hash = ? AND expires_at > ?")) {
+                ps.setString(1, uuid.toString());
+                ps.setString(2, sha256Hex(token));
+                ps.setLong(3, now.toEpochMilli());
+                return ps.executeUpdate() > 0;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -315,6 +421,254 @@ public abstract class AbstractSqlStorage implements Storage {
                 throw new RuntimeException(e);
             }
         }, executor);
+    }
+
+    // --- Session transfer codes ---
+
+    @Override
+    public CompletableFuture<String> issueTransferToken(UUID uuid, Instant expiresAt) {
+        return CompletableFuture.supplyAsync(() -> {
+            // A transfer code is typed by hand in chat, so it is kept shorter than
+            // the machine-to-machine session token — 128 bits is still far more
+            // entropy than a short-lived, single-use code needs.
+            byte[] bytes = new byte[16];
+            TOKEN_RANDOM.nextBytes(bytes);
+            String token = HexFormat.of().formatHex(bytes);
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "INSERT INTO rlogin_transfer_tokens (uuid, token_hash, created_at, expires_at) "
+                                 + "VALUES (?, ?, ?, ?)")) {
+                ps.setString(1, uuid.toString());
+                ps.setString(2, sha256Hex(token));
+                ps.setLong(3, Instant.now().toEpochMilli());
+                ps.setLong(4, expiresAt.toEpochMilli());
+                ps.executeUpdate();
+                return token;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> consumeTransferToken(UUID uuid, String token, Instant now) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (token == null || token.isBlank()) {
+                return false;
+            }
+            // Deleting on match makes the code single-use with no extra step:
+            // the same code can never be presented twice.
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "DELETE FROM rlogin_transfer_tokens WHERE uuid = ? AND token_hash = ? AND expires_at > ?")) {
+                ps.setString(1, uuid.toString());
+                ps.setString(2, sha256Hex(token));
+                ps.setLong(3, now.toEpochMilli());
+                return ps.executeUpdate() > 0;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> purgeExpiredTransferTokens(Instant now) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "DELETE FROM rlogin_transfer_tokens WHERE expires_at <= ?")) {
+                ps.setLong(1, now.toEpochMilli());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    // --- Distributed login-failure limit ---
+
+    @Override
+    public CompletableFuture<Void> recordLoginFailure(String ip, String username, Instant now) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "INSERT INTO rlogin_login_failures (ip, username, attempted_at) VALUES (?, ?, ?)")) {
+                ps.setString(1, ip);
+                ps.setString(2, username);
+                ps.setLong(3, now.toEpochMilli());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Integer> countLoginFailures(String ip, String username, Instant since) {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "SELECT (SELECT COUNT(*) FROM rlogin_login_failures WHERE ip = ? AND attempted_at > ?) AS by_ip, "
+                    + "(SELECT COUNT(*) FROM rlogin_login_failures WHERE username = ? AND attempted_at > ?) AS by_name";
+            try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setString(1, ip);
+                ps.setLong(2, since.toEpochMilli());
+                ps.setString(3, username);
+                ps.setLong(4, since.toEpochMilli());
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    // Either dimension crossing the limit is enough to lock out.
+                    return Math.max(rs.getInt("by_ip"), rs.getInt("by_name"));
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Long> oldestLoginFailureWithin(String ip, String username, Instant since) {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "SELECT MIN(attempted_at) AS oldest FROM rlogin_login_failures "
+                    + "WHERE (ip = ? OR username = ?) AND attempted_at > ?";
+            try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setString(1, ip);
+                ps.setString(2, username);
+                ps.setLong(3, since.toEpochMilli());
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    long oldest = rs.getLong("oldest");
+                    return rs.wasNull() ? -1L : oldest;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> clearLoginFailures(String ip, String username) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "DELETE FROM rlogin_login_failures WHERE ip = ? OR username = ?")) {
+                ps.setString(1, ip);
+                ps.setString(2, username);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> purgeExpiredLoginFailures(Instant now) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "DELETE FROM rlogin_login_failures WHERE attempted_at <= ?")) {
+                ps.setLong(1, now.toEpochMilli());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    // --- Device memory ---
+
+    @Override
+    public CompletableFuture<Boolean> isKnownIp(UUID uuid, String ip) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (Connection c = dataSource.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "SELECT 1 FROM rlogin_known_ips WHERE uuid = ? AND ip = ?")) {
+                ps.setString(1, uuid.toString());
+                ps.setString(2, ip);
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> rememberIp(UUID uuid, String ip, Instant now) {
+        return CompletableFuture.runAsync(() -> {
+            try (Connection c = dataSource.getConnection()) {
+                try (PreparedStatement upd = c.prepareStatement(
+                        "UPDATE rlogin_known_ips SET last_seen = ? WHERE uuid = ? AND ip = ?")) {
+                    upd.setLong(1, now.toEpochMilli());
+                    upd.setString(2, uuid.toString());
+                    upd.setString(3, ip);
+                    if (upd.executeUpdate() == 0) {
+                        try (PreparedStatement ins = c.prepareStatement(
+                                "INSERT INTO rlogin_known_ips (uuid, ip, first_seen, last_seen) "
+                                        + "VALUES (?, ?, ?, ?)")) {
+                            ins.setString(1, uuid.toString());
+                            ins.setString(2, ip);
+                            ins.setLong(3, now.toEpochMilli());
+                            ins.setLong(4, now.toEpochMilli());
+                            ins.executeUpdate();
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    @Override
+    public CompletableFuture<Void> pruneKnownIps(UUID uuid, int keep) {
+        return CompletableFuture.runAsync(() -> {
+            if (keep <= 0) {
+                return;
+            }
+            try (Connection c = dataSource.getConnection()) {
+                Long threshold = null;
+                // The keep-th most recent last_seen; everything older goes.
+                try (PreparedStatement ps = c.prepareStatement(
+                        "SELECT last_seen FROM rlogin_known_ips WHERE uuid = ? "
+                                + "ORDER BY last_seen DESC LIMIT 1 OFFSET ?")) {
+                    ps.setString(1, uuid.toString());
+                    ps.setInt(2, Math.max(0, keep - 1));
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            threshold = rs.getLong("last_seen");
+                        }
+                    }
+                }
+                if (threshold == null) {
+                    return; // keep or fewer addresses: nothing to prune.
+                }
+                try (PreparedStatement del = c.prepareStatement(
+                        "DELETE FROM rlogin_known_ips WHERE uuid = ? AND last_seen < ?")) {
+                    del.setString(1, uuid.toString());
+                    del.setLong(2, threshold);
+                    del.executeUpdate();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, executor);
+    }
+
+    private static final SecureRandom TOKEN_RANDOM = new SecureRandom();
+
+    private static String generateToken() {
+        byte[] bytes = new byte[32];
+        TOKEN_RANDOM.nextBytes(bytes);
+        return HexFormat.of().formatHex(bytes);
+    }
+
+    private static String sha256Hex(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return HexFormat.of().formatHex(digest.digest(input.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 unavailable on this JVM", e);
+        }
     }
 
     private RLoginAccount map(ResultSet rs) throws SQLException {

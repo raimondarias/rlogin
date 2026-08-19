@@ -24,6 +24,14 @@ public final class AuthSessionManager {
     private final Map<UUID, AuthReason> authenticated = new ConcurrentHashMap<>();
     private final Map<UUID, SchedulerAdapter.CancellableTask> reminderTasks = new ConcurrentHashMap<>();
     /**
+     * Players who passed {@code /login} but must confirm this new device
+     * (see device-memory) before the freeze lifts: UUID -> expiry in epoch
+     * millis. They stay frozen while inside the window, and the limbo
+     * reminders hold off so the only thing telling them what to do is the
+     * new-device message itself.
+     */
+    private final Map<UUID, Long> pendingDeviceConfirmations = new ConcurrentHashMap<>();
+    /**
      * Players the proxy has told us it already greeted, on an earlier backend
      * of the same connection. Only ever populated behind a proxy.
      */
@@ -46,6 +54,21 @@ public final class AuthSessionManager {
     /** Null if this player isn't authenticated (or already disconnected). */
     public AuthReason reasonFor(UUID uuid) {
         return authenticated.get(uuid);
+    }
+
+    /** Starts the new-device confirmation window for a player who just logged in. */
+    public void requireDeviceConfirmation(UUID uuid, long expiryEpochMillis) {
+        pendingDeviceConfirmations.put(uuid, expiryEpochMillis);
+    }
+
+    /** Whether this player is inside a new-device confirmation window right now. */
+    public boolean isAwaitingDeviceConfirmation(UUID uuid) {
+        Long expiry = pendingDeviceConfirmations.get(uuid);
+        return expiry != null && expiry > System.currentTimeMillis();
+    }
+
+    public void clearDeviceConfirmation(UUID uuid) {
+        pendingDeviceConfirmations.remove(uuid);
     }
 
     /** Called when the proxy reports this arrival is a server switch, not a fresh connection. */
@@ -75,5 +98,6 @@ public final class AuthSessionManager {
         authenticated.remove(uuid);
         cancelReminder(uuid);
         alreadyGreeted.remove(uuid);
+        clearDeviceConfirmation(uuid);
     }
 }

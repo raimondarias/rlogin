@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eTerlalu banyak percobaan gagal. Tunggu &#5e9dfd{seconds} detik&#fd5e5e."
 
+device:
+  new-device: "{prefix}&#fdba5ePertama kali di perangkat ini. Konfirmasi bahwa ini kamu: &#e39fff/confirm <kata sandi> [kode-2fa]"
+  confirmed: "{prefix}&#91f251Perangkat ini sekarang dipercaya."
+  not-pending: "{prefix}&#fd5e5eTidak ada yang perlu dikonfirmasi sekarang. Masuk dulu dengan &#e39fff/login&#fd5e5e."
+  confirm-usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/confirm <kata sandi> [kode-2fa]"
+  confirmation-failed: "{prefix}&#fd5e5eKonfirmasi gagal — kata sandi atau kode 2FA salah. Coba lagi."
+
+session:
+  usage: "{prefix}&#fd5e5ePenggunaan: &#e39fff/session <kode>"
+  generated: "{prefix}&#91f251Kode transfer: &#fd8ddb{code}&#91f251 — berlaku &#5e9dfd{minutes} menit&#91f251, sekali pakai."
+  invalid: "{prefix}&#fd5e5eKode itu tidak valid atau sudah kedaluwarsa."
+  unavailable: "{prefix}&#fdba5eKode transfer sesi dinonaktifkan di server ini."
+
 totp:
   enabled: "{prefix}&#91f251Autentikasi dua faktor diaktifkan."
   disabled: "{prefix}&#91f251Autentikasi dua faktor dinonaktifkan."

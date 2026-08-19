@@ -56,6 +56,19 @@ limbo:
 security:
   locked-out: "{prefix}&#fd5e5eЗабагато невдалих спроб. Зачекайте &#5e9dfd{seconds} секунд&#fd5e5e."
 
+device:
+  new-device: "{prefix}&#fdba5eВхід з цього пристрою вперше. Підтвердіть, що це ви: &#e39fff/confirm <пароль> [код-2fa]"
+  confirmed: "{prefix}&#91f251Цей пристрій тепер довірений."
+  not-pending: "{prefix}&#fd5e5eЗараз підтверджувати нічого. Спочатку увійдіть через &#e39fff/login&#fd5e5e."
+  confirm-usage: "{prefix}&#fd5e5eВикористання: &#e39fff/confirm <пароль> [код-2fa]"
+  confirmation-failed: "{prefix}&#fd5e5eПідтвердження не вдалося — невірний пароль або код 2FA. Спробуйте ще раз."
+
+session:
+  usage: "{prefix}&#fd5e5eВикористання: &#e39fff/session <код>"
+  generated: "{prefix}&#91f251Код перенесення: &#fd8ddb{code}&#91f251 — діє &#5e9dfd{minutes} хв&#91f251, одноразовий."
+  invalid: "{prefix}&#fd5e5eЦей код недійсний або прострочений."
+  unavailable: "{prefix}&#fdba5eКоди перенесення сесії вимкнено на цьому сервері."
+
 totp:
   enabled: "{prefix}&#91f251Двофакторну автентифікацію увімкнено."
   disabled: "{prefix}&#91f251Двофакторну автентифікацію вимкнено."

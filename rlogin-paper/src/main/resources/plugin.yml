@@ -31,6 +31,12 @@ commands:
   recover:
     description: Recover your account with a one-time code
     usage: /recover <code> <new password>
+  confirm:
+    description: Confirm a new device with your password
+    usage: /confirm <password> [2fa-code]
+  session:
+    description: Sign in with a code from a trusted device, or generate one
+    usage: /session [code]
   rlogin:
     description: General rLogin command (includes all of the above plus administration)
     aliases: [rl]
